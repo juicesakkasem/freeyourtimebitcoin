@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Silent Thief of Purchasing Power</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Noto Sans Thai -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Chart.js & Annotation Plugin -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@2.1.0/dist/chartjs-plugin-annotation.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Noto Sans Thai', sans-serif;
+        }
+        /* Custom scrollbar for better look in dark mode */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569; 
+        }
+    </style>
+</head>
+<style>
+    .cashual-nav { position: fixed; top: 0; width: 100%; background: rgba(15,15,15,0.95); backdrop-filter: blur(10px); border-bottom: 1px solid #222; z-index: 1000; display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; height: 72px; }
+    .cashual-nav-logo { font-size: 22px; font-weight: 700; color: #f7931a; letter-spacing: 0.05em; }
+    .cashual-nav-links { display: flex; gap: 2.5rem; list-style: none; margin: 0; padding: 0; }
+    .cashual-nav-links a { color: #aaa; text-decoration: none; font-size: 17px; transition: color 0.2s; }
+    .cashual-nav-links a:hover { color: #f7931a; }
+</style>
+<body class="bg-slate-950 text-slate-300 min-h-screen p-4 md:p-8" style="padding-top:88px">
+
+    <nav class="cashual-nav">
+        <div class="cashual-nav-logo"><a href="index.html" style="text-decoration:none;color:inherit;">FreeyourtimeBitcoin</a></div>
+        <ul class="cashual-nav-links">
+            <li><a href="Bitcoin DCA Master.html">DCA Master</a></li>
+            <li><a href="Purchasing Power.html">Purchasing Power</a></li>
+            <li><a href="wealth planner.html">Wealth Planner</a></li>
+            <li><a href="https://cashualme.com/" target="_blank">Cashualme</a></li>
+        </ul>
+    </nav>
+
+    <div class="max-w-6xl mx-auto space-y-6">
+        
+        <!-- Header -->
+        <div class="text-center space-y-2 mb-10 mt-4">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-white tracking-tight">
+                The Silent Thief of <span class="text-rose-500">Purchasing Power</span>
+            </h1>
+            <p class="text-slate-400 text-lg max-w-2xl mx-auto">
+                ตัวเลขในสมุดบัญชีอาจจะเพิ่มขึ้นทุกวัน แต่มูลค่าที่แท้จริงกำลังหายไป... เรามาดูกันว่าเงินของคุณมีค่าลดลงแค่ไหน?
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <!-- Left Column: Inputs -->
+            <div class="space-y-6">
+                <!-- ข้อมูลเงินของคุณ -->
+                <div class="bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-800">
+                    <h2 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
+                        <i data-lucide="wallet" class="w-5 h-5 text-blue-400"></i>
+                        ข้อมูลเงินของคุณ
+                    </h2>
+
+                    <div class="space-y-5">
+                        <!-- Input: เงินสะสม -->
+                        <div>
+                            <label class="flex justify-between text-sm font-medium text-slate-300 mb-2">
+                                <span>เงินเก็บสะสมปัจจุบัน</span>
+                                <span id="valCurrentSavings" class="text-blue-400 font-bold">1,000,000 บาท</span>
+                            </label>
+                            <input type="range" id="inputCurrentSavings" min="10000" max="10000000" step="10000" value="1000000"
+                                class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-blue-500">
+                        </div>
+
+                        <!-- Input: เงินเก็บต่อเดือน -->
+                        <div>
+                            <label class="flex justify-between text-sm font-medium text-slate-300 mb-2">
+                                <span>เก็บเพิ่มต่อเดือน</span>
+                                <span id="valMonthlySavings" class="text-emerald-400 font-bold">5,000 บาท</span>
+                            </label>
+                            <input type="range" id="inputMonthlySavings" min="0" max="100000" step="1000" value="5000"
+                                class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500">
+                        </div>
+
+                        <!-- Input: เงินเฟ้อ -->
+                        <div class="pt-4 border-t border-slate-800">
+                            <label class="flex justify-between text-sm font-medium text-slate-300 mb-2">
+                                <span>อัตราเงินเฟ้อเฉลี่ย</span>
+                                <span id="valInflationRate" class="text-rose-500 font-bold">3% / ปี</span>
+                            </label>
+                            <input type="range" id="inputInflationRate" min="0" max="10" step="0.5" value="3"
+                                class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-rose-500">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Time Machine Box -->
+                <div class="bg-gradient-to-br from-amber-900/20 to-orange-900/10 p-6 rounded-2xl border border-amber-700/30 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-4 opacity-5">
+                        <i data-lucide="history" class="w-24 h-24 text-amber-500"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-amber-500 flex items-center gap-2 mb-3">
+                        <i data-lucide="history" class="w-5 h-5"></i>
+                        ไทม์แมชชีนย้อนเวลา 5 ปี
+                    </h3>
+                    <p class="text-slate-300 text-sm leading-relaxed mb-4">
+                        รู้หรือไม่? เพื่อให้ซื้อของได้เท่ากับเงิน <span id="tmCurrent" class="font-bold text-white">1,000,000</span> บาทในวันนี้...
+                    </p>
+                    <div class="bg-slate-950/50 p-4 rounded-xl backdrop-blur-sm border border-amber-900/30 relative z-10">
+                        <p class="text-sm text-slate-400 mb-1">เมื่อ 5 ปีที่แล้ว คุณใช้เงินแค่</p>
+                        <p class="text-2xl font-black text-amber-400">
+                            <span id="tmPastNeed">862,609</span> <span class="text-base font-normal">บาท</span>
+                        </p>
+                    </div>
+                    <p class="text-xs text-amber-200/70 mt-4 bg-amber-900/20 p-3 rounded-lg border border-amber-900/30 relative z-10">
+                        💡 ความหมายคือ: เงินก้อนที่คุณถืออยู่ตอนนี้ มีค่าเท่ากับคนที่มีเงิน <strong id="tmPastValue" class="text-amber-400">1,159,274</strong> บาทในยุคเมื่อ 5 ปีก่อน (อำนาจซื้อมันหดตัวลงอย่างมาก!)
+                    </p>
+                </div>
+            </div>
+
+            <!-- Right Column: Charts & Solutions -->
+            <div class="lg:col-span-2 space-y-6">
+                
+                <!-- Chart -->
+                <div class="bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-800 flex flex-col relative">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h2 class="text-xl font-bold text-white">อนาคตของเงินคุณในอีก 20 ปี</h2>
+                            <p class="text-sm text-slate-400">เส้นสีแดงคือมูลค่าของเงินที่สามารถนำไปซื้อของได้จริง</p>
+                        </div>
+                    </div>
+                    
+                    <div class="w-full h-[350px] relative">
+                        <canvas id="inflationChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Solution Box -->
+                <div id="solutionContainer" class="p-6 rounded-2xl transition-all duration-300 border bg-slate-900/50 hover:bg-slate-800 border-slate-800 cursor-pointer">
+                    
+                    <!-- Before Click -->
+                    <div id="solutionIntro" class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="bg-slate-800 p-2 rounded-full border border-slate-700">
+                                <i data-lucide="shield-check" class="w-6 h-6 text-slate-400"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-white">ไม่อยากให้เงินด้อยค่าลงทำยังไงดี?</h3>
+                                <p class="text-sm text-slate-400">คลิกเพื่อดูทางแก้ปัญหา (The Solution)</p>
+                            </div>
+                        </div>
+                        <button class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-medium rounded-lg shadow-sm transition-colors">
+                            ดูทางรอด
+                        </button>
+                    </div>
+
+                    <!-- After Click -->
+                    <div id="solutionContent" class="hidden space-y-4">
+                        <div class="flex justify-between items-start">
+                            <div class="flex items-center gap-3 mb-2">
+                                <div class="bg-emerald-900/40 p-2 rounded-full text-emerald-400 border border-emerald-800/50">
+                                    <i data-lucide="trending-up" class="w-6 h-6"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-bold text-emerald-400">ทางรอด: เปลี่ยนที่เก็บรักษามูลค่า</h3>
+                                    <p class="text-sm text-emerald-200/70">ถ้าเก็บเงินในสินทรัพย์ที่เก็บมูลค่าได้</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-slate-950/50 p-5 rounded-xl border border-slate-800">
+                            <label class="flex justify-between text-sm font-medium text-slate-300 mb-2">
+                                <span>สินทรัพย์มูลค่าเติบโต</span>
+                                <span id="valInvestmentReturn" class="text-emerald-400 font-bold">5% / ปี</span>
+                            </label>
+                            <input type="range" id="inputInvestmentReturn" min="1" max="20" step="1" value="5"
+                                class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500">
+                            <p class="text-xs text-slate-400 mt-3 flex items-center gap-1">
+                                <i data-lucide="alert-circle" class="w-3 h-3 text-slate-500"></i>
+                                ลองเลื่อนให้ <span class="text-emerald-400 mx-1">สินทรัพย์มูลค่าเติบโต</span> มากกว่า <span class="text-rose-400 mx-1">เงินเฟ้อ</span> แล้วดูเส้นสีเขียวสิครับ!
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Application Logic -->
+    <script>
+        // Initialize Icons
+        lucide.createIcons();
+
+        // State Variables
+        let currentSavings = 1000000;
+        let monthlySavings = 5000;
+        let inflationRate = 3;
+        let investmentReturn = 5;
+        let showSolution = false;
+        let myChart = null;
+
+        // Format Currency
+        const formatMoney = (value) => {
+            return new Intl.NumberFormat('th-TH').format(value);
+        };
+
+        // DOM Elements
+        const elCurrentSavings = document.getElementById('inputCurrentSavings');
+        const elMonthlySavings = document.getElementById('inputMonthlySavings');
+        const elInflationRate = document.getElementById('inputInflationRate');
+        const elInvestmentReturn = document.getElementById('inputInvestmentReturn');
+
+        const valCurrentSavings = document.getElementById('valCurrentSavings');
+        const valMonthlySavings = document.getElementById('valMonthlySavings');
+        const valInflationRate = document.getElementById('valInflationRate');
+        const valInvestmentReturn = document.getElementById('valInvestmentReturn');
+
+        const tmCurrent = document.getElementById('tmCurrent');
+        const tmPastNeed = document.getElementById('tmPastNeed');
+        const tmPastValue = document.getElementById('tmPastValue');
+
+        const solutionContainer = document.getElementById('solutionContainer');
+        const solutionIntro = document.getElementById('solutionIntro');
+        const solutionContent = document.getElementById('solutionContent');
+
+        // Calculation Logic
+        function generateData() {
+            let labels = [];
+            let nominalData = [];
+            let realData = [];
+            let nominalInvestData = [];
+            let realInvestData = [];
+
+            // ย้อนหลัง 5 ปี
+            for (let year = -5; year < 0; year++) {
+                let realValue = currentSavings / Math.pow(1 + inflationRate / 100, year);
+                labels.push(`ย้อนหลัง ${Math.abs(year)} ปี`);
+                nominalData.push(Math.round(currentSavings));
+                realData.push(Math.round(realValue));
+                nominalInvestData.push(Math.round(currentSavings));
+                realInvestData.push(Math.round(realValue));
+            }
+
+            // ปัจจุบันและอนาคต 20 ปี
+            let nominal = currentSavings;
+            let invested = currentSavings;
+
+            for (let year = 0; year <= 20; year++) {
+                if (year > 0) {
+                    nominal += (monthlySavings * 12);
+                    invested = (invested + monthlySavings * 12) * (1 + investmentReturn / 100);
+                }
+                
+                let realValue = nominal / Math.pow(1 + inflationRate / 100, year);
+                let realInvestedValue = invested / Math.pow(1 + inflationRate / 100, year);
+
+                labels.push(year === 0 ? 'ปัจจุบัน' : `ปีที่ ${year}`);
+                nominalData.push(Math.round(nominal));
+                realData.push(Math.round(realValue));
+                nominalInvestData.push(Math.round(invested));
+                realInvestData.push(Math.round(realInvestedValue));
+            }
+
+            return { labels, nominalData, realData, nominalInvestData, realInvestData };
+        }
+
+        function updateUI() {
+            // Update Text Values
+            valCurrentSavings.textContent = `${formatMoney(currentSavings)} บาท`;
+            valMonthlySavings.textContent = `${formatMoney(monthlySavings)} บาท`;
+            valInflationRate.textContent = `${inflationRate}% / ปี`;
+            valInvestmentReturn.textContent = `${investmentReturn}% / ปี`;
+
+            // Update Time Machine
+            tmCurrent.textContent = formatMoney(currentSavings);
+            tmPastNeed.textContent = formatMoney(Math.round(currentSavings / Math.pow(1 + inflationRate / 100, 5)));
+            tmPastValue.textContent = formatMoney(Math.round(currentSavings * Math.pow(1 + inflationRate / 100, 5)));
+
+            // Update Chart
+            updateChart();
+        }
+
+        // Initialize Chart
+        function initChart() {
+            const ctx = document.getElementById('inflationChart').getContext('2d');
+            
+            // Create Gradients
+            let gradNominal = ctx.createLinearGradient(0, 0, 0, 350);
+            gradNominal.addColorStop(0, 'rgba(96, 165, 250, 0.2)');
+            gradNominal.addColorStop(1, 'rgba(96, 165, 250, 0)');
+
+            let gradReal = ctx.createLinearGradient(0, 0, 0, 350);
+            gradReal.addColorStop(0, 'rgba(244, 63, 94, 0.3)');
+            gradReal.addColorStop(1, 'rgba(244, 63, 94, 0)');
+
+            let gradInvestNominal = ctx.createLinearGradient(0, 0, 0, 350);
+            gradInvestNominal.addColorStop(0, 'rgba(192, 132, 252, 0.2)');
+            gradInvestNominal.addColorStop(1, 'rgba(192, 132, 252, 0)');
+
+            let gradInvest = ctx.createLinearGradient(0, 0, 0, 350);
+            gradInvest.addColorStop(0, 'rgba(52, 211, 153, 0.3)');
+            gradInvest.addColorStop(1, 'rgba(52, 211, 153, 0)');
+
+            Chart.register(window['chartjs-plugin-annotation']);
+
+            myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [
+                        {
+                            label: 'ตัวเลขเงินในบัญชี',
+                            data: [],
+                            borderColor: '#60a5fa',
+                            backgroundColor: gradNominal,
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 0,
+                            pointHoverRadius: 5
+                        },
+                        {
+                            label: 'มูลค่าจริง (อำนาจซื้อ)',
+                            data: [],
+                            borderColor: '#f43f5e',
+                            backgroundColor: gradReal,
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 0,
+                            pointHoverRadius: 5
+                        },
+                        {
+                            label: 'ตัวเลขพอร์ต (ยังไม่หักเงินเฟ้อ)',
+                            data: [],
+                            borderColor: '#c084fc',
+                            backgroundColor: gradInvestNominal,
+                            borderWidth: 2,
+                            borderDash: [5, 5],
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 0,
+                            pointHoverRadius: 5,
+                            hidden: true // ซ่อนตอนแรก
+                        },
+                        {
+                            label: 'เก็บในสินทรัพย์เก็บมูลค่า (อำนาจซื้อ)',
+                            data: [],
+                            borderColor: '#34d399',
+                            backgroundColor: gradInvest,
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 0,
+                            pointHoverRadius: 5,
+                            hidden: true // ซ่อนตอนแรก
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#cbd5e1',
+                                font: { family: "'Noto Sans Thai', sans-serif", size: 13 },
+                                usePointStyle: true,
+                                boxWidth: 8
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(30, 41, 59, 0.95)',
+                            titleColor: '#f1f5f9',
+                            bodyColor: '#cbd5e1',
+                            borderColor: '#334155',
+                            borderWidth: 1,
+                            padding: 12,
+                            titleFont: { family: "'Noto Sans Thai', sans-serif", size: 14, weight: 'bold' },
+                            bodyFont: { family: "'Noto Sans Thai', sans-serif", size: 13 },
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + formatMoney(context.parsed.y) + ' บาท';
+                                },
+                                footer: function(tooltipItems) {
+                                    let nominal = 0;
+                                    let real = 0;
+                                    tooltipItems.forEach(item => {
+                                        if (item.datasetIndex === 0) nominal = item.parsed.y;
+                                        if (item.datasetIndex === 1) real = item.parsed.y;
+                                    });
+                                    
+                                    if(nominal > 0 && real > 0) {
+                                        if (nominal < real) {
+                                            return '\nมูลค่าในอดีตสูงกว่าปัจจุบัน: +' + formatMoney(real - nominal) + ' บาท';
+                                        } else if (nominal > real) {
+                                            return '\nเงินเฟ้อขโมยไป: ' + formatMoney(nominal - real) + ' บาท';
+                                        }
+                                    }
+                                    return '';
+                                }
+                            }
+                        },
+                        annotation: {
+                            annotations: {
+                                line1: {
+                                    type: 'line',
+                                    xMin: 5, // Index ของคำว่า "ปัจจุบัน" (0 ถึง 4 คือย้อนหลัง)
+                                    xMax: 5,
+                                    borderColor: '#64748b',
+                                    borderWidth: 2,
+                                    borderDash: [5, 5],
+                                    label: {
+                                        display: true,
+                                        content: 'วันนี้',
+                                        position: 'start',
+                                        backgroundColor: 'rgba(30, 41, 59, 0.8)',
+                                        color: '#cbd5e1',
+                                        font: { family: "'Noto Sans Thai', sans-serif", size: 12 }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false, drawBorder: false },
+                            ticks: { color: '#94a3b8', font: { family: "'Noto Sans Thai', sans-serif" } }
+                        },
+                        y: {
+                            grid: { color: '#1e293b', drawBorder: false },
+                            ticks: {
+                                color: '#94a3b8',
+                                font: { family: "'Noto Sans Thai', sans-serif" },
+                                callback: function(value) {
+                                    return (value / 1000000).toFixed(1) + 'M';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            updateChart();
+        }
+
+        function updateChart() {
+            if (!myChart) return;
+            const data = generateData();
+            myChart.data.labels = data.labels;
+            myChart.data.datasets[0].data = data.nominalData;
+            myChart.data.datasets[1].data = data.realData;
+            myChart.data.datasets[2].data = data.nominalInvestData;
+            myChart.data.datasets[3].data = data.realInvestData;
+            myChart.update();
+        }
+
+        // Event Listeners
+        elCurrentSavings.addEventListener('input', (e) => { currentSavings = Number(e.target.value); updateUI(); });
+        elMonthlySavings.addEventListener('input', (e) => { monthlySavings = Number(e.target.value); updateUI(); });
+        elInflationRate.addEventListener('input', (e) => { inflationRate = Number(e.target.value); updateUI(); });
+        elInvestmentReturn.addEventListener('input', (e) => { investmentReturn = Number(e.target.value); updateUI(); });
+
+        // Toggle Solution
+        solutionContainer.addEventListener('click', (e) => {
+            // ป้องกันการกดซ้ำที่ปุ่ม input
+            if(e.target.tagName.toLowerCase() === 'input') return;
+            
+            if (!showSolution) {
+                showSolution = true;
+                solutionIntro.classList.add('hidden');
+                solutionContent.classList.remove('hidden');
+                
+                // เปลี่ยนสไตล์กล่อง
+                solutionContainer.classList.remove('bg-slate-900/50', 'hover:bg-slate-800', 'border-slate-800');
+                solutionContainer.classList.add('bg-slate-900', 'border-emerald-500/30');
+                solutionContainer.style.boxShadow = '0 0 15px rgba(16, 185, 129, 0.05)';
+                solutionContainer.style.cursor = 'default';
+
+                // โชว์กราฟเส้นลงทุน
+                myChart.data.datasets[2].hidden = false;
+                myChart.data.datasets[3].hidden = false;
+                myChart.update();
+            }
+        });
+
+        // Initialize
+        initChart();
+        updateUI();
+
+    </script>
+</body>
+</html>
