@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wealth Planner Simulator</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Sarabun', sans-serif; background-color: #0f172a; color: #e2e8f0; }
+        .card { background-color: #1e293b; border-radius: 16px; padding: 24px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); border: 1px solid #334155; }
+        .input-group { background-color: #334155; border-radius: 12px; padding: 16px; transition: all 0.2s; }
+        .input-group:focus-within { ring: 2px solid #38bdf8; }
+        .input-label { color: #94a3b8; font-size: 0.85rem; display: block; margin-bottom: 8px; font-weight: 600; }
+        .input-field { 
+            width: 100%; background: transparent; border: none; border-bottom: 2px solid #475569; 
+            color: #fff; font-size: 1.25rem; font-weight: 600; outline: none; transition: all 0.2s; padding-bottom: 4px;
+        }
+        .input-field:focus { border-bottom-color: #38bdf8; }
+        .stat-value { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.5px; transition: all 0.3s ease; }
+        .stat-label { color: #94a3b8; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; }
+        
+        /* Toggle Switch CSS */
+        .toggle-checkbox:checked { right: 0; border-color: #22d3ee; }
+        .toggle-checkbox:checked + .toggle-label { background-color: #22d3ee; }
+        .toggle-checkbox:checked + .toggle-label:after { transform: translateX(100%); border-color: white; }
+    .cashual-nav { position: fixed; top: 0; left: 0; width: 100%; background: rgba(15,15,15,0.95); backdrop-filter: blur(10px); border-bottom: 1px solid #222; z-index: 1000; display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; height: 72px; }
+    .cashual-nav-logo { font-size: 22px; font-weight: 700; color: #f7931a; letter-spacing: 0.05em; }
+    .cashual-nav-links { display: flex; gap: 2.5rem; list-style: none; margin: 0; padding: 0; }
+    .cashual-nav-links a { color: #aaa; text-decoration: none; font-size: 17px; transition: color 0.2s; }
+    .cashual-nav-links a:hover { color: #f7931a; }
+    </style>
+</head>
+<body class="p-4 md:p-8 max-w-7xl mx-auto min-h-screen flex flex-col" style="padding-top:88px">
+
+    <nav class="cashual-nav">
+        <div class="cashual-nav-logo"><a href="index.html" style="text-decoration:none;color:inherit;">FreeyourtimeBitcoin</a></div>
+        <ul class="cashual-nav-links">
+            <li><a href="Bitcoin-DCA-Master.html">DCA Master</a></li>
+            <li><a href="Purchasing-Power.html">Purchasing Power</a></li>
+            <li><a href="wealth-planner.html">Wealth Planner</a></li>
+            <li><a href="https://cashualme.com/" target="_blank">Cashualme</a></li>
+        </ul>
+    </nav>
+
+    <!-- Header -->
+    <div class="mb-10 flex flex-col md:flex-row justify-between items-center gap-4">
+        <div>
+            <h1 class="text-3xl md:text-4xl font-bold text-white mb-2">💎 Wealth Planner</h1>
+            <p class="text-slate-400 text-lg">วางแผนเกษียณด้วยพลังของ DCA และ Asset Allocation</p>
+        </div>
+        <div class="text-right hidden md:block">
+            <div class="text-sm text-slate-500">Scenario Mode</div>
+            <div class="text-xl font-semibold text-white">Monthly Savings (DCA)</div>
+        </div>
+    </div>
+
+    <!-- Control Panel -->
+    <div class="card mb-8 bg-slate-800/50 backdrop-blur-sm">
+        
+        <!-- Section 1: Input -->
+        <h3 class="text-white font-semibold mb-4 flex items-center justify-between text-lg border-b border-slate-700 pb-2">
+            <span class="flex items-center gap-2">📝 Input (ข้อมูลพื้นฐาน)</span>
+            
+            <!-- Real Value Toggle -->
+            <div class="flex items-center gap-3 bg-slate-900 px-4 py-2 rounded-lg border border-slate-700">
+                <span class="text-sm font-semibold text-slate-300">หักเงินเฟ้อ (Real Value)</span>
+                <div class="relative inline-block w-12 align-middle select-none transition duration-200 ease-in">
+                    <input type="checkbox" name="toggle" id="toggle-inflation" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer z-10 transition-transform duration-200 ease-in-out" style="top: 2px; left: 2px; width: 20px; height: 20px;"/>
+                    <label for="toggle-inflation" class="toggle-label block overflow-hidden h-6 rounded-full bg-slate-600 cursor-pointer transition-colors duration-200 ease-in-out"></label>
+                </div>
+            </div>
+        </h3>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <!-- 1. เงินต้น -->
+            <div class="input-group border-t-4 border-blue-500">
+                <label class="input-label">เริ่มต้น (บาท)</label>
+                <input type="text" inputmode="numeric" id="inp-initial" class="input-field currency-input" value="0">
+                <div class="text-xs text-slate-400 mt-2">เงินก้อนแรก</div>
+            </div>
+            
+            <!-- 2. ออมเพิ่ม -->
+            <div class="input-group border-t-4 border-blue-500">
+                <label class="input-label">ออมเพิ่มต่อปี (บาท)</label>
+                <input type="text" inputmode="numeric" id="inp-dca" class="input-field currency-input" value="120,000">
+                <div class="text-xs text-slate-400 mt-2">เฉลี่ยเดือนละ 10,000 บาท</div>
+            </div>
+
+            <!-- 3. Inflation Input -->
+            <div class="input-group border-t-4 border-red-500">
+                <label class="input-label">อัตราเงินเฟ้อ (%)</label>
+                <input type="number" id="inp-inflation" class="input-field" value="3" step="0.1">
+                <div class="text-xs text-slate-400 mt-2">ลดทอนมูลค่าเงินในอนาคต</div>
+            </div>
+        </div>
+
+        <!-- Section 2: Your Plan -->
+        <h3 class="text-white font-semibold mb-4 flex items-center gap-2 text-lg border-b border-slate-700 pb-2">
+            🛠️ กำหนดแผนการลงทุน (Your Plan)
+        </h3>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- 1. S&P 500 Growth -->
+            <div class="input-group border-t-4 border-emerald-500 relative group">
+                <label class="input-label flex justify-between items-center">
+                    S&P 500 (%)
+                    <span class="w-4 h-4 rounded-full bg-slate-600 text-[10px] flex items-center justify-center text-slate-300 cursor-help">?</span>
+                </label>
+                <input type="number" id="inp-spx" class="input-field" value="12">
+                <div class="text-xs text-emerald-400 mt-2 font-medium">📌 Traditional Plan</div>
+                <!-- Tooltip -->
+                <div class="absolute bottom-[105%] left-0 hidden group-hover:block w-56 bg-slate-800 text-slate-200 text-xs p-3 rounded-xl border border-slate-600 shadow-2xl z-50">
+                    <strong>Traditional Plan:</strong><br>
+                    นำเงินไป DCA ในดัชนีหุ้นสหรัฐฯ 500 บริษัทชั้นนำ
+                </div>
+            </div>
+            
+            <!-- 2. Gold Hold Growth -->
+            <div class="input-group border-t-4 border-yellow-400 relative group">
+                <label class="input-label flex justify-between items-center">
+                    gold Growth (%)
+                    <span class="w-4 h-4 rounded-full bg-slate-600 text-[10px] flex items-center justify-center text-slate-300 cursor-help">?</span>
+                </label>
+                <input type="number" id="inp-gold" class="input-field" value="8">
+                <div class="text-xs text-yellow-400 mt-2 font-medium">📌 gold hold</div>
+                <!-- Tooltip -->
+                <div class="absolute bottom-[105%] left-0 hidden group-hover:block w-64 bg-slate-800 text-slate-200 text-xs p-3 rounded-xl border border-slate-600 shadow-2xl z-50">
+                    <strong>gold hold :</strong><br>
+                    นำเงินไป DCA ในทองคำ ถือยาวเพื่อรักษามูลค่าความมั่งคั่ง และป้องกันความเสี่ยงจากเงินเฟ้อ
+                </div>
+            </div>
+
+            <!-- 3. BTC Growth -->
+            <div class="input-group border-t-4 border-orange-500 relative group">
+                <label class="input-label flex justify-between items-center">
+                    Bitcoin Growth (%)
+                    <span class="w-4 h-4 rounded-full bg-slate-600 text-[10px] flex items-center justify-center text-slate-300 cursor-help">?</span>
+                </label>
+                <input type="number" id="inp-btc" class="input-field" value="30">
+                <div class="text-xs text-orange-400 mt-2 font-medium">📌 Max HODL Plan</div>
+                <!-- Tooltip -->
+                <div class="absolute bottom-[105%] right-0 hidden group-hover:block w-56 bg-slate-800 text-slate-200 text-xs p-3 rounded-xl border border-slate-600 shadow-2xl z-50">
+                    <strong>Max HODL Plan :</strong><br>
+                    นำเงินไป DCA ใน Bitcoin แบบ 100% ถือยาว
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <!-- Traditional -->
+        <div class="card border-l-4 border-emerald-500 bg-emerald-950/20">
+            <div class="flex justify-between items-start mb-2">
+                <div class="stat-label text-emerald-300">Traditional Plan</div>
+                <div class="bg-emerald-900 text-emerald-300 text-xs px-2 py-1 rounded">Standard</div>
+            </div>
+            <div class="stat-value text-white mb-1" id="val-strat2">...</div>
+            <div class="text-sm text-emerald-400 flex items-center gap-1" id="roi-strat2">
+                S&P 500 Strategy <span class="val-type text-[10px] bg-slate-800 px-1 rounded text-slate-400"></span>
+            </div>
+        </div>
+
+        <!-- Gold Hold -->
+        <div class="card border-l-4 border-yellow-400 bg-yellow-950/20 transform md:-translate-y-2 border shadow-yellow-500/10 shadow-lg">
+            <div class="flex justify-between items-start mb-2 mt-2">
+                <div class="stat-label text-yellow-300">gold hold</div>
+                <div class="bg-yellow-900 text-yellow-300 text-xs px-2 py-1 rounded">Safe Haven</div>
+            </div>
+            <div class="stat-value text-white mb-1 text-3xl" id="val-strat4">...</div>
+            <div class="text-sm text-yellow-400 flex items-center gap-1" id="roi-strat4">
+                Gold Investment <span class="val-type text-[10px] bg-yellow-900 text-yellow-200 px-1 rounded"></span>
+            </div>
+        </div>
+
+        <!-- HODL -->
+        <div class="card border-l-4 border-orange-500 bg-orange-950/20">
+            <div class="flex justify-between items-start mb-2">
+                <div class="stat-label text-orange-300">Max HODL Plan</div>
+                <div class="bg-orange-900 text-orange-300 text-xs px-2 py-1 rounded">Holder</div>
+            </div>
+            <div class="stat-value text-white mb-1" id="val-strat5">...</div>
+            <div class="text-sm text-orange-400 flex items-center gap-1" id="roi-strat5">
+                100% BTC Exposure <span class="val-type text-[10px] bg-slate-800 px-1 rounded text-slate-400"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart Section -->
+    <div class="card p-4 md:p-8">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl md:text-2xl font-bold text-white flex items-center gap-2">
+                📈 เส้นทางความมั่งคั่ง 
+                <span id="chart-title-badge" class="text-xs bg-slate-700 px-2 py-1 rounded text-slate-300 font-normal">มูลค่าตัวเลข (Nominal)</span>
+            </h2>
+            <div id="insight-badge" class="hidden md:block bg-slate-700 text-slate-300 text-xs px-3 py-1.5 rounded-full">
+                Waiting for data...
+            </div>
+        </div>
+        
+        <div class="relative h-[400px] w-full">
+            <canvas id="wealthChart"></canvas>
+        </div>
+        
+        <div class="mt-6 p-4 bg-slate-800 rounded-xl border border-slate-700">
+            <p class="text-slate-300 text-sm leading-relaxed" id="insight-text">
+                <!-- Dynamic Insight -->
+            </p>
+        </div>
+    </div>
+
+    <script>
+        Chart.defaults.font.family = "'Sarabun', sans-serif";
+        Chart.defaults.color = '#94a3b8';
+
+        const ctxWealth = document.getElementById('wealthChart').getContext('2d');
+        let wealthChart;
+
+        function initChart() {
+            wealthChart = new Chart(ctxWealth, {
+                type: 'line',
+                data: { labels: [], datasets: [] },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: {
+                        legend: { position: 'top', labels: { usePointStyle: true, padding: 20 } },
+                        tooltip: {
+                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                            titleColor: '#fff',
+                            bodyColor: '#cbd5e1',
+                            borderColor: '#334155',
+                            borderWidth: 1,
+                            padding: 12,
+                            callbacks: {
+                                label: context => context.dataset.label + ': ' + new Intl.NumberFormat('th-TH', { style: 'currency', currency: 'THB', maximumFractionDigits: 0 }).format(context.parsed.y)
+                            }
+                        }
+                    },
+                    scales: {
+                        y: { 
+                            grid: { color: '#334155', drawBorder: false }, 
+                            ticks: { callback: function(value) { return (value / 1000000).toFixed(1) + 'M'; } } 
+                        },
+                        x: { grid: { display: false, drawBorder: false } }
+                    }
+                }
+            });
+        }
+
+        function calculateAndUpdate() {
+            // Get Inputs and strip commas for calculation
+            const initialStr = document.getElementById('inp-initial').value.replace(/,/g, '');
+            const initial = parseFloat(initialStr) || 0;
+            
+            const dcaStr = document.getElementById('inp-dca').value.replace(/,/g, '');
+            const dca = parseFloat(dcaStr) || 0;
+            
+            const rateBTC = (parseFloat(document.getElementById('inp-btc').value) || 0) / 100;
+            const rateSPX = (parseFloat(document.getElementById('inp-spx').value) || 0) / 100; 
+            const rateGold = (parseFloat(document.getElementById('inp-gold').value) || 0) / 100; 
+            const inflationRate = (parseFloat(document.getElementById('inp-inflation').value) || 0) / 100;
+            const showRealValue = document.getElementById('toggle-inflation').checked;
+            
+            const years = 20;
+            const labels = Array.from({length: years + 1}, (_, i) => `Year ${i}`);
+
+            // arrays for internal logic (Nominal value always)
+            let raw_SPX = [initial];
+            let raw_Gold = [initial];
+            let raw_HODL = [initial];
+            
+            // arrays for display (Nominal or Real based on toggle)
+            let disp_SPX = [initial];
+            let disp_Gold = [initial];
+            let disp_HODL = [initial];
+
+            for (let i = 1; i <= years; i++) {
+                // Calculate Discount Factor for this year
+                let discountFactor = showRealValue ? Math.pow(1 + inflationRate, i) : 1;
+
+                // 1. S&P 500
+                let val2 = (raw_SPX[i-1] + dca) * (1 + rateSPX);
+                raw_SPX.push(val2);
+                disp_SPX.push(val2 / discountFactor);
+
+                // 2. HODL (Bitcoin)
+                let val5 = (raw_HODL[i-1] + dca) * (1 + rateBTC);
+                raw_HODL.push(val5);
+                disp_HODL.push(val5 / discountFactor);
+
+                // 3. Gold Hold
+                let val4 = (raw_Gold[i-1] + dca) * (1 + rateGold);
+                raw_Gold.push(val4);
+                disp_Gold.push(val4 / discountFactor);
+            }
+
+            // --- Update UI ---
+            const formatMoney = (num) => (num / 1000000).toFixed(2) + ' ลบ.';
+            
+            // Update Card Values
+            document.getElementById('val-strat2').innerText = formatMoney(disp_SPX[years]);
+            document.getElementById('val-strat4').innerText = formatMoney(disp_Gold[years]);
+            document.getElementById('val-strat5').innerText = formatMoney(disp_HODL[years]);
+
+            // Update Labels to show if it's Nominal or Real
+            const typeText = showRealValue ? "หักเงินเฟ้อแล้ว" : "ยังไม่หักเงินเฟ้อ";
+            document.querySelectorAll('.val-type').forEach(el => el.innerText = typeText);
+            document.getElementById('chart-title-badge').innerText = showRealValue ? "มูลค่าจริง (Real Value)" : "มูลค่าตามตัวเลข (Nominal)";
+            document.getElementById('chart-title-badge').className = showRealValue 
+                ? "text-xs bg-red-900/50 text-red-300 px-2 py-1 rounded font-normal border border-red-700/50" 
+                : "text-xs bg-slate-700 text-slate-300 px-2 py-1 rounded font-normal";
+
+            // Update Insight
+            const insightBox = document.getElementById('insight-text');
+            const badge = document.getElementById('insight-badge');
+            
+            badge.innerText = `Diversified Assets`;
+            badge.className = "hidden md:block bg-yellow-900 text-yellow-300 text-xs px-3 py-1.5 rounded-full border border-yellow-700";
+            
+            let text = `<strong class="text-yellow-400">💡 Wealth Analysis:</strong> การกระจายสินทรัพย์สำคัญมาก ทองคำ (Gold Hold) ทำหน้าที่เป็นสินทรัพย์ปลอดภัยรักษามูลค่า ส่วน S&P500 และ Bitcoin เน้นการเติบโตระยะยาว`;
+            
+            if (showRealValue) {
+                text += `<br><span class="text-red-300 mt-2 block">⚠️ <b>Reality Check:</b> ตัวเลขที่คุณเห็นตอนนี้คือ <b>"อำนาจซื้อที่แท้จริง"</b> หลังหักเงินเฟ้อ ${Math.round(inflationRate*100)}% แล้ว การถือเงินสดเฉยๆ จะทำให้มูลค่าเงินลดลง นี่คือเหตุผลที่เราต้องมี Asset Allocation ครับ</span>`;
+            } else {
+                text += `<br><span class="text-slate-400 mt-2 block">ลองกดปุ่ม <b>"หักเงินเฟ้อ"</b> ด้านบนดูสิครับ เพื่อดูว่าเงินทั้งหมดนี้จะมีอำนาจซื้อจริงๆ ในอนาคตเหลือเท่าไหร่?</span>`;
+            }
+            insightBox.innerHTML = text;
+
+            // Update Chart
+            wealthChart.data.labels = labels;
+            wealthChart.data.datasets = [
+                {
+                    label: 'S&P 500 (Traditional)',
+                    data: disp_SPX,
+                    borderColor: '#10b981',
+                    borderWidth: 2,
+                    borderDash: [5, 5],
+                    tension: 0.4,
+                    pointRadius: 0
+                },
+                {
+                    label: 'Bitcoin (Max HODL)',
+                    data: disp_HODL,
+                    borderColor: '#f97316',
+                    backgroundColor: 'rgba(249, 115, 22, 0.05)',
+                    fill: true,
+                    borderWidth: 1,
+                    tension: 0.4,
+                    pointRadius: 0
+                },
+                {
+                    label: 'gold hold',
+                    data: disp_Gold,
+                    borderColor: '#facc15',
+                    borderWidth: 4,
+                    tension: 0.4,
+                    pointBackgroundColor: '#facc15',
+                    pointRadius: 3
+                }
+            ];
+
+            wealthChart.update();
+        }
+
+        // Listeners for Formatting Currency
+        document.querySelectorAll('.input-field').forEach(input => {
+            if (input.classList.contains('currency-input')) {
+                input.addEventListener('input', function(e) {
+                    let cursorPosition = this.selectionStart;
+                    let originalLength = this.value.length;
+                    
+                    let value = this.value.replace(/[^0-9]/g, '');
+                    if(value !== '') {
+                        this.value = parseInt(value, 10).toLocaleString('en-US');
+                    } else {
+                        this.value = '';
+                    }
+                    
+                    let newLength = this.value.length;
+                    cursorPosition = cursorPosition + (newLength - originalLength);
+                    try { this.setSelectionRange(cursorPosition, cursorPosition); } catch(err) {}
+                    
+                    calculateAndUpdate();
+                });
+            } else {
+                input.addEventListener('input', calculateAndUpdate);
+            }
+        });
+        document.getElementById('toggle-inflation').addEventListener('change', calculateAndUpdate);
+
+        // Init
+        initChart();
+        calculateAndUpdate();
+
+    </script>
+</body>
+</html>
