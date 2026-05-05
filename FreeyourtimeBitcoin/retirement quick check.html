@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Retirement Quick Check</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f7f7f5;color:#111;min-height:100vh}
+    .wrap{max-width:680px;margin:0 auto;padding:1.5rem 12px 4rem}
+    h1{font-size:18px;font-weight:700;margin-bottom:4px}
+    .sub{font-size:12px;color:#888;margin-bottom:20px}
+
+    .card{background:#fff;border:0.5px solid #e0e0e0;border-radius:10px;padding:16px;margin-bottom:12px}
+    .ct{font-size:11px;font-weight:600;color:#888;letter-spacing:.8px;text-transform:uppercase;margin-bottom:12px}
+
+    .g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+
+    label{display:block;font-size:11px;color:#666;margin-bottom:3px}
+    input{width:100%;padding:7px 10px;font-size:14px;border:0.5px solid #ddd;border-radius:6px;background:#fff;color:#111;outline:none;font-family:inherit}
+    input:focus{border-color:#185FA5}
+
+    .result-banner{border-radius:10px;padding:20px;margin-bottom:12px;text-align:center}
+    .result-banner .big{font-size:48px;font-weight:800;line-height:1}
+    .result-banner .label{font-size:13px;margin-top:6px;opacity:.85}
+    .result-banner .sub2{font-size:11px;margin-top:4px;opacity:.7}
+    .ok{background:#eaf5e6;color:#2d5a0e}
+    .warn{background:#fff8e0;color:#7a5000}
+    .bad{background:#fcebeb;color:#8b1a1a}
+
+    .srow{display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+    .sc{background:#fff;border:0.5px solid #e0e0e0;border-radius:8px;padding:10px 14px;flex:1;min-width:130px;text-align:center}
+    .sc .lbl{font-size:10px;color:#999;margin-bottom:3px}
+    .sc .val{font-size:15px;font-weight:700}
+
+    .hint{font-size:11px;color:#bbb;margin-top:6px;line-height:1.5}
+    .divider{border:none;border-top:0.5px solid #f0f0f0;margin:10px 0}
+
+    .irow{display:grid;grid-template-columns:1fr auto auto;gap:6px;align-items:center;margin-bottom:7px}
+    .irow input{font-size:13px}
+    .del{width:24px;height:24px;border-radius:4px;border:0.5px solid #ddd;background:transparent;color:#bbb;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .del:hover{background:#fcebeb;color:#a32d2d;border-color:#a32d2d}
+    .addbtn{width:100%;margin-top:6px;padding:6px;font-size:12px;border:0.5px dashed #ccc;border-radius:6px;background:transparent;color:#999;cursor:pointer;font-family:inherit}
+    .addbtn:hover{background:#f5f5f5}
+
+    .tag-inc{background:#e6f1fb;color:#185FA5;border-radius:4px;padding:1px 6px;font-size:10px;font-weight:500}
+    .tag-exp{background:#fcebeb;color:#A32D2D;border-radius:4px;padding:1px 6px;font-size:10px;font-weight:500}
+    .tag-inv{background:#f0ebe0;color:#7a4f00;border-radius:4px;padding:1px 6px;font-size:10px;font-weight:500}
+    .inv-header{display:grid;grid-template-columns:1fr 140px 90px 28px;gap:6px;margin-bottom:5px;padding:0 2px}
+    .irow-inv{display:grid;grid-template-columns:1fr 140px 90px 28px;gap:6px;align-items:center;margin-bottom:7px}
+    .irow-inv input{font-size:13px}
+
+    canvas{max-height:240px}
+    #ret-table{width:100%;border-collapse:collapse;font-size:12px}
+    #ret-table th{text-align:right;font-size:10px;color:#999;font-weight:600;padding:4px 8px;border-bottom:1px solid #f0f0f0;white-space:nowrap}
+    #ret-table th:first-child{text-align:center}
+    #ret-table td{text-align:right;padding:5px 8px;border-bottom:0.5px solid #f5f5f5;white-space:nowrap}
+    #ret-table td:first-child{text-align:center;font-weight:600;color:#185FA5}
+    #ret-table tr.empty-row td{color:#A32D2D;font-weight:700;background:#fcebeb}
+    #ret-table tr.life-row td{background:#fff8e0}
+    #ret-table tr:last-child td{border-bottom:none}
+    .green{color:#3B6D11}.red{color:#A32D2D}.blue{color:#185FA5}
+
+    .badge{display:inline-block;font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px;margin-left:6px;vertical-align:middle}
+    .badge-ok{background:#eaf5e6;color:#2d5a0e}
+    .badge-bad{background:#fcebeb;color:#8b1a1a}
+
+    @media(max-width:480px){.g3{grid-template-columns:1fr 1fr}.srow{gap:8px}}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Retirement Quick Check 📊</h1>
+  <p class="sub">ตอนนี้เราสามารถเกษียณจนถึงอายุเท่าไหร่?</p>
+
+  <!-- Result banner -->
+  <div class="result-banner" id="banner">
+    <div class="big" id="r-years">—</div>
+    <div class="label" id="r-label">กรอกข้อมูลด้านล่างเพื่อดูผล</div>
+    <div class="sub2" id="r-sub"></div>
+  </div>
+
+  <!-- Key numbers -->
+  <div class="srow">
+    <div class="sc"><div class="lbl">เงินที่จะมีตอนเกษียณ</div><div class="val blue" id="r-pot">-</div></div>
+    <div class="sc"><div class="lbl">ค่าใช้จ่ายสุทธิ/ปีหลังเกษียณ</div><div class="val red" id="r-annual">-</div></div>
+    <div class="sc"><div class="lbl">surplus/เดือน ตอนนี้</div><div class="val green" id="r-surplus">-</div></div>
+  </div>
+
+  <!-- Profile -->
+  <div class="card">
+    <div class="ct">ข้อมูลส่วนตัว</div>
+    <div class="g3">
+      <div>
+        <label>อายุตอนนี้</label>
+        <input type="number" id="age-now" value="35" min="15" max="80" oninput="calc()">
+      </div>
+      <div>
+        <label>อยากเกษียณอายุ</label>
+        <input type="number" id="age-ret" value="55" min="30" max="90" oninput="calc()">
+      </div>
+      <div>
+        <label>อายุขัยที่คาดหวัง</label>
+        <input type="number" id="age-end" value="85" min="50" max="120" oninput="calc()">
+        <div class="hint">ใช้วางแผนให้เงินครอบคลุมถึงอายุนี้</div>
+      </div>
+    </div>
+    <div style="margin-top:10px" class="g2">
+      <div>
+        <label>เงินออมตั้งต้น (฿)</label>
+        <input type="text" inputmode="numeric" id="init-sav" placeholder="0">
+      </div>
+      <div>
+        <label>ผลตอบแทนช่วงสะสม (%/ปี)</label>
+        <input type="number" id="pre-return" value="5" step="0.5" min="0" max="30" oninput="calc()">
+        <div class="hint">เงินที่ออมเพิ่มทุกเดือนได้ผลตอบแทนกี่%</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Retirement settings -->
+  <div class="card">
+    <div class="ct">หลังเกษียณ</div>
+    <div class="g3">
+      <div>
+        <label>ค่าใช้จ่าย/เดือน (฿)</label>
+        <input type="text" inputmode="numeric" id="ret-exp" placeholder="30,000">
+      </div>
+      <div>
+        <label>รายได้ passive/เดือน (฿)</label>
+        <input type="text" inputmode="numeric" id="ret-inc" placeholder="0">
+        <div class="hint">บำนาญ ค่าเช่า เงินปันผล</div>
+      </div>
+      <div>
+        <label>ผลตอบแทนเงินออม (%/ปี)</label>
+        <input type="number" id="ret-return" value="0" step="0.5" min="0" max="30" oninput="calc()">
+        <div class="hint">0% = เงินสด</div>
+      </div>
+    </div>
+    <div style="margin-top:10px">
+      <label>เงินเฟ้อ (%/ปี)</label>
+      <input type="number" id="inflation" value="3" step="0.5" min="0" max="20" oninput="calc()" style="max-width:200px">
+    </div>
+  </div>
+
+  <!-- Investment -->
+  <div class="card">
+    <div class="ct">เงินลงทุนที่มีอยู่แล้ว <span class="tag-inv">Investment</span></div>
+    <div class="inv-header">
+      <span style="font-size:11px;color:#999">ชื่อ</span>
+      <span style="font-size:11px;color:#999;text-align:right">มูลค่าปัจจุบัน (฿)</span>
+      <span style="font-size:11px;color:#999;text-align:right">ผลตอบแทน %/ปี</span>
+      <span></span>
+    </div>
+    <div id="inv-list"></div>
+    <button class="addbtn" onclick="addInv()">+ เพิ่มการลงทุน</button>
+  </div>
+
+  <!-- Income -->
+  <div class="card">
+    <div class="ct">รายรับ/เดือน <span class="tag-inc">Income</span></div>
+    <div id="inc-list"></div>
+    <button class="addbtn" onclick="addRow('inc')">+ เพิ่มรายรับ</button>
+    <div style="margin-top:10px;display:flex;align-items:center;gap:8px">
+      <label style="margin:0;white-space:nowrap">รายรับเพิ่มขึ้นปีละ</label>
+      <input type="number" id="inc-growth" value="3" step="0.5" min="0" max="50" oninput="calc()" style="width:80px;text-align:right">
+      <span style="font-size:13px;color:#666">%/ปี</span>
+      <div class="hint" style="margin:0">เงินเดือนขึ้น / เลื่อนตำแหน่ง</div>
+    </div>
+  </div>
+
+  <!-- Expense -->
+  <div class="card">
+    <div class="ct">รายจ่าย/เดือน <span class="tag-exp">Expense</span></div>
+    <div id="exp-list"></div>
+    <button class="addbtn" onclick="addRow('exp')">+ เพิ่มรายจ่าย</button>
+    <div style="margin-top:8px">
+      <div class="hint">📌 ค่าใช้จ่ายนี้จะเพิ่มตามเงินเฟ้อ <span id="inf-label">3</span>%/ปี ทุกปีจนถึงเกษียณ</div>
+    </div>
+  </div>
+
+  <!-- Chart -->
+  <div class="card" id="chart-card" style="display:none">
+    <div class="ct">เงินจะหมดปีไหน?</div>
+    <canvas id="chart"></canvas>
+    <div class="hint" id="chart-hint" style="margin-top:8px;text-align:center"></div>
+  </div>
+
+  <!-- Yearly table -->
+  <div class="card" id="table-card" style="display:none">
+    <div class="ct">ตารางรายปีหลังเกษียณ</div>
+    <div style="overflow-x:auto">
+      <table id="ret-table">
+        <thead>
+          <tr>
+            <th>อายุ</th>
+            <th>เงินต้นปี</th>
+            <th>ค่าใช้จ่าย/ปี</th>
+            <th>รายได้ passive/ปี</th>
+            <th>ผลตอบแทน</th>
+            <th>เงินปลายปี</th>
+          </tr>
+        </thead>
+        <tbody id="ret-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+let INC = [{id:1,label:'เงินเดือน',amount:50000},{id:2,label:'รายได้เสริม',amount:0}];
+let EXP = [{id:1,label:'อาหาร & ของใช้',amount:15000},{id:2,label:'ที่อยู่อาศัย',amount:8000},{id:3,label:'เดินทาง',amount:5000},{id:4,label:'อื่นๆ',amount:3000}];
+let INV = [{id:1,label:'กองทุนหุ้น',amount:0,ret:7},{id:2,label:'Bitcoin',amount:0,ret:20}];
+let _ni = 10, _ne = 20, _nv = 10;
+let chart = null;
+
+const strip = s => parseFloat(String(s).replace(/,/g,'').replace(/[^\d.]/g,'')) || 0;
+const commas = v => { const n = strip(v); return n ? n.toLocaleString('th-TH') : ''; };
+
+function fmtMoney(v) {
+  if (Math.abs(v) >= 1e6) return '฿' + (v/1e6).toFixed(1).replace(/\.0$/,'') + 'M';
+  if (Math.abs(v) >= 1e3) return '฿' + Math.round(v/1000) + 'K';
+  return '฿' + Math.round(v).toLocaleString('th-TH');
+}
+function fmtFull(v) { return '฿' + Math.round(v).toLocaleString('th-TH'); }
+
+function numInp(el) {
+  el.addEventListener('keydown', e => {
+    if (['Backspace','Delete','ArrowLeft','ArrowRight','Tab','Enter'].includes(e.key)) return;
+    if (!/\d/.test(e.key)) e.preventDefault();
+  });
+  el.addEventListener('blur', () => { const v = strip(el.value); el.value = v ? commas(v) : ''; });
+  el.addEventListener('input', calc);
+}
+
+['init-sav','ret-exp','ret-inc'].forEach(id => numInp(document.getElementById(id)));
+
+function addInv() {
+  INV.push({id:_nv++,label:'',amount:0,ret:7});
+  renderInv(); calc();
+}
+function delInv(id) {
+  INV = INV.filter(x => x.id !== id);
+  renderInv(); calc();
+}
+function upInvLabel(id, v) { INV.find(x=>x.id===id).label = v; }
+function upInvAmt(id, el) { INV.find(x=>x.id===id).amount = strip(el.value); calc(); }
+function upInvRet(id, v) { INV.find(x=>x.id===id).ret = parseFloat(v)||0; calc(); }
+
+function renderInv() {
+  document.getElementById('inv-list').innerHTML = INV.map(r => `
+    <div class="irow-inv">
+      <input type="text" placeholder="ชื่อ" value="${r.label.replace(/"/g,'&quot;')}" oninput="upInvLabel(${r.id},this.value)">
+      <input type="text" inputmode="numeric" style="text-align:right" placeholder="0"
+        value="${r.amount ? commas(r.amount) : ''}"
+        oninput="upInvAmt(${r.id},this)" onblur="blurAmt(this)">
+      <input type="number" style="text-align:right" placeholder="0" step="0.5" min="0" max="100"
+        value="${r.ret}" oninput="upInvRet(${r.id},this.value)">
+      <button class="del" onclick="delInv(${r.id})">×</button>
+    </div>`).join('');
+}
+
+function addRow(t) {
+  if (t === 'inc') INC.push({id:_ni++,label:'',amount:0});
+  else EXP.push({id:_ne++,label:'',amount:0});
+  renderLists(); calc();
+}
+function delRow(t, id) {
+  if (t === 'inc') INC = INC.filter(x => x.id !== id);
+  else EXP = EXP.filter(x => x.id !== id);
+  renderLists(); calc();
+}
+function upLabel(t, id, v) { (t==='inc'?INC:EXP).find(x=>x.id===id).label = v; }
+function upAmt(t, id, el) {
+  (t==='inc'?INC:EXP).find(x=>x.id===id).amount = strip(el.value);
+  calc();
+}
+function blurAmt(el) { const v = strip(el.value); el.value = v ? commas(v) : ''; }
+
+function renderLists() {
+  ['inc','exp'].forEach(t => {
+    const arr = t==='inc' ? INC : EXP;
+    document.getElementById(t+'-list').innerHTML = arr.map(r => `
+      <div class="irow">
+        <input type="text" placeholder="ชื่อ" value="${r.label.replace(/"/g,'&quot;')}" oninput="upLabel('${t}',${r.id},this.value)">
+        <input type="text" inputmode="numeric" style="width:130px;text-align:right" placeholder="0"
+          value="${r.amount ? commas(r.amount) : ''}"
+          oninput="upAmt('${t}',${r.id},this)" onblur="blurAmt(this)">
+        <button class="del" onclick="delRow('${t}',${r.id})">×</button>
+      </div>`).join('');
+  });
+}
+
+function calc() {
+  const ageNow    = +document.getElementById('age-now').value || 35;
+  const ageRet    = +document.getElementById('age-ret').value || 55;
+  const ageEnd    = +document.getElementById('age-end').value || 85;
+  const initSav   = strip(document.getElementById('init-sav').value);
+  const retExp    = strip(document.getElementById('ret-exp').value);
+  const retInc    = strip(document.getElementById('ret-inc').value);
+  const inf       = (+document.getElementById('inflation').value || 3) / 100;
+  const preRet    = (+document.getElementById('pre-return').value || 0) / 100;
+  const retRet    = (+document.getElementById('ret-return').value || 0) / 100;
+  const incGrowth = (+document.getElementById('inc-growth').value || 0) / 100;
+
+  // update inflation label hint
+  document.getElementById('inf-label').textContent = document.getElementById('inflation').value || 3;
+
+  const totalInc  = INC.reduce((s,r) => s+r.amount, 0);
+  const totalExp  = EXP.reduce((s,r) => s+r.amount, 0);
+  const surplus   = totalInc - totalExp;  // year-0 surplus (for display)
+  const yrsToRet  = Math.max(0, ageRet - ageNow);
+  const yrsNeeded = Math.max(0, ageEnd - ageRet);
+
+  // --- Accumulation phase: income grows at incGrowth, expenses grow at inf ---
+  let pot = initSav;
+  let annualInc = totalInc * 12;
+  let annualExp = totalExp * 12;
+  for (let y = 0; y < yrsToRet; y++) {
+    pot = pot * (1 + preRet) + (annualInc - annualExp);
+    annualInc *= (1 + incGrowth);
+    annualExp *= (1 + inf);
+  }
+  // each investment compounds at its own rate
+  for (const iv of INV) {
+    let v = iv.amount;
+    const r = iv.ret / 100;
+    for (let y = 0; y < yrsToRet; y++) v = v * (1 + r);
+    pot += v;
+  }
+
+  // --- Drawdown phase ---
+  const annualRetExp0 = retExp * 12;
+  const annualRetInc0 = retInc * 12;
+  const annualNet0    = annualRetExp0 - annualRetInc0; // net outflow year 0
+
+  let remaining = pot;
+  const dataYears = [], dataPot = [];
+  const tableRows = [];
+  let surviveYears = 0;
+  const maxSim = Math.max(yrsNeeded + 5, 60);
+
+  for (let y = 0; y <= maxSim; y++) {
+    const age       = ageRet + y;
+    const annualExp = annualRetExp0 * Math.pow(1 + inf, y);
+    const annualInc = annualRetInc0 * Math.pow(1 + inf, y);
+    const net       = annualExp - annualInc;
+    const startBal  = Math.max(0, remaining);
+    const returnAmt = startBal * retRet;
+    const endBal    = startBal > 0 ? startBal * (1 + retRet) - net : 0;
+
+    dataYears.push(age);
+    dataPot.push(Math.max(0, Math.round(remaining)));
+    tableRows.push({ age, startBal, annualExp, annualInc, returnAmt, endBal: Math.max(0, endBal), isEnd: endBal <= 0, isLife: age === ageEnd });
+
+    if (remaining <= 0) break;
+    remaining = remaining * (1 + retRet) - net;
+    if (remaining > 0) surviveYears = y + 1;
+  }
+
+  const coversLifespan = surviveYears >= yrsNeeded;
+
+  // --- Update UI ---
+  document.getElementById('r-pot').textContent     = fmtFull(pot);
+  document.getElementById('r-annual').textContent  = retExp > 0 ? fmtFull(Math.max(0, annualNet0)) : '-';
+  document.getElementById('r-surplus').textContent = surplus >= 0 ? fmtFull(surplus) : `-${fmtFull(Math.abs(surplus))}`;
+  document.getElementById('r-surplus').className   = 'val ' + (surplus >= 0 ? 'green' : 'red');
+
+  const banner = document.getElementById('banner');
+  const bigEl  = document.getElementById('r-years');
+  const lblEl  = document.getElementById('r-label');
+  const subEl  = document.getElementById('r-sub');
+
+  if (retExp <= 0 || ageRet <= ageNow) {
+    banner.className = 'result-banner';
+    bigEl.textContent = '—';
+    lblEl.textContent = 'กรอกข้อมูลด้านล่างเพื่อดูผล';
+    subEl.textContent = '';
+  } else if (surplus < 0) {
+    banner.className = 'result-banner bad';
+    bigEl.textContent = '⚠️';
+    lblEl.textContent = 'รายจ่ายมากกว่ารายรับ — ยังไม่มี surplus สะสม';
+    subEl.textContent = 'ลองลดรายจ่าย หรือเพิ่มรายรับก่อนครับ';
+  } else if (surviveYears >= maxSim) {
+    banner.className = 'result-banner ok';
+    bigEl.textContent = '60+ ปี';
+    lblEl.textContent = `หลังเกษียณอายุ ${ageRet} ปี — เงินอยู่ได้มากกว่า 60 ปี ✅`;
+    subEl.textContent = `เงินก้อนตอนเกษียณ ${fmtFull(pot)} · ค่าใช้จ่ายสุทธิ/ปี ${fmtFull(annualNet0)}`;
+  } else {
+    const deadAge = ageRet + surviveYears;
+    const ok = coversLifespan;
+    banner.className = 'result-banner ' + (ok ? 'warn' : 'bad');
+    bigEl.textContent = surviveYears + ' ปี';
+    if (ok) {
+      lblEl.textContent = `ครอบคลุมถึงอายุ ${deadAge} ปี — เกินอายุขัยที่ตั้งไว้ (${ageEnd} ปี) ✅`;
+    } else {
+      lblEl.textContent = `หลังเกษียณอายุ ${ageRet} — เงินจะหมดตอนอายุ ${deadAge} ปี`;
+    }
+    subEl.textContent = `เงินก้อนตอนเกษียณ ${fmtFull(pot)} · ค่าใช้จ่ายสุทธิ/ปี ${fmtFull(annualNet0)}`;
+  }
+
+  // --- Chart ---
+  const cc = document.getElementById('chart-card');
+  if (dataYears.length > 1 && retExp > 0) {
+    cc.style.display = 'block';
+    const ctx = document.getElementById('chart').getContext('2d');
+    if (chart) chart.destroy();
+
+    const maxVal = Math.max(...dataPot);
+    const useMil = maxVal >= 1e6;
+
+    // build lifespan reference line data
+    const lifespanData = dataYears.map(a => a === ageEnd ? maxVal * 1.05 : null);
+
+    chart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: dataYears,
+        datasets: [
+          {
+            label: 'เงินที่เหลือ',
+            data: dataPot,
+            borderColor: '#185FA5',
+            backgroundColor: (ctx2) => {
+              const g = ctx2.chart.ctx.createLinearGradient(0, 0, 0, 220);
+              g.addColorStop(0, 'rgba(24,95,165,0.18)');
+              g.addColorStop(1, 'rgba(24,95,165,0.01)');
+              return g;
+            },
+            borderWidth: 2,
+            pointRadius: 2,
+            fill: true,
+            tension: 0.4,
+            order: 1
+          }
+        ]
+      },
+      options: {
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: ctx2 => ' ' + fmtFull(ctx2.parsed.y)
+            }
+          }
+        },
+        scales: {
+          x: {
+            title: { display: true, text: 'อายุ', font: {size:10} },
+            ticks: { font: {size:10} }
+          },
+          y: {
+            ticks: {
+              font: {size:10},
+              callback: v => useMil ? '฿'+(v/1e6).toFixed(1)+'M' : '฿'+Math.round(v/1000)+'K'
+            },
+            grid: { color: 'rgba(0,0,0,0.04)' }
+          }
+        },
+        animation: { duration: 400 }
+      },
+      plugins: [{
+        id: 'lifespan-line',
+        afterDraw(ch) {
+          const idx = dataYears.indexOf(ageEnd);
+          if (idx < 0) return;
+          const meta = ch.getDatasetMeta(0);
+          if (!meta.data[idx]) return;
+          const x = meta.data[idx].x;
+          const { top, bottom } = ch.chartArea;
+          const ctx3 = ch.ctx;
+          ctx3.save();
+          ctx3.setLineDash([4,3]);
+          ctx3.strokeStyle = '#e07b00';
+          ctx3.lineWidth = 1.5;
+          ctx3.beginPath();
+          ctx3.moveTo(x, top);
+          ctx3.lineTo(x, bottom);
+          ctx3.stroke();
+          ctx3.setLineDash([]);
+          ctx3.fillStyle = '#e07b00';
+          ctx3.font = '10px sans-serif';
+          ctx3.fillText(`อายุ ${ageEnd}`, x + 3, top + 12);
+          ctx3.restore();
+        }
+      }]
+    });
+
+    const hintEl = document.getElementById('chart-hint');
+    if (surviveYears >= maxSim) {
+      hintEl.textContent = '🟢 เงินยังเหลืออยู่ตลอดช่วงที่จำลอง';
+    } else if (coversLifespan) {
+      hintEl.textContent = `🟡 เงินหมดอายุ ${ageRet+surviveYears} ปี — ครอบคลุมอายุขัยที่ตั้งไว้แล้ว`;
+    } else {
+      hintEl.textContent = `🔴 เงินหมดอายุ ${ageRet+surviveYears} ปี — ขาดอีก ${ageEnd-(ageRet+surviveYears)} ปีจากอายุขัยที่ตั้งไว้`;
+    }
+  } else {
+    cc.style.display = 'none';
+  }
+
+  // --- Yearly table ---
+  const tc = document.getElementById('table-card');
+  if (tableRows.length > 0 && retExp > 0) {
+    tc.style.display = 'block';
+    document.getElementById('ret-tbody').innerHTML = tableRows.map(r => `
+      <tr class="${r.isEnd ? 'empty-row' : r.isLife ? 'life-row' : ''}">
+        <td>${r.age}${r.isLife ? ' 🎯' : ''}</td>
+        <td>${fmtFull(r.startBal)}</td>
+        <td class="red">-${fmtFull(r.annualExp)}</td>
+        <td class="green">${r.annualInc > 0 ? '+'+fmtFull(r.annualInc) : '-'}</td>
+        <td class="blue">${r.returnAmt > 0 ? '+'+fmtFull(r.returnAmt) : '-'}</td>
+        <td style="font-weight:600;color:${r.isEnd?'#A32D2D':r.endBal<annualRetExp0*2?'#7a5000':'#2d5a0e'}">${fmtFull(r.endBal)}</td>
+      </tr>`).join('');
+  } else {
+    tc.style.display = 'none';
+  }
+}
+
+renderLists();
+renderInv();
+calc();
+</script>
+</body>
+</html>
