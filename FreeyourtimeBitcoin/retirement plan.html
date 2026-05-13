@@ -1,52 +1,123 @@
 ﻿
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
-    .cashual-nav { position: fixed; top: 0; width: 100%; background: rgba(15,15,15,0.95); backdrop-filter: blur(10px); border-bottom: 1px solid #222; z-index: 1000; display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; height: 72px; }
-    .cashual-nav-logo { font-size: 22px; font-weight: 700; color: #f7931a; letter-spacing: 0.05em; }
-    .cashual-nav-links { display: flex; gap: 2.5rem; list-style: none; margin: 0; padding: 0; }
-    .cashual-nav-links a { color: #aaa; text-decoration: none; font-size: 17px; transition: color 0.2s; }
-    .cashual-nav-links a:hover { color: #f7931a; }
-</style>
-<style>
+:root {
+  --card: #ffffff;
+  --ring: #f59e0b;
+  --input: #e5e7eb;
+  --muted: #f9fafb;
+  --accent: #fffbeb;
+  --border: #e5e7eb;
+  --radius: 0.375rem;
+  --chart-1: #f59e0b;
+  --chart-2: #d97706;
+  --chart-3: #b45309;
+  --chart-4: var(--chart-4);
+  --chart-5: #78350f;
+  --popover: #ffffff;
+  --primary: #f59e0b;
+  --sidebar: #f9fafb;
+  --spacing: 0.25rem;
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-sans: 'Inter', sans-serif;
+  --secondary: #f3f4f6;
+  --background: #ffffff;
+  --foreground: #262626;
+  --destructive: #ef4444;
+  --shadow-blur: 8px;
+  --shadow-color: hsl(0 0% 0%);
+  --sidebar-ring: #f59e0b;
+  --shadow-spread: -1px;
+  --letter-spacing: 0em;
+  --shadow-opacity: 0.1;
+  --sidebar-accent: #fffbeb;
+  --sidebar-border: #e5e7eb;
+  --card-foreground: #262626;
+  --shadow-offset-x: 0px;
+  --shadow-offset-y: 4px;
+  --sidebar-primary: #f59e0b;
+  --muted-foreground: #6b7280;
+  --accent-foreground: var(--chart-4);
+  --popover-foreground: #262626;
+  --primary-foreground: #000000;
+  --sidebar-foreground: #262626;
+  --secondary-foreground: #4b5563;
+  --destructive-foreground: #ffffff;
+  --sidebar-accent-foreground: var(--chart-4);
+  --sidebar-primary-foreground: #ffffff;
+}
+.dark {
+  --card: #262626;
+  --ring: #f59e0b;
+  --input: #404040;
+  --muted: #262626;
+  --accent: var(--chart-4);
+  --border: #404040;
+  --chart-1: #fbbf24;
+  --chart-2: #d97706;
+  --chart-3: var(--chart-4);
+  --chart-4: #b45309;
+  --chart-5: var(--chart-4);
+  --popover: #262626;
+  --primary: #f59e0b;
+  --sidebar: #0f0f0f;
+  --secondary: #262626;
+  --background: #171717;
+  --foreground: #e5e5e5;
+  --destructive: #ef4444;
+  --sidebar-ring: #f59e0b;
+  --sidebar-accent: var(--chart-4);
+  --sidebar-border: #404040;
+  --card-foreground: #e5e5e5;
+  --sidebar-primary: #f59e0b;
+  --muted-foreground: #a3a3a3;
+  --accent-foreground: #fde68a;
+  --popover-foreground: #e5e5e5;
+  --primary-foreground: #000000;
+  --sidebar-foreground: #e5e5e5;
+  --secondary-foreground: #e5e5e5;
+  --destructive-foreground: #ffffff;
+  --sidebar-accent-foreground: #fde68a;
+  --sidebar-primary-foreground: #ffffff;
+}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:transparent;color:var(--color-text-primary,#111)}
-input,select{font-family:inherit;width:100%;padding:7px 10px;font-size:15px;border:0.5px solid var(--color-border-tertiary,#ddd);border-radius:6px;background:var(--color-background-primary,#fff);color:var(--color-text-primary,#111);outline:none}
+body{font-family:var(--font-sans);background:var(--background);color:var(--foreground)}
+input,select{font-family:inherit;width:100%;padding:7px 10px;font-size:13px;border:0.5px solid var(--border);border-radius:6px;background:var(--card);color:var(--foreground);outline:none}
 input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
 input[type=number]{-moz-appearance:textfield}
-input:focus,select:focus{border-color:#185FA5}
-input[type=checkbox]{width:15px;height:15px;accent-color:#185FA5;flex-shrink:0}
+input:focus,select:focus{border-color:var(--ring);box-shadow:0 0 0 2px color-mix(in srgb,var(--ring) 15%,transparent)}
+input[type=checkbox]{width:15px;height:15px;accent-color:var(--primary);flex-shrink:0}
 button{cursor:pointer;font-family:inherit}button:hover{opacity:.85}
 .w{max-width:900px;margin:0 auto;padding:.75rem 16px}
-.card{background:var(--color-background-primary,#fff);border:0.5px solid var(--color-border-tertiary,#ddd);border-radius:10px;padding:.9rem;margin-bottom:12px}
+.card{background:var(--card);border:0.5px solid var(--border);border-radius:10px;padding:.9rem;margin-bottom:12px}
 .tabs{display:flex;gap:5px;overflow-x:auto;margin-bottom:14px;padding-bottom:3px;align-items:center;-webkit-overflow-scrolling:touch}
-.tab{font-size:14px;padding:5px 9px;border-radius:6px;border:0.5px solid var(--color-border-tertiary,#ddd);background:transparent;color:var(--color-text-secondary,#666);white-space:nowrap;flex-shrink:0}
-.tab.on{background:#e6f1fb;color:#185FA5;border-color:#378add}
+.tab{font-size:12px;padding:5px 9px;border-radius:6px;border:0.5px solid var(--border);background:transparent;color:var(--muted-foreground);white-space:nowrap;flex-shrink:0}
+.tab.on{background:var(--accent);color:var(--accent-foreground);border-color:var(--ring)}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.fl{display:block;font-size:14px;color:var(--color-text-secondary,#666);margin-bottom:3px}
-.hint{font-size:13px;color:var(--color-text-secondary,#999);margin-top:3px}
-.sl{font-size:13px;font-weight:500;color:var(--color-text-secondary,#888);letter-spacing:.8px;margin:12px 0 8px}
+.fl{display:block;font-size:12px;color:var(--muted-foreground);margin-bottom:3px}
+.hint{font-size:11px;color:var(--muted-foreground);margin-top:3px}
+.sl{font-size:11px;font-weight:500;color:var(--muted-foreground);letter-spacing:.8px;margin:12px 0 8px}
 .sl:first-child{margin-top:0}
-.mc{background:var(--color-background-secondary,#f5f5f5);border-radius:7px;padding:.7rem;flex:1;min-width:0}
+.mc{background:var(--muted);border-radius:7px;padding:.7rem;flex:1;min-width:0}
 .mcr{display:flex;gap:9px;margin-bottom:12px}
 .tl{border-radius:8px;padding:.8rem;border:0.5px solid}
 .tlg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
-.dh{display:grid;gap:4px;margin-bottom:5px;padding-bottom:4px;border-bottom:0.5px solid var(--color-border-tertiary,#eee)}
-.dh span{font-size:13px;color:var(--color-text-secondary,#666)}
+.dh{display:grid;gap:4px;margin-bottom:5px;padding-bottom:4px;border-bottom:0.5px solid var(--border)}
+.dh span{font-size:11px;color:var(--muted-foreground)}
 .dr{display:grid;gap:4px;margin-bottom:7px;align-items:center}
-.del{width:22px;height:22px;border-radius:4px;border:0.5px solid var(--color-border-tertiary,#ddd);background:transparent;color:#999;font-size:14px;display:flex;align-items:center;justify-content:center;padding:0;flex-shrink:0}
-.del:hover{background:#FCEBEB;color:#A32D2D;border-color:#A32D2D}
-.ab{font-size:14px;padding:5px 12px;border-radius:6px;border:0.5px dashed #aaa;background:transparent;color:var(--color-text-secondary,#666);width:100%;text-align:center;margin-top:3px}
+.del{width:22px;height:22px;border-radius:4px;border:0.5px solid var(--border);background:transparent;color:var(--muted-foreground);font-size:14px;display:flex;align-items:center;justify-content:center;padding:0;flex-shrink:0}
+.del:hover{background:color-mix(in srgb,var(--destructive) 10%,transparent);color:var(--destructive);border-color:var(--destructive)}
+.ab{font-size:12px;padding:5px 12px;border-radius:6px;border:0.5px dashed var(--border);background:transparent;color:var(--muted-foreground);width:100%;text-align:center;margin-top:3px}
 .ap{display:flex;gap:4px;align-items:flex-start}
 .ap input{width:50px!important;font-size:12px!important;padding:5px 4px!important;text-align:center}
-.bb{width:100%;padding:10px;font-size:16px;font-weight:500;border-radius:9px;border:none;background:#185FA5;color:#fff}
-.eb{background:#FAEEDA;border:0.5px solid #EF9F27;border-radius:9px;padding:.85rem;margin-bottom:12px;font-size:15px;color:#854F0B}
-/* amount+toggle cell */
+.bb{width:100%;padding:10px;font-size:14px;font-weight:500;border-radius:9px;border:none;background:var(--primary);color:var(--primary-foreground)}
+.eb{background:var(--accent);border:0.5px solid var(--ring);border-radius:9px;padding:.85rem;margin-bottom:12px;font-size:13px;color:var(--accent-foreground)}
 .amtcell{display:flex;align-items:center;gap:3px}
 .amtcell input{flex:1;min-width:0;text-align:right}
-.ptog{display:inline-flex;border-radius:4px;overflow:hidden;border:0.5px solid var(--color-border-tertiary,#ddd);flex-shrink:0}
-.ptog button{padding:2px 5px;font-size:12px;border:none;background:transparent;color:var(--color-text-secondary,#666);cursor:pointer;font-family:inherit;line-height:1.5;white-space:nowrap}
-.ptog button.on{background:#185FA5;color:#fff}
-.ubadge{font-size:12px;font-weight:500;border-radius:3px;padding:2px 5px;white-space:nowrap;flex-shrink:0}
+.ptog{display:inline-flex;border-radius:4px;overflow:hidden;border:0.5px solid var(--border);flex-shrink:0}
+.ptog button{padding:2px 5px;font-size:10px;border:none;background:transparent;color:var(--muted-foreground);cursor:pointer;font-family:inherit;line-height:1.5;white-space:nowrap}
+.ptog button.on{background:var(--primary);color:var(--primary-foreground)}
+.ubadge{font-size:10px;font-weight:500;border-radius:3px;padding:2px 5px;white-space:nowrap;flex-shrink:0}
 @keyframes spin{to{transform:rotate(360deg)}}
 #pv{display:none}
 @media print{
@@ -57,25 +128,15 @@ button{cursor:pointer;font-family:inherit}button:hover{opacity:.85}
   @page{margin:15mm 12mm}
 }
 </style>
-<nav class="cashual-nav">
-    <div class="cashual-nav-logo"><a href="index.html" style="text-decoration:none;color:inherit;">FreeyourtimeBitcoin</a></div>
-    <ul class="cashual-nav-links">
-        <li><a href="Bitcoin-DCA-Master.html">DCA Master</a></li>
-        <li><a href="Purchasing-Power.html">Purchasing Power</a></li>
-        <li><a href="wealth-planner.html">Wealth Planner</a></li>
-        <li><a href="retirement plan.html">Retirement Plan</a></li>
-        <li><a href="https://cashualme.com/" target="_blank">Cashualme</a></li>
-    </ul>
-</nav>
 <div id="pv"></div>
-<div class="w" style="padding-top:72px">
-<div style="padding:14px 0 10px;border-bottom:0.5px solid var(--color-border-tertiary,#eee);margin-bottom:0">
-  <span style="font-size:20px;font-weight:600;letter-spacing:.3px;color:var(--color-text-primary,#111)">Retirement Plan</span>
+<div class="w">
+<div style="padding:14px 0 10px;border-bottom:0.5px solid var(--border);margin-bottom:0">
+  <span style="font-size:17px;font-weight:600;letter-spacing:.3px;color:var(--foreground)">Retirement Plan</span>
 </div>
-<div style="background:linear-gradient(135deg,#f0f7ff 0%,#fef9ec 100%);border-left:3px solid #185FA5;border-radius:0 0 10px 10px;padding:.75rem 1rem;margin-bottom:14px">
-  <div style="font-size:13px;font-weight:600;color:#185FA5;margin-bottom:4px">เคยรู้มั้ยว่าตัวเองต้องมีเงินเท่าไหร่หลังเกษียณ?</div>
-  <div style="font-size:11px;color:var(--color-text-secondary,#555);font-weight:500;margin-bottom:3px">ทำไมถึงจำเป็น?</div>
-  <div style="font-size:11px;color:var(--color-text-secondary,#666);line-height:1.7">เพราะทุกคนมีสิ่งที่ต้องทำมากกว่าเรื่องการหาเงิน<br>เกษียณไม่ใช่การหยุดทำงาน แต่เราสามารถที่จะ <span style="font-weight:600;color:#185FA5">"เลือกงาน"</span> ได้ทำในสิ่งที่ต้องการ</div>
+<div style="background:linear-gradient(135deg,var(--accent) 0%,color-mix(in srgb,var(--accent) 60%,var(--background)) 100%);border-left:3px solid var(--primary);border-radius:0 0 10px 10px;padding:.75rem 1rem;margin-bottom:14px">
+  <div style="font-size:13px;font-weight:600;color:var(--primary);margin-bottom:4px">เคยรู้มั้ยว่าตัวเองต้องมีเงินเท่าไหร่หลังเกษียณ?</div>
+  <div style="font-size:11px;color:var(--muted-foreground);font-weight:500;margin-bottom:3px">ทำไมถึงจำเป็น?</div>
+  <div style="font-size:11px;color:var(--muted-foreground);line-height:1.7">เพราะทุกคนมีสิ่งที่ต้องทำมากกว่าเรื่องการหาเงิน<br>เกษียณไม่ใช่การหยุดทำงาน แต่เราสามารถที่จะ <span style="font-weight:600;color:var(--primary)">"เลือกงาน"</span> ได้ทำในสิ่งที่ต้องการ</div>
 </div>
 <div class="tabs" id="tabs"></div><div id="ct"></div></div>
 <script>
@@ -83,15 +144,17 @@ const TABS=['🔍 Quick Scan','รายละเอียด','สินทร�
 let AT=0,CH=null,showR=false,tipIdx=null,_tips=[];
 let D={age:35,retireAge:55,lifeExpect:85,inflation:3,retireIncome:40000};
 let A={cash:{v:300000,g:1.5},stocks:{v:200000,g:8},fund:{v:100000,g:6},gold:{v:50000,g:4},home:{v:3000000,g:3},btcAmt:0.05,btcPrice:3400000};
+// cssClr resolves a CSS variable to its actual value for use in Canvas API
+const cssClr=v=>v.startsWith('var(')?getComputedStyle(document.documentElement).getPropertyValue(v.slice(4,-1)).trim()||v:v;
 const SC_TYPES=[
-  {v:'income',     l:'รายรับ+',      c:'#185FA5'},
+  {v:'income',     l:'รายรับ+',      c:'#f59e0b'},
   {v:'expReduce',  l:'รายจ่าย-',     c:'#3B6D11'},
   {v:'expIncrease',l:'รายจ่ายเพิ่ม', c:'#A32D2D'},
   {v:'asset',      l:'asset ก้อน',   c:'#3B6D11'},
-  {v:'invAmt',     l:'ลงทุนเพิ่ม',   c:'#185FA5'},
+  {v:'invAmt',     l:'ลงทุนเพิ่ม',   c:'#f59e0b'},
   {v:'invPct',     l:'ผลตอบแทน%',   c:'#7B2FBE'},
-  {v:'btcDCA',     l:'BTC DCA',      c:'#854F0B'},
-  {v:'btcGr',      l:'BTC %/ปี',     c:'#854F0B'},
+  {v:'btcDCA',     l:'BTC DCA',      c:'#92400e'},
+  {v:'btcGr',      l:'BTC %/ปี',     c:'#92400e'},
 ];
 const scInfo=t=>SC_TYPES.find(x=>x.v===t)||SC_TYPES[0];
 function toMonthly(sc){if(sc.type==='btcGr'||sc.type==='invPct')return sc.amount;return sc.period==='year'?sc.amount/12:sc.amount;}
@@ -110,7 +173,7 @@ function amtCell(sc){
     const rateVal=sc.rate!=null?sc.rate:8;
     return `<div class="amtcell" style="flex-direction:column;align-items:stretch;gap:3px">
       <div style="display:flex;align-items:center;gap:3px">${mi(`sc${sc.id}`,sc.amount,`oninput="upit('sc',${sc.id},'amount',pC(this.value),true);refreshTable()" onchange="ff(this);renderAll()"`)  }${tog}</div>
-      <div style="display:flex;align-items:center;gap:3px"><input type="number" value="${rateVal}" step="0.5" min="0" max="50" onchange="upit('sc',${sc.id},'rate',+this.value)" style="font-size:11px;padding:3px 5px;width:52px;border:0.5px solid var(--color-border-tertiary,#ddd);border-radius:5px;text-align:right"><span style="font-size:10px;color:#7B2FBE;white-space:nowrap">%/ปี</span></div>
+      <div style="display:flex;align-items:center;gap:3px"><input type="number" value="${rateVal}" step="0.5" min="0" max="50" onchange="upit('sc',${sc.id},'rate',+this.value)" style="font-size:11px;padding:3px 5px;width:52px;border:0.5px solid var(--border);border-radius:5px;text-align:right"><span style="font-size:10px;color:#7B2FBE;white-space:nowrap">%/ปี</span></div>
     </div>`;
   }
   return `<div class="amtcell">${mi(`sc${sc.id}`,sc.amount,`oninput="upit('sc',${sc.id},'amount',pC(this.value),true);refreshTable()" onchange="ff(this);renderAll()"`)  }${tog}</div>`;
@@ -136,39 +199,39 @@ const pC=v=>parseFloat(String(v).replace(/,/g,'').replace(/[^0-9.]/g,''))||0;
 const fC=v=>Math.round(v||0).toLocaleString('th-TH');
 const ff=el=>{el.value=fC(pC(el.value));};
 function mi(id,val,ex=''){return `<input type="text" id="${id}" value="${fC(val)}" ${ex} style="text-align:right">`;}
-function _tblAge(r){return r.age+(r.isRetire?' 🎯':'')+(r.assetSale>0?` <span style="font-size:8px;color:#854F0B;background:#FAEEDA;border-radius:3px;padding:1px 2px">+${fmtT(r.assetSale)}</span>`:'');}
+function _tblAge(r){return r.age+(r.isRetire?' 🎯':'')+(r.assetSale>0?` <span style="font-size:8px;color:var(--accent-foreground);background:var(--accent);border-radius:3px;padding:1px 2px">+${fmtT(r.assetSale)}</span>`:'');}
 function mkCfRow(r){
-  const bg=r.isRetire?'#FFF8E6':r.isWorking?'':'var(--color-background-secondary,#fafafa)';
+  const bg=r.isRetire?'var(--accent)':r.isWorking?'':'var(--color-background-secondary,#fafafa)';
   const ncB=r.netB>0?'#3B6D11':r.netB<0?'#A32D2D':'#888';
   const ncA=r.netA>0?'#3B6D11':r.netA<0?'#A32D2D':'#888';
   const fB=r.isWorking?[fmtT(r.incB),fmtT(r.expB),(r.netB>0?'+':'')+fmtT(r.netB)]:['—',fmtT(r.expB),(r.netB>0?'+':'')+fmtT(r.netB)];
   const fA=r.isWorking?[fmtT(r.incA),fmtT(r.expA),(r.netA>0?'+':'')+fmtT(r.netA)]:['—',fmtT(r.expA),(r.netA>0?'+':'')+fmtT(r.netA)];
-  const ic=r.isWorking?'#3B6D11':'#185FA5';
+  const ic=r.isWorking?'#3B6D11':'var(--primary)';
   return`<tr style="border-bottom:0.5px solid var(--color-border-tertiary,#e5e5e5);background:${bg}">
-    <td style="padding:3px 5px;font-weight:${r.isRetire?600:400};color:${r.isRetire?'#854F0B':'inherit'};border-right:0.5px solid var(--color-border-tertiary,#e5e5e5)">${_tblAge(r)}</td>
+    <td style="padding:3px 5px;font-weight:${r.isRetire?600:400};color:${r.isRetire?'var(--accent-foreground)':'inherit'};border-right:0.5px solid var(--color-border-tertiary,#e5e5e5)">${_tblAge(r)}</td>
     <td style="padding:3px 5px;text-align:right;color:${ic}">${fB[0]}</td>
     <td style="padding:3px 5px;text-align:right;color:#A32D2D">${fB[1]}</td>
-    <td style="padding:3px 5px;text-align:right;color:${ncB};border-right:1px solid var(--color-border-tertiary,#ddd)">${fB[2]}</td>
+    <td style="padding:3px 5px;text-align:right;color:${ncB};border-right:1px solid var(--border)">${fB[2]}</td>
     <td style="padding:3px 5px;text-align:right;color:${ic}">${fA[0]}</td>
     <td style="padding:3px 5px;text-align:right;color:#A32D2D">${fA[1]}</td>
     <td style="padding:3px 5px;text-align:right;color:${ncA}">${fA[2]}</td>
   </tr>`;
 }
 function mkAtRow(r){
-  const bg=r.isRetire?'#FFF8E6':r.isWorking?'':'var(--color-background-secondary,#fafafa)';
+  const bg=r.isRetire?'var(--accent)':r.isWorking?'':'var(--color-background-secondary,#fafafa)';
   const diff=r.portA-r.portB;
   const dc=diff>100?'#3B6D11':diff<-100?'#A32D2D':'#888';
   return`<tr style="border-bottom:0.5px solid var(--color-border-tertiary,#e5e5e5);background:${bg}">
-    <td style="padding:3px 5px;font-weight:${r.isRetire?600:400};color:${r.isRetire?'#854F0B':'inherit'};border-right:0.5px solid var(--color-border-tertiary,#e5e5e5)">${_tblAge(r)}</td>
-    <td style="padding:3px 5px;text-align:right;color:#185FA5;font-weight:500;border-right:0.5px solid var(--color-border-tertiary,#ddd)">${fmtT(r.portB)}</td>
-    <td style="padding:3px 5px;text-align:right;color:#185FA5;font-weight:500;border-right:0.5px solid var(--color-border-tertiary,#ddd)">${fmtT(r.portA)}</td>
+    <td style="padding:3px 5px;font-weight:${r.isRetire?600:400};color:${r.isRetire?'var(--accent-foreground)':'inherit'};border-right:0.5px solid var(--color-border-tertiary,#e5e5e5)">${_tblAge(r)}</td>
+    <td style="padding:3px 5px;text-align:right;color:var(--primary);font-weight:500;border-right:0.5px solid var(--border)">${fmtT(r.portB)}</td>
+    <td style="padding:3px 5px;text-align:right;color:var(--primary);font-weight:500;border-right:0.5px solid var(--border)">${fmtT(r.portA)}</td>
     <td style="padding:3px 5px;text-align:right;color:${dc};font-weight:500">${diff>=0?'+':''}${fmtT(diff)}</td>
   </tr>`;
 }
 function refreshTable(){
   const sB=sim(false),sA=sim(true),needed=cN();
   const sb=document.getElementById('sc-stats');
-  if(sb)sb.innerHTML=[['ปัจจุบัน ณ เกษียณ',fmtM(sB.retV),sB.retV>=needed?'#3B6D11':'#BA7517'],['หลังปรับ ณ เกษียณ',fmtM(sA.retV),sA.retV>=needed?'#3B6D11':'#BA7517'],['เงินหมดอายุ',sA.sa>=D.lifeExpect?'อยู่รอด ✓':'อายุ '+sA.sa,sA.sa>=D.lifeExpect?'#3B6D11':'#A32D2D']].map(([l,v,c])=>`<div><div style="font-size:11px;color:var(--color-text-secondary,#666)">${l}</div><div style="font-size:13px;font-weight:500;color:${c}">${v}</div></div>`).join('');
+  if(sb)sb.innerHTML=[['ปัจจุบัน ณ เกษียณ',fmtM(sB.retV),sB.retV>=needed?'#3B6D11':'#BA7517'],['หลังปรับ ณ เกษียณ',fmtM(sA.retV),sA.retV>=needed?'#3B6D11':'#BA7517'],['เงินหมดอายุ',sA.sa>=D.lifeExpect?'อยู่รอด ✓':'อายุ '+sA.sa,sA.sa>=D.lifeExpect?'#3B6D11':'#A32D2D']].map(([l,v,c])=>`<div><div style="font-size:11px;color:var(--muted-foreground)">${l}</div><div style="font-size:13px;font-weight:500;color:${c}">${v}</div></div>`).join('');
   const rows=simRows();
   const el=document.getElementById('tbl-card');
   if(el)el.querySelector('tbody').innerHTML=(()=>{let pB=false,pA=false;return rows.map(r=>{
@@ -176,26 +239,26 @@ function refreshTable(){
     const startB=drainsB&&!pB,startA=drainsA&&!pA;
     pB=drainsB;pA=drainsA;
     const showMark=startB||startA;
-    const bg=r.isRetire?'#FFF8E6':showMark?'#FFF0EE':r.isWorking?'':'var(--color-background-secondary,#fafafa)';
+    const bg=r.isRetire?'var(--accent)':showMark?'#FFF0EE':r.isWorking?'':'var(--color-background-secondary,#fafafa)';
     const ncB=r.netB>0?'#3B6D11':r.netB<0?'#A32D2D':'#888';
     const ncA=r.netA>0?'#3B6D11':r.netA<0?'#A32D2D':'#888';
     const fB=r.isWorking?[fmtT(r.incB),fmtT(r.expB),(r.netB>0?'+':'')+fmtT(r.netB)]:['—',fmtT(r.expB),(r.netB>0?'+':'')+fmtT(r.netB)];
     const fA=r.isWorking?[fmtT(r.incA),fmtT(r.expA),(r.netA>0?'+':'')+fmtT(r.netA)]:['—',fmtT(r.expA),(r.netA>0?'+':'')+fmtT(r.netA)];
     const ageLbl=_tblAge(r)+(showMark?` <span style="font-size:8px;color:#A32D2D;background:#FCEBEB;border-radius:3px;padding:1px 3px">↙ดึงพอร์ต</span>`:'');
     return`<tr style="border-bottom:0.5px solid var(--color-border-tertiary,#e5e5e5);background:${bg}">
-      <td style="padding:3px 5px;font-weight:${r.isRetire?600:400};color:${r.isRetire?'#854F0B':'inherit'};border-right:0.5px solid var(--color-border-tertiary,#e5e5e5)">${ageLbl}</td>
-      <td style="padding:3px 5px;text-align:right;color:${r.isWorking?'#3B6D11':'#185FA5'}">${fB[0]}</td>
+      <td style="padding:3px 5px;font-weight:${r.isRetire?600:400};color:${r.isRetire?'var(--accent-foreground)':'inherit'};border-right:0.5px solid var(--color-border-tertiary,#e5e5e5)">${ageLbl}</td>
+      <td style="padding:3px 5px;text-align:right;color:${r.isWorking?'#3B6D11':'var(--primary)'}">${fB[0]}</td>
       <td style="padding:3px 5px;text-align:right;color:#A32D2D">${fB[1]}</td>
       <td style="padding:3px 5px;text-align:right;color:${ncB}">${fB[2]}</td>
-      <td style="padding:3px 5px;text-align:right;color:#185FA5;font-weight:500;border-right:1px solid var(--color-border-tertiary,#ddd);${startB?'border-left:2px solid #A32D2D':''}">${fmtT(r.portB)}</td>
-      <td style="padding:3px 5px;text-align:right;color:${r.isWorking?'#3B6D11':'#185FA5'}">${fA[0]}</td>
+      <td style="padding:3px 5px;text-align:right;color:var(--primary);font-weight:500;border-right:1px solid var(--border);${startB?'border-left:2px solid #A32D2D':''}">${fmtT(r.portB)}</td>
+      <td style="padding:3px 5px;text-align:right;color:${r.isWorking?'#3B6D11':'var(--primary)'}">${fA[0]}</td>
       <td style="padding:3px 5px;text-align:right;color:#A32D2D">${fA[1]}</td>
       <td style="padding:3px 5px;text-align:right;color:${ncA}">${fA[2]}</td>
-      <td style="padding:3px 5px;text-align:right;color:#185FA5;font-weight:500;${startA?'border-left:2px solid #A32D2D':''}">${fmtT(r.portA)}</td>
+      <td style="padding:3px 5px;text-align:right;color:var(--primary);font-weight:500;${startA?'border-left:2px solid #A32D2D':''}">${fmtT(r.portA)}</td>
     </tr>`;
   }).join('')})();
 }
-function ap(src,id,f,t){return `<div class="ap"><div><div style="font-size:10px;color:var(--color-text-secondary,#666);margin-bottom:2px">ตั้งแต่อายุ</div><input type="number" value="${f}" onchange="upit('${src}',${id},'from',+this.value)"></div><span style="padding-top:16px;font-size:11px;color:var(--color-text-secondary,#666)">–</span><div><div style="font-size:10px;color:var(--color-text-secondary,#666);margin-bottom:2px">ถึงอายุ</div><input type="number" value="${t}" onchange="upit('${src}',${id},'to',+this.value)"></div></div>`;}
+function ap(src,id,f,t){return `<div class="ap"><div><div style="font-size:10px;color:var(--muted-foreground);margin-bottom:2px">ตั้งแต่อายุ</div><input type="number" value="${f}" onchange="upit('${src}',${id},'from',+this.value)"></div><span style="padding-top:16px;font-size:11px;color:var(--muted-foreground)">–</span><div><div style="font-size:10px;color:var(--muted-foreground);margin-bottom:2px">ถึงอายุ</div><input type="number" value="${t}" onchange="upit('${src}',${id},'to',+this.value)"></div></div>`;}
 
 function upit(src,id,f,v,noRender){const a=src==='inc'?INC:src==='exp'?EXP:src==='dbt'?DBT:src==='ca'?CA:SC;const it=a.find(x=>x.id===id);if(it)it[f]=v;if(!noRender)renderAll();}
 function rmit(src,id){if(src==='inc'){if(INC.length>1)INC=INC.filter(x=>x.id!==id);}else if(src==='exp'){if(EXP.length>1)EXP=EXP.filter(x=>x.id!==id);}else if(src==='dbt')DBT=DBT.filter(x=>x.id!==id);else if(src==='ca')CA=CA.filter(x=>x.id!==id);else SC=SC.filter(x=>x.id!==id);renderAll();}
@@ -306,7 +369,7 @@ function cN(){
   const fm=Math.max(0,sd.retireIncome||0)*Math.pow(1+inf,yrs);
   return Math.abs(disc-inf)<0.001?fm*12*rY/(1+disc):Math.max(0,fm*12*(1-Math.pow((1+inf)/(1+disc),rY))/(disc-inf));
 }
-function tc(s){const ok=s>=70,w=s>=40;return{bg:ok?'#EAF3DE':w?'#FAEEDA':'#FCEBEB',bd:ok?'#C0DD97':w?'#FAC775':'#F09595',tx:ok?'#3B6D11':w?'#854F0B':'#A32D2D',dt:ok?'#3B6D11':w?'#BA7517':'#A32D2D',lb:ok?'ดี ✓':w?'พอรับได้':'ต้องแก้ด่วน'};}
+function tc(s){const ok=s>=70,w=s>=40;return{bg:ok?'#EAF3DE':w?'var(--accent)':'#FCEBEB',bd:ok?'#C0DD97':w?'#FAC775':'#F09595',tx:ok?'#3B6D11':w?'var(--accent-foreground)':'#A32D2D',dt:ok?'#3B6D11':w?'#BA7517':'#A32D2D',lb:ok?'ดี ✓':w?'พอรับได้':'ต้องแก้ด่วน'};}
 
 function rQS(){
   const yW=Math.max(0,QS.ret-QS.age),yR=Math.max(0,QS.life-QS.ret);
@@ -317,9 +380,9 @@ function rQS(){
   // เงินที่ต้องมีทั้งหมด = ผลรวมค่าใช้จ่ายที่โตทุกปีตลอดช่วงเกษียณ
   const need=inf>0.0001?rExpAdj*12*(Math.pow(1+inf,yR)-1)/inf:rExpAdj*12*yR;
   const gap=need-st2,pct=need>0?Math.round(st2/need*100):100;
-  const ok=gap<=0,warn=gap>0&&pct>=60,hc=ok?'#3B6D11':warn?'#854F0B':'#A32D2D',hbg=ok?'#EAF3DE':warn?'#FAEEDA':'#FCEBEB',hbd=ok?'#639922':warn?'#EF9F27':'#E24B4A';
+  const ok=gap<=0,warn=gap>0&&pct>=60,hc=ok?'#3B6D11':warn?'var(--accent-foreground)':'#A32D2D',hbg=ok?'#EAF3DE':warn?'var(--accent)':'#FCEBEB',hbd=ok?'#639922':warn?'var(--ring)':'#E24B4A';
   const br=[[`ออมได้/เดือน`,(spm>=0?'+':'')+`฿${fmt(spm)}`,spm<0?'#A32D2D':hc],[`ออมใน ${yW} ปี`,`฿${fmt(Math.max(0,spm)*12*yW)}`,hc],QS.sav>0?[`+ เงินออมที่มีอยู่`,`฿${fmt(QS.sav)}`,hc]:null,[`รวมที่จะมีตอนเกษียณ`,`฿${fmt(st2)}`,hc],['─','',hc],[`ค่าใช้จ่ายวันนี้/เดือน`,`฿${fmt(QS.rExp)}`,hc],[`ค่าใช้จ่ายตอนเกษียณ/เดือน`,`฿${fmt(Math.round(rExpAdj))} (+เงินเฟ้อ ${yW}ปี)`,hc],[`รวมต้องใช้ ${yR} ปี (รวมเงินเฟ้อ)`,fmtM(need),hc],[ok?'เหลือ':'ขาดอีก',fmtM(Math.abs(gap)),hc]].filter(Boolean);
-  return `<div style="text-align:center;margin-bottom:18px"><h2 style="font-size:19px;font-weight:500;margin-bottom:5px">เช็คเร็ว — เกษียณได้ไหม?</h2><p style="font-size:13px;color:var(--color-text-secondary,#666)">กรอก 5 ช่อง รู้ผลทันที</p></div>
+  return `<div style="text-align:center;margin-bottom:18px"><h2 style="font-size:19px;font-weight:500;margin-bottom:5px">เช็คเร็ว — เกษียณได้ไหม?</h2><p style="font-size:13px;color:var(--muted-foreground)">กรอก 5 ช่อง รู้ผลทันที</p></div>
   <div class="card">
     <div class="sl">ช่วงชีวิต</div>
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px">
@@ -327,20 +390,20 @@ function rQS(){
       <div><label class="fl">อยากเกษียณอายุ</label><input type="number" value="${QS.ret}" onchange="QS.ret=+this.value;rQSr()"></div>
       <div><label class="fl">อายุขัย</label><input type="number" value="${QS.life}" onchange="QS.life=+this.value;rQSr()"></div>
     </div>
-    <div style="border-top:0.5px solid var(--color-border-tertiary,#eee);padding-top:12px;margin-bottom:12px">
+    <div style="border-top:0.5px solid var(--border);padding-top:12px;margin-bottom:12px">
       <div class="sl" style="margin-top:0">รายได้ & รายจ่าย (ต่อเดือน)</div>
       <div class="g2">
         <div><label class="fl">รายได้สุทธิ (฿)</label>${mi('qi',QS.inc,'onchange="QS.inc=pC(this.value);ff(this);rQSr()"')}</div>
         <div><label class="fl">รายจ่ายรวม (฿)</label>${mi('qe',QS.exp,'onchange="QS.exp=pC(this.value);ff(this);rQSr()"')}</div>
       </div>
-      <div style="background:${spm>=0?'var(--color-background-secondary,#f5f5f5)':'#FCEBEB'};border-radius:7px;padding:8px 12px;font-size:13px;color:${spm>=0?'var(--color-text-secondary,#666)':'#A32D2D'}">ออมได้/เดือน: <b style="color:${spm>=0?'var(--color-text-primary,#111)':'#A32D2D'}">${(spm>=0?'+':'')+fmtM(spm)}</b>${spm<0?' — รายจ่ายเกินรายรับ':''}</div>
+      <div style="background:${spm>=0?'var(--muted)':'#FCEBEB'};border-radius:7px;padding:8px 12px;font-size:13px;color:${spm>=0?'var(--muted-foreground)':'#A32D2D'}">ออมได้/เดือน: <b style="color:${spm>=0?'var(--foreground)':'#A32D2D'}">${(spm>=0?'+':'')+fmtM(spm)}</b>${spm<0?' — รายจ่ายเกินรายรับ':''}</div>
     </div>
-    <div style="border-top:0.5px solid var(--color-border-tertiary,#eee);padding-top:12px">
+    <div style="border-top:0.5px solid var(--border);padding-top:12px">
       <div class="sl" style="margin-top:0">หลังเกษียณ</div>
       <div style="margin-bottom:10px"><label class="fl">ต้องการใช้/เดือน (฿)</label><div class="hint">ใส่ค่าเงินวันนี้ — จะปรับเงินเฟ้อให้อัตโนมัติ</div>${mi('qr',QS.rExp,'onchange="QS.rExp=pC(this.value);ff(this);rQSr()"')}</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:10px">
         <div><label class="fl">เงินออมที่มีอยู่แล้ว (฿)</label>${mi('qs2',QS.sav,'onchange="QS.sav=pC(this.value);ff(this);rQSr()"')}</div>
-        <div><label class="fl">เงินเฟ้อ (%/ปี)</label><input type="number" value="${QS.inf}" step="0.5" min="0" max="20" onchange="QS.inf=+this.value;rQSr()" style="width:100%;padding:7px 10px;font-size:13px;border:0.5px solid var(--color-border-tertiary,#ddd);border-radius:6px;background:var(--color-background-primary,#fff);color:var(--color-text-primary,#111)"></div>
+        <div><label class="fl">เงินเฟ้อ (%/ปี)</label><input type="number" value="${QS.inf}" step="0.5" min="0" max="20" onchange="QS.inf=+this.value;rQSr()" style="width:100%;padding:7px 10px;font-size:13px;border:0.5px solid var(--border);border-radius:6px;background:var(--background);color:var(--foreground)"></div>
       </div>
     </div>
     <button class="bb" onclick="qD=true;renderAll()">ดูผลเลย →</button>
@@ -372,35 +435,35 @@ function rT1(){
       <div style="grid-column:span 2"><label class="fl">ต้องการใช้ตอนเกษียณ/เดือน (฿)</label><div class="hint">ค่าเงินวันนี้</div>${mi('ri',D.retireIncome,'onchange="D.retireIncome=pC(this.value);ff(this);renderAll()"')}</div>
     </div>
   </div>
-  <div class="card" style="border-top:3px solid #185FA5;padding-top:.75rem">
+  <div class="card" style="border-top:3px solid var(--primary);padding-top:.75rem">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-      <div style="display:flex;align-items:center;gap:7px"><span style="width:8px;height:8px;border-radius:50%;background:#185FA5;display:inline-block"></span><span class="sl" style="margin:0;color:#185FA5">รายรับ</span></div>
-      <span style="font-size:12px;font-weight:600;color:#185FA5;background:#e6f1fb;border-radius:6px;padding:2px 10px">+฿${fmt(gMI(D.age))}/ด.</span>
+      <div style="display:flex;align-items:center;gap:7px"><span style="width:8px;height:8px;border-radius:50%;background:var(--primary);display:inline-block"></span><span class="sl" style="margin:0;color:var(--primary)">รายรับ</span></div>
+      <span style="font-size:12px;font-weight:600;color:var(--primary);background:var(--accent);border-radius:6px;padding:2px 10px">+฿${fmt(gMI(D.age))}/ด.</span>
     </div>
     <div class="dh" style="grid-template-columns:1fr 95px 52px 128px 22px"><span>ชื่อ</span><span style="text-align:right">฿/เดือน</span><span style="text-align:center">%โต/ปี</span><span style="text-align:center">ช่วงอายุ</span><span></span></div>
     ${INC.map(x=>`<div class="dr" style="grid-template-columns:1fr 95px 52px 128px 22px"><input type="text" value="${x.label}" onchange="upit('inc',${x.id},'label',this.value)">${mi(`i${x.id}`,x.amount,`onchange="upit('inc',${x.id},'amount',pC(this.value));ff(this)"`)}<input type="number" value="${x.g||0}" step="0.5" min="0" max="50" style="text-align:center;font-size:12px;padding:5px 4px" onchange="upit('inc',${x.id},'g',+this.value)">${ap('inc',x.id,x.from,x.to)}<button class="del" onclick="rmit('inc',${x.id})">×</button></div>`).join('')}
     <button class="ab" onclick="addit('inc')">+ เพิ่มรายรับ</button>
-    <div style="margin-top:10px;background:#e6f1fb;border-radius:8px;padding:.65rem .85rem;display:flex;justify-content:space-between;align-items:center">
-      <span style="font-size:12px;color:#185FA5">รายรับรวม/เดือน</span>
-      <span style="font-size:15px;font-weight:700;color:#185FA5">+฿${fmt(gMI(D.age))}</span>
+    <div style="margin-top:10px;background:var(--accent);border-radius:8px;padding:.65rem .85rem;display:flex;justify-content:space-between;align-items:center">
+      <span style="font-size:12px;color:var(--primary)">รายรับรวม/เดือน</span>
+      <span style="font-size:15px;font-weight:700;color:var(--primary)">+฿${fmt(gMI(D.age))}</span>
     </div>
   </div>
-  <div class="card" style="border-top:3px solid #D97706;padding-top:.75rem">
+  <div class="card" style="border-top:3px solid var(--chart-2);padding-top:.75rem">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-      <div style="display:flex;align-items:center;gap:7px"><span style="width:8px;height:8px;border-radius:50%;background:#D97706;display:inline-block"></span><span class="sl" style="margin:0;color:#D97706">รายจ่าย</span></div>
+      <div style="display:flex;align-items:center;gap:7px"><span style="width:8px;height:8px;border-radius:50%;background:var(--chart-2);display:inline-block"></span><span class="sl" style="margin:0;color:var(--chart-2)">รายจ่าย</span></div>
       <div style="display:flex;align-items:center;gap:6px">
-        <span style="font-size:11px;color:var(--color-text-secondary,#666)">เงินเฟ้อ</span>
+        <span style="font-size:11px;color:var(--muted-foreground)">เงินเฟ้อ</span>
         <input type="number" value="${D.inflation}" step="0.5" min="0" max="20" style="width:48px;text-align:center;font-size:12px;padding:3px 5px" onchange="D.inflation=+this.value;renderAll()">
-        <span style="font-size:11px;color:var(--color-text-secondary,#666)">%/ปี</span>
-        <span style="font-size:12px;font-weight:600;color:#D97706;background:#FEF3C7;border-radius:6px;padding:2px 10px">−฿${fmt(gME(D.age,0,D.inflation/100))}/ด.</span>
+        <span style="font-size:11px;color:var(--muted-foreground)">%/ปี</span>
+        <span style="font-size:12px;font-weight:600;color:var(--chart-2);background:var(--accent);border-radius:6px;padding:2px 10px">−฿${fmt(gME(D.age,0,D.inflation/100))}/ด.</span>
       </div>
     </div>
     <div class="dh" style="grid-template-columns:1fr 95px 128px 22px 22px"><span>ชื่อ</span><span style="text-align:right">฿/เดือน</span><span style="text-align:center">ช่วงอายุ</span><span style="text-align:center;font-size:10px">เงินเฟ้อ</span><span></span></div>
     ${EXP.map(x=>`<div class="dr" style="grid-template-columns:1fr 95px 128px 22px 22px"><input type="text" value="${x.label}" onchange="upit('exp',${x.id},'label',this.value)">${mi(`e${x.id}`,x.amount,`onchange="upit('exp',${x.id},'amount',pC(this.value));ff(this)"`) }${ap('exp',x.id,x.from,x.to)}<div style="text-align:center"><input type="checkbox" ${x.inf?'checked':''} title="ปรับตามเงินเฟ้อทุกปี" onchange="upit('exp',${x.id},'inf',this.checked)"></div><button class="del" onclick="rmit('exp',${x.id})">×</button></div>`).join('')}
     <button class="ab" onclick="addit('exp')">+ เพิ่มรายจ่าย</button>
-    <div style="margin-top:10px;background:#FEF3C7;border-radius:8px;padding:.65rem .85rem;display:flex;justify-content:space-between;align-items:center">
-      <span style="font-size:12px;color:#92400E">รายจ่ายรวม/เดือน</span>
-      <span style="font-size:15px;font-weight:700;color:#B45309">−฿${fmt(gME(D.age,0,D.inflation/100))}</span>
+    <div style="margin-top:10px;background:var(--accent);border-radius:8px;padding:.65rem .85rem;display:flex;justify-content:space-between;align-items:center">
+      <span style="font-size:12px;color:var(--chart-4)">รายจ่ายรวม/เดือน</span>
+      <span style="font-size:15px;font-weight:700;color:var(--chart-3)">−฿${fmt(gME(D.age,0,D.inflation/100))}</span>
     </div>
   </div>
   ${DBT.reduce((s,x)=>s+x.monthly,0)>0||true?`<div class="card" style="border-top:3px solid #A32D2D;padding-top:.75rem">
@@ -442,7 +505,7 @@ function rT1(){
 function rT2(){
   return `<div class="card">
     <div class="sl" style="margin-top:0">สินทรัพย์ (มูลค่าตลาดวันนี้)</div>
-    <div style="display:grid;grid-template-columns:1fr 100px 55px;gap:5px;margin-bottom:6px"><span style="font-size:11px;color:var(--color-text-secondary,#666)">สินทรัพย์</span><span style="font-size:11px;color:var(--color-text-secondary,#666);text-align:right">มูลค่า (฿)</span><span style="font-size:11px;color:var(--color-text-secondary,#666);text-align:center">%/ปี</span></div>
+    <div style="display:grid;grid-template-columns:1fr 100px 55px;gap:5px;margin-bottom:6px"><span style="font-size:11px;color:var(--muted-foreground)">สินทรัพย์</span><span style="font-size:11px;color:var(--muted-foreground);text-align:right">มูลค่า (฿)</span><span style="font-size:11px;color:var(--muted-foreground);text-align:center">%/ปี</span></div>
     ${[{l:'เงินสด / เงินฝาก',k:'cash'},{l:'หุ้น',k:'stocks'},{l:'กองทุนรวม LTF/RMF',k:'fund'},{l:'ทองคำ',k:'gold'},{l:'บ้าน / อสังหาฯ',k:'home'}].map(({l,k})=>`<div style="display:grid;grid-template-columns:1fr 100px 55px;gap:5px;margin-bottom:8px;align-items:center"><span style="font-size:12px">${l}</span>${mi(`av${k}`,A[k].v,`onchange="A['${k}'].v=pC(this.value);ff(this);renderAll()"`)}<input type="number" value="${A[k].g}" step="0.5" style="text-align:center" onchange="A['${k}'].g=+this.value;renderAll()"></div>`).join('')}
     <div class="sl">สินทรัพย์อื่นๆ</div>
     ${CA.map(x=>`<div style="display:grid;grid-template-columns:1fr 100px 55px 22px;gap:5px;margin-bottom:7px;align-items:center"><input type="text" value="${x.label}" onchange="upit('ca',${x.id},'label',this.value)">${mi(`cv${x.id}`,x.v,`onchange="upit('ca',${x.id},'v',pC(this.value));ff(this)"`)}<input type="number" value="${x.g}" step="0.5" style="text-align:center" onchange="upit('ca',${x.id},'g',+this.value)"><button class="del" onclick="rmit('ca',${x.id})">×</button></div>`).join('')}
@@ -475,37 +538,37 @@ function rT2(){
       const totalFVR=items.reduce((s,x)=>s+x.v*Math.pow(1+x.g/100,yrsR),0);
       const totalFVL=items.reduce((s,x)=>s+x.v*Math.pow(1+x.g/100,yrsL),0);
       const cols='1fr 72px 42px 100px 100px';
-      return`<div style="margin-top:14px;border-top:0.5px solid var(--color-border-tertiary,#eee);padding-top:12px">
+      return`<div style="margin-top:14px;border-top:0.5px solid var(--border);padding-top:12px">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-          <span style="font-size:11px;font-weight:500;color:var(--color-text-secondary,#666);letter-spacing:.5px">สรุปพอร์ตรวม</span>
-          <span style="font-size:10px;color:var(--color-text-secondary,#999)">ทบต้นแยกรายสินทรัพย์</span>
+          <span style="font-size:11px;font-weight:500;color:var(--muted-foreground);letter-spacing:.5px">สรุปพอร์ตรวม</span>
+          <span style="font-size:10px;color:var(--muted-foreground)">ทบต้นแยกรายสินทรัพย์</span>
         </div>
         <div style="display:grid;grid-template-columns:${cols};gap:4px;margin-bottom:6px">
-          <span style="font-size:10px;color:var(--color-text-secondary,#999)">สินทรัพย์</span>
-          <span style="font-size:10px;color:var(--color-text-secondary,#999);text-align:right">ปัจจุบัน</span>
+          <span style="font-size:10px;color:var(--muted-foreground)">สินทรัพย์</span>
+          <span style="font-size:10px;color:var(--muted-foreground);text-align:right">ปัจจุบัน</span>
           <span style="font-size:10px;color:#7B2FBE;text-align:center">%/ปี</span>
-          <span style="font-size:10px;color:#185FA5;text-align:right">เกษียณ (${D.retireAge})</span>
+          <span style="font-size:10px;color:var(--primary);text-align:right">เกษียณ (${D.retireAge})</span>
           <span style="font-size:10px;color:#3B6D11;text-align:right">อายุขัย (${D.lifeExpect})</span>
         </div>
         ${items.map(x=>{
           const fvR=x.v*Math.pow(1+x.g/100,yrsR);
           const fvL=x.v*Math.pow(1+x.g/100,yrsL);
           return`<div style="display:grid;grid-template-columns:${cols};gap:4px;padding:4px 0;border-bottom:0.5px solid var(--color-border-tertiary,#f0f0f0);align-items:center;font-size:12px">
-            <span style="color:var(--color-text-secondary,#666)">${x.l}</span>
-            <span style="text-align:right;color:var(--color-text-primary,#111)">฿${fmt(x.v)}</span>
+            <span style="color:var(--muted-foreground)">${x.l}</span>
+            <span style="text-align:right;color:var(--foreground)">฿${fmt(x.v)}</span>
             <span style="text-align:center;color:#7B2FBE;font-size:11px">${x.g.toFixed(1)}%</span>
-            <span style="text-align:right"><span style="color:#185FA5;font-weight:500">฿${fmt(Math.round(fvR))}</span><span style="font-size:10px;color:#185FA5;opacity:.6;margin-left:3px">×${(fvR/x.v).toFixed(1)}</span></span>
+            <span style="text-align:right"><span style="color:var(--primary);font-weight:500">฿${fmt(Math.round(fvR))}</span><span style="font-size:10px;color:var(--primary);opacity:.6;margin-left:3px">×${(fvR/x.v).toFixed(1)}</span></span>
             <span style="text-align:right"><span style="color:#3B6D11;font-weight:500">฿${fmt(Math.round(fvL))}</span><span style="font-size:10px;color:#3B6D11;opacity:.6;margin-left:3px">×${(fvL/x.v).toFixed(1)}</span></span>
           </div>`;
         }).join('')}
-        <div style="display:grid;grid-template-columns:${cols};gap:4px;padding:8px 0 3px;margin-top:4px;font-weight:600;font-size:13px;border-top:0.5px solid var(--color-border-tertiary,#ddd)">
+        <div style="display:grid;grid-template-columns:${cols};gap:4px;padding:8px 0 3px;margin-top:4px;font-weight:600;font-size:13px;border-top:0.5px solid var(--border)">
           <span>รวมทั้งหมด</span>
-          <span style="text-align:right;color:var(--color-text-secondary,#666);font-size:12px">฿${fmt(total)}</span>
+          <span style="text-align:right;color:var(--muted-foreground);font-size:12px">฿${fmt(total)}</span>
           <span></span>
-          <span style="text-align:right;color:#185FA5">฿${fmt(Math.round(totalFVR))}</span>
+          <span style="text-align:right;color:var(--primary)">฿${fmt(Math.round(totalFVR))}</span>
           <span style="text-align:right;color:#3B6D11">฿${fmt(Math.round(totalFVL))}</span>
         </div>
-        <div style="font-size:10px;color:var(--color-text-secondary,#666);margin-top:6px">* ทบต้นถึงแต่ละช่วง ไม่รวมเงินออมรายเดือนหรือการถอน — ดูภาพรวมจริงได้ที่ Chart</div>
+        <div style="font-size:10px;color:var(--muted-foreground);margin-top:6px">* ทบต้นถึงแต่ละช่วง ไม่รวมเงินออมรายเดือนหรือการถอน — ดูภาพรวมจริงได้ที่ Chart</div>
       </div>`;
     })()}
   </div>
@@ -520,7 +583,7 @@ function rT3(){
   const rs=sA.sa>=D.lifeExpect?Math.min(100,Math.round(sA.retV/Math.max(1,needed)*100)):Math.min(65,Math.round((sA.sa-D.retireAge)/Math.max(1,D.lifeExpect-D.retireAge)*100));
   const bs=btcN>0?Math.min(100,Math.round(btcN*3/Math.max(1,gap)*100)):0;
   const cs=Math.max(0,Math.round(100-Math.max(0,btcC-20)*1.5));
-  const bad=sA.sa<D.lifeExpect||sA.finalPort<0,hc=bad?'#A32D2D':rs>=80?'#3B6D11':'#854F0B',hbg=bad?'#FCEBEB':rs>=80?'#EAF3DE':'#FAEEDA';
+  const bad=sA.sa<D.lifeExpect||sA.finalPort<0,hc=bad?'#A32D2D':rs>=80?'#3B6D11':'var(--accent-foreground)',hbg=bad?'#FCEBEB':rs>=80?'#EAF3DE':'var(--accent)';
   const yrs=Math.max(1,sd.retireAge-sd.age);
   const nb0=A.cash.v+A.stocks.v+A.fund.v+A.gold.v;
   const wR=nb0>0?(A.cash.v*A.cash.g/100+A.stocks.v*A.stocks.g/100+A.fund.v*A.fund.g/100+A.gold.v*A.gold.g/100)/nb0:0.07;
@@ -548,17 +611,17 @@ function rT3(){
   </div>
   ${tipIdx!==null?(()=>{const names=['ความพร้อมเกษียณ','สภาพคล่อง'];const scores=[rs,ls];const c=tc(scores[tipIdx]);return`<div style="background:${c.bg};border:0.5px solid ${c.bd};border-radius:10px;padding:.9rem;margin-bottom:12px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><b style="font-size:13px;color:${c.tx}">${names[tipIdx]}</b><button onclick="tipIdx=null;renderAll()" style="font-size:16px;line-height:1;border:none;background:transparent;cursor:pointer;color:${c.tx};opacity:.5;padding:0">×</button></div><div style="font-size:12px;color:${c.tx};line-height:2">${_tips[tipIdx]}</div></div>`;})():''}
   <div class="mcr">
-    <div class="mc"><div style="font-size:11px;color:var(--color-text-secondary,#666);margin-bottom:2px">Net Cash Flow</div><div style="font-size:15px;font-weight:500;color:${nc>=0?'#3B6D11':'#A32D2D'}">${(nc>=0?'+':'')+`฿${fmt(nc)}`}</div><div style="font-size:11px;color:var(--color-text-secondary,#666);margin-top:2px">/เดือน</div></div>
-    <div class="mc"><div style="font-size:11px;color:var(--color-text-secondary,#666);margin-bottom:2px">สินทรัพย์รวม</div><div style="font-size:15px;font-weight:500">${fmtM(totA)}</div></div>
-    <div class="mc"><div style="font-size:11px;color:var(--color-text-secondary,#666);margin-bottom:2px">เงินหมดอายุ</div><div style="font-size:15px;font-weight:500;color:${sA.sa>=D.lifeExpect?'#3B6D11':'#A32D2D'}">${sA.sa>=D.lifeExpect?'อยู่รอด ✓':'อายุ '+sA.sa}</div></div>
+    <div class="mc"><div style="font-size:11px;color:var(--muted-foreground);margin-bottom:2px">Net Cash Flow</div><div style="font-size:15px;font-weight:500;color:${nc>=0?'#3B6D11':'#A32D2D'}">${(nc>=0?'+':'')+`฿${fmt(nc)}`}</div><div style="font-size:11px;color:var(--muted-foreground);margin-top:2px">/เดือน</div></div>
+    <div class="mc"><div style="font-size:11px;color:var(--muted-foreground);margin-bottom:2px">สินทรัพย์รวม</div><div style="font-size:15px;font-weight:500">${fmtM(totA)}</div></div>
+    <div class="mc"><div style="font-size:11px;color:var(--muted-foreground);margin-bottom:2px">เงินหมดอายุ</div><div style="font-size:15px;font-weight:500;color:${sA.sa>=D.lifeExpect?'#3B6D11':'#A32D2D'}">${sA.sa>=D.lifeExpect?'อยู่รอด ✓':'อายุ '+sA.sa}</div></div>
   </div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
     <div class="card" style="padding:.75rem">
-      <div style="font-size:11px;font-weight:500;color:var(--color-text-secondary,#666);margin-bottom:8px">กระแสเงินสด/เดือน</div>
+      <div style="font-size:11px;font-weight:500;color:var(--muted-foreground);margin-bottom:8px">กระแสเงินสด/เดือน</div>
       <div style="position:relative;height:150px"><canvas id="pieCF"></canvas></div>
     </div>
     <div class="card" style="padding:.75rem">
-      <div style="font-size:11px;font-weight:500;color:var(--color-text-secondary,#666);margin-bottom:8px">สัดส่วนสินทรัพย์</div>
+      <div style="font-size:11px;font-weight:500;color:var(--muted-foreground);margin-bottom:8px">สัดส่วนสินทรัพย์</div>
       <div style="position:relative;height:150px"><canvas id="pieAS"></canvas></div>
     </div>
   </div>
@@ -568,12 +631,12 @@ function rT3(){
   </div>
   ${bad?`<div class="card">
     <div style="font-size:13px;font-weight:500;margin-bottom:3px">ทางออก${hasSC?' (เพิ่มเติมจาก scenario ปัจจุบัน)':''}</div>
-    <div style="font-size:12px;color:var(--color-text-secondary,#666);margin-bottom:12px">เงินหมดอายุ ${sA.sa} — ต้องให้อยู่รอดถึง ${D.lifeExpect} ปี (กรอกแต่ละตัวเลขข้างล่างแล้วเงินจะอยู่รอดถึงอายุขัยพอดี)</div>
-    ${[['💰','ออมเพิ่ม',`฿${fmt(xS)}/เดือน`,`กระจายตามสัดส่วนพอร์ต (เฉลี่ย ${(wR*100).toFixed(1)}%/ปี)`,'#185FA5','#e6f1fb','setTab(4)'],['📅','เกษียณช้าลง',rL?`${rL} ปี`:'> 20 ปี',rL?`เลื่อนจาก ${D.retireAge} → ${D.retireAge+rL} ปี`:'เลื่อนแค่ไหนก็ยังไม่พอ (>20 ปี)','#3B6D11','#EAF3DE',null],['💹','ลงทุนเพิ่ม',`฿${fmt(iAmt)}/เดือน`,`ลงทุนในสินทรัพย์ผลตอบแทนสูง ${bestR.toFixed(1)}%/ปี`,'#7B2FBE','#F3EAFC','setTab(4)'],['₿','DCA Bitcoin',`฿${fmt(bD)}/เดือน`,'สมมติ BTC โต 15%/ปี','#854F0B','#FAEEDA','setTab(4)']].map(([ic,lb,vl,dt,co,bg,ac])=>`<div onclick="${ac||''}" style="display:flex;align-items:center;gap:12px;padding:9px 11px;border-radius:8px;margin-bottom:7px;border:0.5px solid ${co}30;background:${bg};cursor:${ac?'pointer':'default'}"><span style="font-size:17px;flex-shrink:0">${ic}</span><div style="flex:1"><div style="font-size:12px;color:var(--color-text-secondary,#666);margin-bottom:1px">${lb}</div><div style="font-size:14px;font-weight:500;color:${co}">${vl}</div><div style="font-size:11px;color:var(--color-text-secondary,#666);margin-top:1px">${dt}</div></div>${ac?`<span style="font-size:12px;color:${co};opacity:.6">→</span>`:''}</div>`).join('')}
-    <div style="font-size:11px;color:var(--color-text-secondary,#666);margin-top:4px">* แต่ละตัวเลขคำนวณแยก — กรอกตัวใดตัวหนึ่งแล้วเงินพอดีถึงอายุ ${D.lifeExpect} ปี | BTC สมมติ 15%/ปี</div>
+    <div style="font-size:12px;color:var(--muted-foreground);margin-bottom:12px">เงินหมดอายุ ${sA.sa} — ต้องให้อยู่รอดถึง ${D.lifeExpect} ปี (กรอกแต่ละตัวเลขข้างล่างแล้วเงินจะอยู่รอดถึงอายุขัยพอดี)</div>
+    ${[['💰','ออมเพิ่ม',`฿${fmt(xS)}/เดือน`,`กระจายตามสัดส่วนพอร์ต (เฉลี่ย ${(wR*100).toFixed(1)}%/ปี)`,'var(--primary)','var(--accent)','setTab(4)'],['📅','เกษียณช้าลง',rL?`${rL} ปี`:'> 20 ปี',rL?`เลื่อนจาก ${D.retireAge} → ${D.retireAge+rL} ปี`:'เลื่อนแค่ไหนก็ยังไม่พอ (>20 ปี)','#3B6D11','#EAF3DE',null],['💹','ลงทุนเพิ่ม',`฿${fmt(iAmt)}/เดือน`,`ลงทุนในสินทรัพย์ผลตอบแทนสูง ${bestR.toFixed(1)}%/ปี`,'#7B2FBE','#F3EAFC','setTab(4)'],['₿','DCA Bitcoin',`฿${fmt(bD)}/เดือน`,'สมมติ BTC โต 15%/ปี','var(--accent-foreground)','var(--accent)','setTab(4)']].map(([ic,lb,vl,dt,co,bg,ac])=>`<div onclick="${ac||''}" style="display:flex;align-items:center;gap:12px;padding:9px 11px;border-radius:8px;margin-bottom:7px;border:0.5px solid ${co}30;background:${bg};cursor:${ac?'pointer':'default'}"><span style="font-size:17px;flex-shrink:0">${ic}</span><div style="flex:1"><div style="font-size:12px;color:var(--muted-foreground);margin-bottom:1px">${lb}</div><div style="font-size:14px;font-weight:500;color:${co}">${vl}</div><div style="font-size:11px;color:var(--muted-foreground);margin-top:1px">${dt}</div></div>${ac?`<span style="font-size:12px;color:${co};opacity:.6">→</span>`:''}</div>`).join('')}
+    <div style="font-size:11px;color:var(--muted-foreground);margin-top:4px">* แต่ละตัวเลขคำนวณแยก — กรอกตัวใดตัวหนึ่งแล้วเงินพอดีถึงอายุ ${D.lifeExpect} ปี | BTC สมมติ 15%/ปี</div>
   </div>`:`<div class="card" style="background:#EAF3DE;border-color:#C0DD97"><div style="font-size:14px;font-weight:500;color:#3B6D11;margin-bottom:4px">✓ พอร์ตพอเกษียณแล้ว</div><div style="font-size:12px;color:#3B6D11">เงินอยู่รอดถึงอายุ ${D.lifeExpect} ปี${sA.retV>needed?' — มีเหลือ '+fmtM(sA.retV-needed):''}${hasSC?' (รวม scenario ปัจจุบัน)':''}</div></div>`}
   <div style="display:flex;gap:8px;margin-top:4px">
-    <button onclick="setTab(4)" style="flex:1;padding:8px;font-size:12px;font-weight:500;border-radius:7px;border:0.5px solid #185FA5;background:#e6f1fb;color:#185FA5;cursor:pointer">📊 Scenario</button>
+    <button onclick="setTab(4)" style="flex:1;padding:8px;font-size:12px;font-weight:500;border-radius:7px;border:0.5px solid var(--primary);background:var(--accent);color:var(--primary);cursor:pointer">📊 Scenario</button>
   </div>`;
 }
 
@@ -585,8 +648,8 @@ function rT4(){
   return `<div class="card">
     <div style="font-size:13px;font-weight:500;margin-bottom:3px">พอร์ตตลอดชีวิต อายุ ${D.age}–${D.lifeExpect} ปี</div>
     <div style="display:flex;gap:14px;margin-bottom:8px;flex-wrap:wrap;align-items:center">
-      ${[{c:'#185FA5',l:'ปัจจุบัน'},{c:'#3B6D11',l:'หลังปรับ'},{c:'#A32D2D',l:'เป้าหมาย',d:true}].map(x=>`<span style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--color-text-secondary,#666)"><span style="width:18px;height:2px;background:${x.d?'transparent':x.c};border-top:${x.d?`2px dashed ${x.c}`:'none'};display:inline-block"></span>${x.l}</span>`).join('')}
-      ${events.length?`<span style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--color-text-secondary,#666)"><span style="width:2px;height:14px;background:#888;border-radius:1px;display:inline-block"></span>● เหตุการณ์</span>`:''}
+      ${[{c:'var(--primary)',l:'ปัจจุบัน'},{c:'#3B6D11',l:'หลังปรับ'},{c:'#A32D2D',l:'เป้าหมาย',d:true}].map(x=>`<span style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted-foreground)"><span style="width:18px;height:2px;background:${x.d?'transparent':x.c};border-top:${x.d?`2px dashed ${x.c}`:'none'};display:inline-block"></span>${x.l}</span>`).join('')}
+      ${events.length?`<span style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted-foreground)"><span style="width:2px;height:14px;background:#888;border-radius:1px;display:inline-block"></span>● เหตุการณ์</span>`:''}
     </div>
     <div style="position:relative;height:260px"><canvas id="CC"></canvas></div>
     ${events.length?`<div style="margin-top:10px;display:flex;flex-wrap:wrap;gap:6px">
@@ -595,9 +658,9 @@ function rT4(){
   </div>
   <div class="card">
     <div style="font-size:13px;font-weight:500;margin-bottom:4px">Scenario Builder</div>
-    <div style="font-size:12px;color:var(--color-text-secondary,#666);margin-bottom:8px">ใส่เหตุการณ์ชีวิต — กราฟเปลี่ยนทันที</div>
+    <div style="font-size:12px;color:var(--muted-foreground);margin-bottom:8px">ใส่เหตุการณ์ชีวิต — กราฟเปลี่ยนทันที</div>
     <div style="margin-bottom:10px;display:flex;gap:6px;flex-wrap:wrap">
-      ${[{l:'มีลูก',t:'expIncrease',a:15000,f:D.age,to:D.age+18,p:'month'},{l:'ป่วย',t:'expIncrease',a:50000,f:D.age,to:D.age+1,p:'year'},{l:'ขึ้นเงินเดือน',t:'income',a:10000,f:D.age,to:D.retireAge,p:'month'},{l:'DCA BTC',t:'btcDCA',a:5000,f:D.age,to:D.retireAge,p:'month'},{l:'ลงทุนเพิ่ม',t:'invAmt',a:5000,f:D.age,to:D.retireAge,p:'month',rate:8},{l:'ปรับผลตอบแทน',t:'invPct',a:10,f:D.age,to:D.retireAge,p:'year'}].map(p=>`<button onclick="SC.push({id:_n++,label:'${p.l}',type:'${p.t}',amount:${p.a},from:${p.f},to:${p.to},period:'${p.p}'${p.rate!=null?`,rate:${p.rate}`:''}});renderAll()" style="font-size:11px;padding:4px 10px;border-radius:6px;border:0.5px solid var(--color-border-tertiary,#ddd);background:transparent;color:var(--color-text-secondary,#666);cursor:pointer">+ ${p.l}</button>`).join('')}
+      ${[{l:'มีลูก',t:'expIncrease',a:15000,f:D.age,to:D.age+18,p:'month'},{l:'ป่วย',t:'expIncrease',a:50000,f:D.age,to:D.age+1,p:'year'},{l:'ขึ้นเงินเดือน',t:'income',a:10000,f:D.age,to:D.retireAge,p:'month'},{l:'DCA BTC',t:'btcDCA',a:5000,f:D.age,to:D.retireAge,p:'month'},{l:'ลงทุนเพิ่ม',t:'invAmt',a:5000,f:D.age,to:D.retireAge,p:'month',rate:8},{l:'ปรับผลตอบแทน',t:'invPct',a:10,f:D.age,to:D.retireAge,p:'year'}].map(p=>`<button onclick="SC.push({id:_n++,label:'${p.l}',type:'${p.t}',amount:${p.a},from:${p.f},to:${p.to},period:'${p.p}'${p.rate!=null?`,rate:${p.rate}`:''}});renderAll()" style="font-size:11px;padding:4px 10px;border-radius:6px;border:0.5px solid var(--border);background:transparent;color:var(--muted-foreground);cursor:pointer">+ ${p.l}</button>`).join('')}
     </div>
     <div class="dh" style="grid-template-columns:${COL}">
       <span>ชื่อ</span><span>ประเภท</span><span>จำนวน / หน่วย</span><span style="text-align:center">ตั้งแต่</span><span style="text-align:center">ถึงอายุ</span><span></span>
@@ -613,8 +676,8 @@ function rT4(){
       <button class="del" onclick="rmit('sc',${x.id})">×</button>
     </div>`).join('')}
     <button class="ab" onclick="addit('sc')" style="margin-bottom:14px">+ เพิ่มเหตุการณ์</button>
-    <div id="sc-stats" style="background:var(--color-background-secondary,#f5f5f5);border-radius:8px;padding:.85rem;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center">
-      ${[['ปัจจุบัน ณ เกษียณ',fmtM(sB.retV),sB.retV>=needed?'#3B6D11':'#BA7517'],['หลังปรับ ณ เกษียณ',fmtM(sA.retV),sA.retV>=needed?'#3B6D11':'#BA7517'],['เงินหมดอายุ',sA.sa>=D.lifeExpect?'อยู่รอด ✓':'อายุ '+sA.sa,sA.sa>=D.lifeExpect?'#3B6D11':'#A32D2D']].map(([l,v,c])=>`<div><div style="font-size:11px;color:var(--color-text-secondary,#666)">${l}</div><div style="font-size:13px;font-weight:500;color:${c}">${v}</div></div>`).join('')}
+    <div id="sc-stats" style="background:var(--muted);border-radius:8px;padding:.85rem;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center">
+      ${[['ปัจจุบัน ณ เกษียณ',fmtM(sB.retV),sB.retV>=needed?'#3B6D11':'#BA7517'],['หลังปรับ ณ เกษียณ',fmtM(sA.retV),sA.retV>=needed?'#3B6D11':'#BA7517'],['เงินหมดอายุ',sA.sa>=D.lifeExpect?'อยู่รอด ✓':'อายุ '+sA.sa,sA.sa>=D.lifeExpect?'#3B6D11':'#A32D2D']].map(([l,v,c])=>`<div><div style="font-size:11px;color:var(--muted-foreground)">${l}</div><div style="font-size:13px;font-weight:500;color:${c}">${v}</div></div>`).join('')}
     </div>
   </div>
   ${(()=>{const rows=simRows();return`<div id="tbl-card" class="card" style="padding:0;overflow:hidden">
@@ -623,24 +686,24 @@ function rT4(){
       <table style="width:100%;border-collapse:collapse;font-size:10px;table-layout:fixed">
         <colgroup>
           <col style="width:36px">
-          <col><col><col><col style="border-right:1px solid var(--color-border-tertiary,#ddd)">
+          <col><col><col><col style="border-right:1px solid var(--border)">
           <col><col><col><col>
         </colgroup>
         <thead style="position:sticky;top:0;z-index:1">
-          <tr style="background:var(--color-background-secondary,#f5f5f5)">
-            <th rowspan="2" style="padding:4px 5px;text-align:left;font-weight:500;color:var(--color-text-secondary,#666);border-bottom:1px solid var(--color-border-tertiary,#e5e5e5);border-right:0.5px solid var(--color-border-tertiary,#e5e5e5)">อายุ</th>
-            <th colspan="4" style="padding:3px 5px;text-align:center;font-weight:500;color:#555;border-bottom:0.5px solid var(--color-border-tertiary,#e5e5e5);border-right:1px solid var(--color-border-tertiary,#ddd);background:#f0f0f0">ก่อนปรับ</th>
-            <th colspan="4" style="padding:3px 5px;text-align:center;font-weight:500;color:#185FA5;border-bottom:0.5px solid var(--color-border-tertiary,#e5e5e5);background:#EAF3F9">หลังปรับ</th>
+          <tr style="background:var(--muted)">
+            <th rowspan="2" style="padding:4px 5px;text-align:left;font-weight:500;color:var(--muted-foreground);border-bottom:1px solid var(--color-border-tertiary,#e5e5e5);border-right:0.5px solid var(--color-border-tertiary,#e5e5e5)">อายุ</th>
+            <th colspan="4" style="padding:3px 5px;text-align:center;font-weight:500;color:#555;border-bottom:0.5px solid var(--color-border-tertiary,#e5e5e5);border-right:1px solid var(--border);background:#f0f0f0">ก่อนปรับ</th>
+            <th colspan="4" style="padding:3px 5px;text-align:center;font-weight:500;color:var(--primary);border-bottom:0.5px solid var(--color-border-tertiary,#e5e5e5);background:#EAF3F9">หลังปรับ</th>
           </tr>
           <tr style="border-bottom:1px solid var(--color-border-tertiary,#e5e5e5)">
             <th style="padding:3px 5px;text-align:right;font-weight:400;color:#3B6D11;background:#f0f0f0">รายรับ/ปี</th>
             <th style="padding:3px 5px;text-align:right;font-weight:400;color:#A32D2D;background:#f0f0f0">รายจ่าย/ปี</th>
             <th style="padding:3px 5px;text-align:right;font-weight:400;color:#555;background:#f0f0f0">เหลือ/ปี</th>
-            <th style="padding:3px 5px;text-align:right;font-weight:400;color:#185FA5;border-right:1px solid var(--color-border-tertiary,#ddd);background:#f0f0f0">สินทรัพย์</th>
+            <th style="padding:3px 5px;text-align:right;font-weight:400;color:var(--primary);border-right:1px solid var(--border);background:#f0f0f0">สินทรัพย์</th>
             <th style="padding:3px 5px;text-align:right;font-weight:400;color:#3B6D11;background:#EAF3F9">รายรับ/ปี</th>
             <th style="padding:3px 5px;text-align:right;font-weight:400;color:#A32D2D;background:#EAF3F9">รายจ่าย/ปี</th>
             <th style="padding:3px 5px;text-align:right;font-weight:400;color:#555;background:#EAF3F9">เหลือ/ปี</th>
-            <th style="padding:3px 5px;text-align:right;font-weight:400;color:#185FA5;background:#EAF3F9">สินทรัพย์</th>
+            <th style="padding:3px 5px;text-align:right;font-weight:400;color:var(--primary);background:#EAF3F9">สินทรัพย์</th>
           </tr>
         </thead>
         <tbody>${(()=>{let pB=false,pA=false;return rows.map(r=>{
@@ -648,27 +711,27 @@ function rT4(){
           const startB=drainsB&&!pB,startA=drainsA&&!pA;
           pB=drainsB;pA=drainsA;
           const showMark=startB||startA;
-          const bg=r.isRetire?'#FFF8E6':showMark?'#FFF0EE':r.isWorking?'':'var(--color-background-secondary,#fafafa)';
+          const bg=r.isRetire?'var(--accent)':showMark?'#FFF0EE':r.isWorking?'':'var(--color-background-secondary,#fafafa)';
           const ncB=r.netB>0?'#3B6D11':r.netB<0?'#A32D2D':'#888';
           const ncA=r.netA>0?'#3B6D11':r.netA<0?'#A32D2D':'#888';
           const fB=r.isWorking?[fmtT(r.incB),fmtT(r.expB),(r.netB>0?'+':'')+fmtT(r.netB)]:['—',fmtT(r.expB),(r.netB>0?'+':'')+fmtT(r.netB)];
           const fA=r.isWorking?[fmtT(r.incA),fmtT(r.expA),(r.netA>0?'+':'')+fmtT(r.netA)]:['—',fmtT(r.expA),(r.netA>0?'+':'')+fmtT(r.netA)];
           const ageLbl=_tblAge(r)+(showMark?` <span style="font-size:8px;color:#A32D2D;background:#FCEBEB;border-radius:3px;padding:1px 3px">↙ดึงพอร์ต</span>`:'');
           return`<tr style="border-bottom:0.5px solid var(--color-border-tertiary,#e5e5e5);background:${bg}">
-            <td style="padding:3px 5px;font-weight:${r.isRetire?600:400};color:${r.isRetire?'#854F0B':'inherit'};border-right:0.5px solid var(--color-border-tertiary,#e5e5e5)">${ageLbl}</td>
-            <td style="padding:3px 5px;text-align:right;color:${r.isWorking?'#3B6D11':'#185FA5'}">${fB[0]}</td>
+            <td style="padding:3px 5px;font-weight:${r.isRetire?600:400};color:${r.isRetire?'var(--accent-foreground)':'inherit'};border-right:0.5px solid var(--color-border-tertiary,#e5e5e5)">${ageLbl}</td>
+            <td style="padding:3px 5px;text-align:right;color:${r.isWorking?'#3B6D11':'var(--primary)'}">${fB[0]}</td>
             <td style="padding:3px 5px;text-align:right;color:#A32D2D">${fB[1]}</td>
             <td style="padding:3px 5px;text-align:right;color:${ncB}">${fB[2]}</td>
-            <td style="padding:3px 5px;text-align:right;color:#185FA5;font-weight:500;border-right:1px solid var(--color-border-tertiary,#ddd);${startB?'border-left:2px solid #A32D2D':''}">${fmtT(r.portB)}</td>
-            <td style="padding:3px 5px;text-align:right;color:${r.isWorking?'#3B6D11':'#185FA5'}">${fA[0]}</td>
+            <td style="padding:3px 5px;text-align:right;color:var(--primary);font-weight:500;border-right:1px solid var(--border);${startB?'border-left:2px solid #A32D2D':''}">${fmtT(r.portB)}</td>
+            <td style="padding:3px 5px;text-align:right;color:${r.isWorking?'#3B6D11':'var(--primary)'}">${fA[0]}</td>
             <td style="padding:3px 5px;text-align:right;color:#A32D2D">${fA[1]}</td>
             <td style="padding:3px 5px;text-align:right;color:${ncA}">${fA[2]}</td>
-            <td style="padding:3px 5px;text-align:right;color:#185FA5;font-weight:500;${startA?'border-left:2px solid #A32D2D':''}">${fmtT(r.portA)}</td>
+            <td style="padding:3px 5px;text-align:right;color:var(--primary);font-weight:500;${startA?'border-left:2px solid #A32D2D':''}">${fmtT(r.portA)}</td>
           </tr>`;
         }).join('')})()}</tbody>
       </table>
     </div>
-    <div style="padding:.4rem .85rem;font-size:10px;color:var(--color-text-secondary,#999);border-top:0.5px solid var(--color-border-tertiary,#e5e5e5)">วัยทำงาน: รายรับ = รายได้จริง | เกษียณ: เหลือ/ปี = ผลตอบแทนพอร์ต − เงินถอน | สินทรัพย์ = พอร์ตรวม</div>
+    <div style="padding:.4rem .85rem;font-size:10px;color:var(--muted-foreground);border-top:0.5px solid var(--color-border-tertiary,#e5e5e5)">วัยทำงาน: รายรับ = รายได้จริง | เกษียณ: เหลือ/ปี = ผลตอบแทนพอร์ต − เงินถอน | สินทรัพย์ = พอร์ตรวม</div>
   </div>`})()}`;
 }
 
@@ -740,7 +803,7 @@ function drawChart(){
     }};
     CH=new Chart(cv,{type:'line',plugins:[evtPlugin],
       data:{labels:sB.ages.map((_,i)=>i),datasets:[
-        {label:'ปัจจุบัน',data:sB.ports,borderColor:'#185FA5',backgroundColor:'rgba(24,95,165,0.07)',borderWidth:2.5,pointRadius:0,fill:true,tension:0.35},
+        {label:'ปัจจุบัน',data:sB.ports,borderColor:cssClr('var(--primary)'),backgroundColor:cssClr('var(--primary)')+'18',borderWidth:2.5,pointRadius:0,fill:true,tension:0.35},
         {label:'หลังปรับ',data:sA.ports,borderColor:'#3B6D11',backgroundColor:'rgba(59,109,17,0.07)',borderWidth:2.5,pointRadius:0,fill:true,tension:0.35},
         {label:'เป้าหมาย',data:tgt,borderColor:'#A32D2D',backgroundColor:'transparent',borderWidth:1.5,pointRadius:0,borderDash:[6,4],tension:0,spanGaps:false},
       ]},
@@ -799,14 +862,14 @@ function _doPrint(chartImg){
   const rows=simRows();
   const lifeOk=sA.sa>=D.lifeExpect&&sA.finalPort>=0;
   const tRows=rows.map(r=>{
-    const bg=r.isRetire?'#FFF8E6':r.age%2===0?'#fafafa':'#fff';
+    const bg=r.isRetire?'var(--accent)':r.age%2===0?'#fafafa':'#fff';
     return `<tr style="background:${bg}">
-      <td style="padding:4px 7px;font-weight:${r.isRetire?600:400};color:${r.isRetire?'#854F0B':'inherit'}">${r.age}${r.isRetire?' ★':''}</td>
+      <td style="padding:4px 7px;font-weight:${r.isRetire?600:400};color:${r.isRetire?'var(--accent-foreground)':'inherit'}">${r.age}${r.isRetire?' ★':''}</td>
       <td style="padding:4px 7px;text-align:right;color:#1A7A48">${r.isWorking?fmtT(r.incB):'—'}</td>
       <td style="padding:4px 7px;text-align:right;color:#A32D2D">${fmtT(r.expB)}</td>
       <td style="padding:4px 7px;text-align:right;color:${r.netB>=0?'#1A7A48':'#A32D2D'}">${r.isWorking?(r.netB>=0?'+':'')+fmtT(r.netB):'—'}</td>
       <td style="padding:4px 7px;text-align:right">${(r.portB/1e6).toFixed(2)}M</td>
-      <td style="padding:4px 7px;text-align:right;color:#185FA5;font-weight:500">${(r.portA/1e6).toFixed(2)}M</td>
+      <td style="padding:4px 7px;text-align:right;color:var(--primary);font-weight:500">${(r.portA/1e6).toFixed(2)}M</td>
     </tr>`;
   }).join('');
   document.getElementById('pv').innerHTML=`
@@ -820,9 +883,9 @@ function _doPrint(chartImg){
   <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#111">
     <!-- หน้า 1: สรุป + chart -->
     <div class="pdf-pg1" style="min-height:96vh;display:flex;flex-direction:column">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2.5px solid #185FA5;padding-bottom:12px;margin-bottom:16px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2.5px solid var(--primary);padding-bottom:12px;margin-bottom:16px">
         <div>
-          <div style="font-size:22px;font-weight:700;color:#185FA5;letter-spacing:.3px">Retirement Plan</div>
+          <div style="font-size:22px;font-weight:700;color:var(--primary);letter-spacing:.3px">Retirement Plan</div>
           <div style="font-size:11px;color:#888;margin-top:4px">สร้างเมื่อ ${new Date().toLocaleDateString('th-TH',{year:'numeric',month:'long',day:'numeric'})}</div>
         </div>
         <div style="text-align:right;font-size:12px;color:#555;line-height:1.8">
@@ -834,9 +897,9 @@ function _doPrint(chartImg){
           <div style="font-size:10px;color:#1A7A48;margin-bottom:5px">Net Cash Flow/เดือน</div>
           <div style="font-size:20px;font-weight:700;color:${nc>=0?'#16A35A':'#E53935'}">${(nc>=0?'+':'')+fmtM(nc)}</div>
         </div>
-        <div style="background:#e6f1fb;border-radius:9px;padding:14px;border:1px solid #378add">
-          <div style="font-size:10px;color:#185FA5;margin-bottom:5px">พอร์ตตอนเกษียณ</div>
-          <div style="font-size:20px;font-weight:700;color:#185FA5">${fmtM(sA.retV)}</div>
+        <div style="background:var(--accent);border-radius:9px;padding:14px;border:1px solid var(--ring)">
+          <div style="font-size:10px;color:var(--primary);margin-bottom:5px">พอร์ตตอนเกษียณ</div>
+          <div style="font-size:20px;font-weight:700;color:var(--primary)">${fmtM(sA.retV)}</div>
         </div>
         <div style="background:#f5f5f5;border-radius:9px;padding:14px">
           <div style="font-size:10px;color:#666;margin-bottom:5px">สินทรัพย์รวมวันนี้</div>
@@ -858,13 +921,13 @@ function _doPrint(chartImg){
     </div>
     <!-- หน้า 2: ตารางรายปี -->
     <div>
-      <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #185FA5;padding-bottom:8px;margin-bottom:14px">
-        <div style="font-size:15px;font-weight:700;color:#185FA5">ตารางคาดการณ์รายปี</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid var(--primary);padding-bottom:8px;margin-bottom:14px">
+        <div style="font-size:15px;font-weight:700;color:var(--primary)">ตารางคาดการณ์รายปี</div>
         <div style="font-size:11px;color:#888">Retirement Plan — อายุ ${D.age}–${D.lifeExpect} ปี</div>
       </div>
       <table class="pdf-tbl" style="width:100%;border-collapse:collapse;font-size:11px">
         <thead>
-          <tr style="background:#185FA5;color:#fff">
+          <tr style="background:var(--primary);color:#fff">
             <th style="padding:7px 8px;text-align:left">อายุ</th>
             <th style="padding:7px 8px;text-align:right">รายรับ/ปี</th>
             <th style="padding:7px 8px;text-align:right">รายจ่าย/ปี</th>
@@ -893,7 +956,7 @@ function exportPDF(){
   const tc=new Chart(oc,{
     type:'line',
     data:{labels:sB.ages,datasets:[
-      {label:'ปัจจุบัน',data:sB.ports,borderColor:'#185FA5',backgroundColor:'rgba(24,95,165,0.08)',borderWidth:2.5,pointRadius:0,fill:true,tension:0.35},
+      {label:'ปัจจุบัน',data:sB.ports,borderColor:'var(--primary)',backgroundColor:'rgba(24,95,165,0.08)',borderWidth:2.5,pointRadius:0,fill:true,tension:0.35},
       {label:'หลังปรับ Scenario',data:sA.ports,borderColor:'#3B6D11',backgroundColor:'rgba(59,109,17,0.08)',borderWidth:2.5,pointRadius:0,fill:true,tension:0.35},
       {label:'เป้าหมาย',data:tgt,borderColor:'#A32D2D',backgroundColor:'transparent',borderWidth:1.5,pointRadius:0,borderDash:[6,4],tension:0,spanGaps:false},
     ]},
@@ -914,16 +977,40 @@ function exportPDF(){
   _doPrint(img);
 }
 
+const LS_KEY='retplan_v1';
+function lsSave(){
+  try{localStorage.setItem(LS_KEY,JSON.stringify({D,A,SC,INC,EXP,DBT,CA,QS,qD,AT}));}catch(e){}
+}
+function lsLoad(){
+  try{
+    const raw=localStorage.getItem(LS_KEY);
+    if(!raw) return;
+    const s=JSON.parse(raw);
+    if(s.D) Object.assign(D,s.D);
+    if(s.A) Object.assign(A,s.A);
+    if(Array.isArray(s.SC)&&s.SC.length) SC=s.SC;
+    if(Array.isArray(s.INC)&&s.INC.length) INC=s.INC;
+    if(Array.isArray(s.EXP)&&s.EXP.length) EXP=s.EXP;
+    if(Array.isArray(s.DBT)) DBT=s.DBT;
+    if(Array.isArray(s.CA)) CA=s.CA;
+    if(s.QS) Object.assign(QS,s.QS);
+    if(typeof s.qD==='boolean') qD=s.qD;
+    if(typeof s.AT==='number'&&s.AT>=0&&s.AT<TABS.length) AT=s.AT;
+  }catch(e){}
+}
+
 function setTab(i){AT=i;tipIdx=null;renderAll();}
 function renderAll(){
-  const rst=showR?`<span style="display:flex;gap:5px;align-items:center"><span style="font-size:11px;color:var(--color-text-secondary,#666);white-space:nowrap">รีเซ็ต?</span><button onclick="SC=dSC.map(x=>({...x}));INC=dI.map(x=>({...x}));EXP=dE.map(x=>({...x}));DBT=dD.map(x=>({...x}));CA=[];D={age:35,retireAge:55,lifeExpect:85,inflation:3,retireIncome:40000};A={cash:{v:300000,g:1.5},stocks:{v:200000,g:8},fund:{v:100000,g:6},gold:{v:50000,g:4},home:{v:3000000,g:3},btcAmt:0.05,btcPrice:3400000};showR=false;renderAll()" style="font-size:11px;padding:3px 8px;border-radius:5px;border:none;background:#A32D2D;color:#fff;cursor:pointer">ยืนยัน</button><button onclick="showR=false;renderAll()" style="font-size:11px;padding:3px 8px;border-radius:5px;border:0.5px solid var(--color-border-tertiary,#ddd);background:transparent;color:var(--color-text-secondary,#666);cursor:pointer">ยกเลิก</button></span>`:`<button onclick="showR=true;renderAll()" style="font-size:11px;padding:4px 9px;border-radius:5px;border:0.5px solid var(--color-border-tertiary,#ddd);background:transparent;color:var(--color-text-secondary,#999);cursor:pointer">รีเซ็ต</button>`;
-  document.getElementById('tabs').innerHTML=TABS.map((t,i)=>`<button class="tab${AT===i?' on':''}" onclick="setTab(${i})">${t}</button>`).join('')+`<div style="margin-left:auto;flex-shrink:0;display:flex;gap:5px;align-items:center"><button onclick="exportCSV()" class="no-print" style="font-size:11px;padding:4px 8px;border-radius:5px;border:0.5px solid #3B6D11;background:transparent;color:#3B6D11;cursor:pointer;white-space:nowrap">📊 CSV</button><button onclick="exportPDF()" class="no-print" style="font-size:11px;padding:4px 8px;border-radius:5px;border:0.5px solid #185FA5;background:transparent;color:#185FA5;cursor:pointer;white-space:nowrap">📄 PDF</button>${rst}</div>`;
+  const rst=showR?`<span style="display:flex;gap:5px;align-items:center"><span style="font-size:11px;color:var(--muted-foreground);white-space:nowrap">รีเซ็ต?</span><button onclick="SC=dSC.map(x=>({...x}));INC=dI.map(x=>({...x}));EXP=dE.map(x=>({...x}));DBT=dD.map(x=>({...x}));CA=[];D={age:35,retireAge:55,lifeExpect:85,inflation:3,retireIncome:40000};A={cash:{v:300000,g:1.5},stocks:{v:200000,g:8},fund:{v:100000,g:6},gold:{v:50000,g:4},home:{v:3000000,g:3},btcAmt:0.05,btcPrice:3400000};QS={age:35,ret:55,life:85,inc:80000,exp:55000,rExp:40000,sav:0,inf:3};qD=false;try{localStorage.removeItem(LS_KEY);}catch(e){}showR=false;renderAll()" style="font-size:11px;padding:3px 8px;border-radius:5px;border:none;background:#A32D2D;color:#fff;cursor:pointer">ยืนยัน</button><button onclick="showR=false;renderAll()" style="font-size:11px;padding:3px 8px;border-radius:5px;border:0.5px solid var(--border);background:transparent;color:var(--muted-foreground);cursor:pointer">ยกเลิก</button></span>`:`<button onclick="showR=true;renderAll()" style="font-size:11px;padding:4px 9px;border-radius:5px;border:0.5px solid var(--border);background:transparent;color:var(--muted-foreground);cursor:pointer">รีเซ็ต</button>`;
+  document.getElementById('tabs').innerHTML=TABS.map((t,i)=>`<button class="tab${AT===i?' on':''}" onclick="setTab(${i})">${t}</button>`).join('')+`<div style="margin-left:auto;flex-shrink:0;display:flex;gap:5px;align-items:center"><button onclick="exportCSV()" class="no-print" style="font-size:11px;padding:4px 8px;border-radius:5px;border:0.5px solid #3B6D11;background:transparent;color:#3B6D11;cursor:pointer;white-space:nowrap">📊 CSV</button><button onclick="exportPDF()" class="no-print" style="font-size:11px;padding:4px 8px;border-radius:5px;border:0.5px solid var(--primary);background:transparent;color:var(--primary);cursor:pointer;white-space:nowrap">📄 PDF</button>${rst}</div>`;
   const ct=document.getElementById('ct');
   if(AT===0)ct.innerHTML=rQS();
   else if(AT===1)ct.innerHTML=rT1();
   else if(AT===2)ct.innerHTML=rT2();
   else if(AT===3){ct.innerHTML=rT3();drawPies();}
   else if(AT===4){ct.innerHTML=rT4();drawChart();}
+  lsSave();
 }
+lsLoad();
 renderAll();
 </script>
