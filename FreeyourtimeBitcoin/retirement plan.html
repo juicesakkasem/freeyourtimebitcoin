@@ -81,7 +81,13 @@
   --sidebar-primary-foreground: #ffffff;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:var(--font-sans);background:var(--background);color:var(--foreground)}
+body{font-family:var(--font-sans);background:var(--background);color:var(--foreground);padding-top:72px}
+.cashual-nav{position:fixed;top:0;left:0;width:100%;background:rgba(15,15,15,0.95);backdrop-filter:blur(10px);border-bottom:1px solid #222;z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:0 2rem;height:72px}
+.cashual-nav-logo{font-size:22px;font-weight:700;color:#f7931a;letter-spacing:0.05em}
+.cashual-nav-links{display:flex;gap:2.5rem;list-style:none;margin:0;padding:0}
+.cashual-nav-links a{color:#aaa;text-decoration:none;font-size:17px;transition:color 0.2s}
+.cashual-nav-links a:hover{color:#f7931a}
+@media(max-width:640px){.cashual-nav{padding:0 1rem}.cashual-nav-links{gap:1rem}.cashual-nav-links a{font-size:14px;white-space:nowrap}}
 input,select{font-family:inherit;width:100%;padding:7px 10px;font-size:13px;border:0.5px solid var(--border);border-radius:6px;background:var(--card);color:var(--foreground);outline:none}
 input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
 input[type=number]{-moz-appearance:textfield}
@@ -122,13 +128,24 @@ button{cursor:pointer;font-family:inherit}button:hover{opacity:.85}
 #pv{display:none}
 @media print{
   *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
-  .no-print,.w{display:none!important}
+  .no-print,.w,.cashual-nav{display:none!important}
+  body{padding-top:0!important}
   #pv{display:block!important}
   body{background:#fff!important;margin:0;padding:0}
   @page{margin:15mm 12mm}
 }
 </style>
 <div id="pv"></div>
+<nav class="cashual-nav no-print">
+  <div class="cashual-nav-logo"><a href="index.html" style="text-decoration:none;color:inherit;">FreeyourtimeBitcoin</a></div>
+  <ul class="cashual-nav-links">
+    <li><a href="Bitcoin-DCA-Master.html">DCA Master</a></li>
+    <li><a href="Purchasing-Power.html">Purchasing Power</a></li>
+    <li><a href="wealth-planner.html">Wealth Planner</a></li>
+    <li><a href="retirement plan.html">Retirement Plan</a></li>
+    <li><a href="https://cashualme.com/" target="_blank">Cashualme</a></li>
+  </ul>
+</nav>
 <div class="w">
 <div style="padding:14px 0 10px;border-bottom:0.5px solid var(--border);margin-bottom:0">
   <span style="font-size:17px;font-weight:600;letter-spacing:.3px;color:var(--foreground)">Retirement Plan</span>
