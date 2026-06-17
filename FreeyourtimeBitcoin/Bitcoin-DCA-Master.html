@@ -25,11 +25,13 @@
     </style>
 </head>
 <style>
-    .cashual-nav { position: fixed; top: 0; width: 100%; background: rgba(15,15,15,0.95); backdrop-filter: blur(10px); border-bottom: 1px solid #222; z-index: 1000; display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; height: 72px; }
+    html { overflow-y: scroll; }
+    .cashual-nav { position: fixed; top: 0; left: 0; width: 100%; background: rgba(15,15,15,0.95); backdrop-filter: blur(10px); border-bottom: 1px solid #222; z-index: 1000; display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; height: 72px; }
     .cashual-nav-logo { font-size: 22px; font-weight: 700; color: #f7931a; letter-spacing: 0.05em; }
-    .cashual-nav-links { display: flex; gap: 2.5rem; list-style: none; margin: 0; padding: 0; }
+    .cashual-nav-links { display: flex; gap: 2.5rem; list-style: none; margin: 0; padding: 0; align-items: center; }
     .cashual-nav-links a { color: #aaa; text-decoration: none; font-size: 17px; transition: color 0.2s; }
     .cashual-nav-links a:hover { color: #f7931a; }
+    @media(max-width:640px){ .cashual-nav{padding:0 1rem} .cashual-nav-links{gap:1rem} .cashual-nav-links a{font-size:14px;white-space:nowrap} }
 </style>
 <body class="bg-slate-950 text-slate-100 font-sans selection:bg-emerald-500/30 pb-20 min-h-screen" style="padding-top:72px">
 
@@ -37,6 +39,7 @@
         <div class="cashual-nav-logo"><a href="index.html" style="text-decoration:none;color:inherit;">FreeyourtimeBitcoin</a></div>
         <ul class="cashual-nav-links">
             <li><a href="Bitcoin-DCA-Master.html">DCA Master</a></li>
+            <li><a href="dca-tracker.html">DCA Tracker</a></li>
             <li><a href="Purchasing-Power.html">Purchasing Power</a></li>
             <li><a href="wealth-planner.html">Wealth Planner</a></li>
             <li><a href="retirement plan.html">Retirement Plan</a></li>
@@ -289,31 +292,54 @@
         const USD_TO_THB_RATE = 32;
 
         // ------------------ Fetch Data ------------------
+        // ดึงราคาย้อนหลังรายวัน (สูงสุด 10 ปี) จากแหล่งฟรีที่ไม่ต้องใช้ API key
+        // คืนค่าเป็น array ของ [เวลา(ms), ราคาบาท]
+        const PRICE_HISTORY_SOURCES = [
+            // Binance — klines รายวัน (BTCUSDT) แบบแบ่งหน้า ครอบคลุมย้อนหลังทั้งหมด แล้วคูณเรต USD→THB
+            async () => {
+                let out = [], end = Date.now();
+                for (let i = 0; i < 6; i++) {
+                    const r = await fetch(`https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1d&limit=1000&endTime=${end}`);
+                    if (!r.ok) throw new Error('Binance HTTP ' + r.status);
+                    const d = await r.json();
+                    if (!d.length) break;
+                    out = d.map(k => [k[0], parseFloat(k[4]) * USD_TO_THB_RATE]).concat(out);
+                    end = d[0][0] - 1;
+                    if (d.length < 1000) break;
+                }
+                if (!out.length) throw new Error('Binance: ไม่มีข้อมูล');
+                return out;
+            },
+            // CoinGecko — สำรอง (ฟรีจำกัด 365 วันล่าสุด) ราคาเป็นบาทโดยตรง
+            async () => {
+                const r = await fetch('https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=thb&days=365');
+                if (!r.ok) throw new Error('CoinGecko HTTP ' + r.status);
+                const j = await r.json();
+                if (!j.prices || !j.prices.length) throw new Error('CoinGecko: ไม่มีข้อมูล');
+                return j.prices.map(p => [p[0], p[1]]);
+            },
+        ];
+
         async function fetchBitcoinData() {
-            try {
-                const response = await fetch('https://min-api.cryptocompare.com/data/v2/histoday?fsym=BTC&tsym=USD&allData=true');
-                if (!response.ok) throw new Error('ไม่สามารถดึงข้อมูลจาก Server ได้');
-                
-                const json = await response.json();
-                if (json.Response === 'Error') throw new Error(json.Message);
+            let lastErr = null;
+            for (const src of PRICE_HISTORY_SOURCES) {
+                try {
+                    allRawPrices = await src();
 
-                // ดึงข้อมูลและแปลงเป็นเงินบาท
-                allRawPrices = json.Data.Data.map(day => [
-                    day.time * 1000,
-                    day.close * USD_TO_THB_RATE
-                ]);
+                    // ปิดหน้า Loading และโชว์เนื้อหาหลัก
+                    document.getElementById('loadingScreen').classList.add('hidden');
+                    document.getElementById('mainContent').classList.remove('hidden');
 
-                // ปิดหน้า Loading และโชว์เนื้อหาหลัก
-                document.getElementById('loadingScreen').classList.add('hidden');
-                document.getElementById('mainContent').classList.remove('hidden');
-
-                calculateData(); // คำนวณครั้งแรก
-
-            } catch (err) {
-                document.getElementById('loadingScreen').classList.add('hidden');
-                document.getElementById('errorScreen').classList.remove('hidden');
-                document.getElementById('errorMsg').innerText = err.message;
+                    calculateData(); // คำนวณครั้งแรก
+                    return;
+                } catch (err) {
+                    lastErr = err;
+                }
             }
+
+            document.getElementById('loadingScreen').classList.add('hidden');
+            document.getElementById('errorScreen').classList.remove('hidden');
+            document.getElementById('errorMsg').innerText = (lastErr && lastErr.message) || 'ดึงข้อมูลไม่ได้';
         }
 
         // ------------------ Calculate Data ------------------

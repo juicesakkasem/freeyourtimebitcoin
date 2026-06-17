@@ -1,4 +1,5 @@
 ﻿
+<script>try{if((localStorage.getItem('dca_theme')||'dark')==='dark')document.documentElement.classList.add('dark');}catch(e){document.documentElement.classList.add('dark');}</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
 :root {
@@ -81,12 +82,15 @@
   --sidebar-primary-foreground: #ffffff;
 }
 *{box-sizing:border-box;margin:0;padding:0}
+html{overflow-y:scroll}
 body{font-family:var(--font-sans);background:var(--background);color:var(--foreground);padding-top:72px}
 .cashual-nav{position:fixed;top:0;left:0;width:100%;background:rgba(15,15,15,0.95);backdrop-filter:blur(10px);border-bottom:1px solid #222;z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:0 2rem;height:72px}
 .cashual-nav-logo{font-size:22px;font-weight:700;color:#f7931a;letter-spacing:0.05em}
-.cashual-nav-links{display:flex;gap:2.5rem;list-style:none;margin:0;padding:0}
+.cashual-nav-links{display:flex;gap:2.5rem;list-style:none;margin:0;padding:0;align-items:center}
 .cashual-nav-links a{color:#aaa;text-decoration:none;font-size:17px;transition:color 0.2s}
 .cashual-nav-links a:hover{color:#f7931a}
+.btntheme{width:34px;height:34px;border-radius:var(--radius);border:1px solid var(--border);background:var(--card);color:var(--foreground);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s,border-color .15s;flex-shrink:0}
+.btntheme:hover{border-color:var(--ring);opacity:1}
 @media(max-width:640px){.cashual-nav{padding:0 1rem}.cashual-nav-links{gap:1rem}.cashual-nav-links a{font-size:14px;white-space:nowrap}}
 input,select{font-family:inherit;width:100%;padding:7px 10px;font-size:13px;border:0.5px solid var(--border);border-radius:6px;background:var(--card);color:var(--foreground);outline:none}
 input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
@@ -140,6 +144,7 @@ button{cursor:pointer;font-family:inherit}button:hover{opacity:.85}
   <div class="cashual-nav-logo"><a href="index.html" style="text-decoration:none;color:inherit;">FreeyourtimeBitcoin</a></div>
   <ul class="cashual-nav-links">
     <li><a href="Bitcoin-DCA-Master.html">DCA Master</a></li>
+    <li><a href="dca-tracker.html">DCA Tracker</a></li>
     <li><a href="Purchasing-Power.html">Purchasing Power</a></li>
     <li><a href="wealth-planner.html">Wealth Planner</a></li>
     <li><a href="retirement plan.html">Retirement Plan</a></li>
@@ -147,8 +152,9 @@ button{cursor:pointer;font-family:inherit}button:hover{opacity:.85}
   </ul>
 </nav>
 <div class="w">
-<div style="padding:14px 0 10px;border-bottom:0.5px solid var(--border);margin-bottom:0">
+<div style="padding:14px 0 10px;border-bottom:0.5px solid var(--border);margin-bottom:0;display:flex;align-items:center;justify-content:space-between;gap:10px">
   <span style="font-size:17px;font-weight:600;letter-spacing:.3px;color:var(--foreground)">Retirement Plan</span>
+  <button class="btntheme no-print" id="btn-theme" onclick="toggleTheme()" title="สลับธีม"></button>
 </div>
 <div style="background:linear-gradient(135deg,var(--accent) 0%,color-mix(in srgb,var(--accent) 60%,var(--background)) 100%);border-left:3px solid var(--primary);border-radius:0 0 10px 10px;padding:.75rem 1rem;margin-bottom:14px">
   <div style="font-size:13px;font-weight:600;color:var(--primary);margin-bottom:4px">เคยรู้มั้ยว่าตัวเองต้องมีเงินเท่าไหร่หลังเกษียณ?</div>
@@ -1028,6 +1034,21 @@ function renderAll(){
   else if(AT===4){ct.innerHTML=rT4();drawChart();}
   lsSave();
 }
+// ── theme ──
+const THEME_KEY='dca_theme';
+function applyTheme(t){
+  document.documentElement.classList.toggle('dark', t==='dark');
+  const btn=document.getElementById('btn-theme');
+  if(btn) btn.textContent = t==='dark' ? '☀️' : '🌙';
+}
+function toggleTheme(){
+  const next = document.documentElement.classList.contains('dark') ? 'light' : 'dark';
+  try{ localStorage.setItem(THEME_KEY, next); }catch(e){}
+  applyTheme(next);
+  renderAll(); // charts read colors from CSS vars
+}
+applyTheme(document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+
 lsLoad();
 renderAll();
 </script>

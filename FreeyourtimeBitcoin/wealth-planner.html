@@ -26,11 +26,13 @@
         .toggle-checkbox:checked { right: 0; border-color: #22d3ee; }
         .toggle-checkbox:checked + .toggle-label { background-color: #22d3ee; }
         .toggle-checkbox:checked + .toggle-label:after { transform: translateX(100%); border-color: white; }
+    html { overflow-y: scroll; }
     .cashual-nav { position: fixed; top: 0; left: 0; width: 100%; background: rgba(15,15,15,0.95); backdrop-filter: blur(10px); border-bottom: 1px solid #222; z-index: 1000; display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; height: 72px; }
     .cashual-nav-logo { font-size: 22px; font-weight: 700; color: #f7931a; letter-spacing: 0.05em; }
-    .cashual-nav-links { display: flex; gap: 2.5rem; list-style: none; margin: 0; padding: 0; }
+    .cashual-nav-links { display: flex; gap: 2.5rem; list-style: none; margin: 0; padding: 0; align-items: center; }
     .cashual-nav-links a { color: #aaa; text-decoration: none; font-size: 17px; transition: color 0.2s; }
     .cashual-nav-links a:hover { color: #f7931a; }
+    @media(max-width:640px){ .cashual-nav{padding:0 1rem} .cashual-nav-links{gap:1rem} .cashual-nav-links a{font-size:14px;white-space:nowrap} }
     </style>
 </head>
 <body class="p-4 md:p-8 max-w-7xl mx-auto min-h-screen flex flex-col" style="padding-top:88px">
@@ -39,6 +41,7 @@
         <div class="cashual-nav-logo"><a href="index.html" style="text-decoration:none;color:inherit;">FreeyourtimeBitcoin</a></div>
         <ul class="cashual-nav-links">
             <li><a href="Bitcoin-DCA-Master.html">DCA Master</a></li>
+            <li><a href="dca-tracker.html">DCA Tracker</a></li>
             <li><a href="Purchasing-Power.html">Purchasing Power</a></li>
             <li><a href="wealth-planner.html">Wealth Planner</a></li>
             <li><a href="retirement plan.html">Retirement Plan</a></li>

@@ -6,6 +6,7 @@
   <title>Free your time with system (Bitcoin)</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { overflow-y: scroll; }
 
     body {
       font-family: 'Sarabun', sans-serif;
@@ -14,47 +15,53 @@
       line-height: 1.8;
     }
 
-    /* NAVBAR */
-    nav {
+    /* NAVBAR (shared across all pages) */
+    .cashual-nav {
       position: fixed;
       top: 0;
+      left: 0;
       width: 100%;
       background: rgba(15,15,15,0.95);
       backdrop-filter: blur(10px);
       border-bottom: 1px solid #222;
-      z-index: 100;
+      z-index: 1000;
       display: flex;
       align-items: center;
-      justify-content: flex-start;
-      gap: 2.5rem;
+      justify-content: space-between;
       padding: 0 2rem;
       height: 72px;
     }
 
-    .nav-logo {
+    .cashual-nav-logo {
       font-size: 22px;
       font-weight: 700;
       color: #f7931a;
       letter-spacing: 0.05em;
     }
 
-    .nav-links {
+    .cashual-nav-links {
       display: flex;
       gap: 2.5rem;
       list-style: none;
-      margin: 0 0 0 auto;
+      margin: 0;
       padding: 0;
       align-items: center;
     }
 
-    .nav-links a {
+    .cashual-nav-links a {
       color: #aaa;
       text-decoration: none;
       font-size: 17px;
       transition: color 0.2s;
     }
 
-    .nav-links a:hover { color: #f7931a; }
+    .cashual-nav-links a:hover { color: #f7931a; }
+
+    @media(max-width:640px) {
+      .cashual-nav { padding: 0 1rem; }
+      .cashual-nav-links { gap: 1rem; }
+      .cashual-nav-links a { font-size: 14px; white-space: nowrap; }
+    }
 
     /* LAYOUT */
     main {
@@ -254,10 +261,11 @@
 <body>
 
   <!-- NAVBAR -->
-  <nav>
-    <div class="nav-logo"><a href="index.html" style="text-decoration:none;color:inherit;">FreeyourtimeBitcoin</a></div>
-    <ul class="nav-links">
+  <nav class="cashual-nav">
+    <div class="cashual-nav-logo"><a href="index.html" style="text-decoration:none;color:inherit;">FreeyourtimeBitcoin</a></div>
+    <ul class="cashual-nav-links">
       <li><a href="Bitcoin-DCA-Master.html">DCA Master</a></li>
+      <li><a href="dca-tracker.html">DCA Tracker</a></li>
       <li><a href="Purchasing-Power.html">Purchasing Power</a></li>
       <li><a href="wealth-planner.html">Wealth Planner</a></li>
       <li><a href="retirement plan.html">Retirement Plan</a></li>
@@ -395,7 +403,7 @@
     <section id="about">
       <h2>About Me</h2>
       <div class="about-card">
-        <img src="510986389_122122980470854400_9204482829263110679_n.jpg" alt="Juice Sakkasem">
+        <img src="F36E85A7-2FE1-4DE7-A2A2-051699A0DAF1.jpg" alt="Juice Sakkasem">
         <div>
           <div class="about-name">Juice Sakkasem</div>
           <div class="about-role">Bitcoin Financial Planner</div>

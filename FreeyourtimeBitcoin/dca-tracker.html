@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="th" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DCA Bitcoin Tracker</title>
+<meta name="description" content="เครื่องมือบันทึกและติดตามการ DCA Bitcoin ดูราคาเฉลี่ย กำไร/ขาดทุน แบบเรียลไทม์ ข้อมูลเก็บในเครื่องคุณเอง">
+<meta name="theme-color" content="#171717">
+<meta property="og:type" content="website">
+<meta property="og:title" content="📈 DCA Bitcoin Tracker">
+<meta property="og:description" content="บันทึก DCA Bitcoin ดูราคาเฉลี่ย มูลค่า และกำไร/ขาดทุนแบบเรียลไทม์ — ฟรี ไม่ต้องสมัคร ข้อมูลอยู่ในเครื่องคุณ">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="📈 DCA Bitcoin Tracker">
+<meta name="twitter:description" content="บันทึก DCA Bitcoin ดูราคาเฉลี่ย มูลค่า และกำไร/ขาดทุนแบบเรียลไทม์ — ฟรี ไม่ต้องสมัคร ข้อมูลอยู่ในเครื่องคุณ">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
+<script>try{if((localStorage.getItem('dca_theme')||'dark')!=='dark')document.documentElement.classList.remove('dark');}catch(e){}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root {
+  --card: #ffffff;
+  --ring: #f59e0b;
+  --input: #e5e7eb;
+  --muted: #f9fafb;
+  --accent: #fffbeb;
+  --border: #e5e7eb;
+  --radius: 0.375rem;
+  --chart-1: #f59e0b;
+  --chart-2: #d97706;
+  --chart-3: #b45309;
+  --chart-4: #92400e;
+  --chart-5: #78350f;
+  --popover: #ffffff;
+  --primary: #f59e0b;
+  --sidebar: #f9fafb;
+  --spacing: 0.25rem;
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-sans: 'Inter', sans-serif;
+  --secondary: #f3f4f6;
+  --background: #ffffff;
+  --font-serif: 'Source Serif 4', serif;
+  --foreground: #262626;
+  --destructive: #ef4444;
+  --shadow-blur: 8px;
+  --shadow-color: hsl(0 0% 0%);
+  --sidebar-ring: #f59e0b;
+  --shadow-spread: -1px;
+  --letter-spacing: 0em;
+  --shadow-opacity: 0.1;
+  --sidebar-accent: #fffbeb;
+  --sidebar-border: #e5e7eb;
+  --card-foreground: #262626;
+  --shadow-offset-x: 0px;
+  --shadow-offset-y: 4px;
+  --sidebar-primary: #f59e0b;
+  --muted-foreground: #6b7280;
+  --accent-foreground: #92400e;
+  --popover-foreground: #262626;
+  --primary-foreground: #000000;
+  --sidebar-foreground: #262626;
+  --secondary-foreground: #4b5563;
+  --destructive-foreground: #ffffff;
+  --sidebar-accent-foreground: #92400e;
+  --sidebar-primary-foreground: #ffffff;
+  --color-green: #3B6D11;
+  --color-green-bg: #eaf3e0;
+}
+.dark {
+  --card: #262626;
+  --ring: #f59e0b;
+  --input: #404040;
+  --muted: #262626;
+  --accent: #92400e;
+  --border: #404040;
+  --chart-1: #fbbf24;
+  --chart-2: #d97706;
+  --chart-3: #92400e;
+  --chart-4: #b45309;
+  --chart-5: #92400e;
+  --popover: #262626;
+  --primary: #f59e0b;
+  --sidebar: #0f0f0f;
+  --secondary: #262626;
+  --background: #171717;
+  --foreground: #e5e5e5;
+  --destructive: #ef4444;
+  --sidebar-ring: #f59e0b;
+  --sidebar-accent: #92400e;
+  --sidebar-border: #404040;
+  --card-foreground: #e5e5e5;
+  --sidebar-primary: #f59e0b;
+  --muted-foreground: #a3a3a3;
+  --accent-foreground: #fde68a;
+  --popover-foreground: #e5e5e5;
+  --primary-foreground: #000000;
+  --sidebar-foreground: #e5e5e5;
+  --secondary-foreground: #e5e5e5;
+  --destructive-foreground: #ffffff;
+  --sidebar-accent-foreground: #fde68a;
+  --sidebar-primary-foreground: #ffffff;
+  --color-green: #5aa832;
+  --color-green-bg: rgba(90,168,50,.15);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{overflow-y:scroll}
+body{font-family:var(--font-sans);background:var(--background);color:var(--foreground);min-height:100vh;padding-top:72px}
+.wrap{max-width:1400px;margin:0 auto;padding:1.5rem 20px 3rem}
+.main-cols{display:grid;grid-template-columns:560px 1fr;gap:12px;align-items:start;margin-bottom:12px}
+.left-col{display:flex;flex-direction:column;gap:12px}
+.left-col .card{margin-bottom:0}
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+h1{font-size:18px;font-weight:700}
+.btntheme{width:34px;height:34px;border-radius:var(--radius);border:1px solid var(--border);background:var(--card);color:var(--foreground);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s,border-color .15s}
+.btntheme:hover{background:var(--secondary);border-color:var(--ring)}
+.btndemo{margin-top:10px;padding:7px 14px;font-size:12px;font-weight:600;border:1px solid var(--ring);border-radius:var(--radius);background:var(--accent);color:var(--accent-foreground);cursor:pointer;font-family:inherit;transition:opacity .15s}
+.btndemo:hover{opacity:.8}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:10px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.scard{background:var(--card);border:1px solid var(--border);border-radius:calc(var(--radius)*2);padding:14px 12px;text-align:center}
+.scard .lbl{font-size:11px;color:var(--muted-foreground);margin-bottom:4px}
+.scard .val{font-size:19px;font-weight:700}
+.card{background:var(--card);border:1px solid var(--border);border-radius:calc(var(--radius)*2);padding:14px;margin-bottom:12px}
+.ct{font-size:11px;font-weight:600;color:var(--muted-foreground);letter-spacing:.8px;text-transform:uppercase;margin-bottom:12px}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:8px;align-items:end}
+.frow .addbtn{grid-column:1/-1}
+label{display:block;font-size:11px;color:var(--muted-foreground);margin-bottom:3px}
+input{width:100%;padding:7px 10px;font-size:13px;border:1px solid var(--border);border-radius:var(--radius);background:var(--card);color:var(--foreground);outline:none;font-family:inherit}
+input:focus{border-color:var(--ring);box-shadow:0 0 0 2px color-mix(in srgb,var(--ring) 20%,transparent)}
+.btnadd{padding:0 16px;font-size:13px;font-weight:600;background:var(--primary);color:var(--primary-foreground);border:none;border-radius:var(--radius);cursor:pointer;font-family:inherit;height:36px;white-space:nowrap;transition:opacity .15s}
+.btnadd:hover{opacity:.85}
+.btndel{width:24px;height:24px;border-radius:var(--radius);border:1px solid var(--border);background:transparent;color:var(--muted-foreground);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.btndel:hover{background:color-mix(in srgb,var(--destructive) 10%,transparent);color:var(--destructive);border-color:var(--destructive)}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{text-align:left;font-size:10px;color:var(--muted-foreground);font-weight:600;letter-spacing:.5px;padding:4px 6px;border-bottom:1px solid var(--border)}
+td{padding:7px 6px;border-bottom:1px solid var(--muted);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--muted)}
+.nr{text-align:right}
+.tag{background:var(--accent);color:var(--accent-foreground);border-radius:var(--radius);padding:1px 6px;font-size:10px;font-weight:600;font-family:var(--font-mono)}
+canvas{max-height:200px}
+.empty{text-align:center;color:var(--muted-foreground);font-size:12px;padding:24px 0}
+.btc{color:var(--accent-foreground)}
+.green{color:var(--color-green)}.red{color:var(--destructive)}.blue{color:var(--primary)}
+.btnmore{width:100%;margin-top:10px;padding:7px;font-size:12px;border:1px dashed var(--border);border-radius:var(--radius);background:transparent;color:var(--muted-foreground);cursor:pointer;font-family:inherit}
+.btnmore:hover{background:var(--secondary)}
+.period-tabs{display:flex;gap:4px}
+.ptab{padding:4px 10px;font-size:11px;font-weight:600;border:1px solid var(--border);border-radius:var(--radius);background:var(--card);color:var(--muted-foreground);cursor:pointer;font-family:inherit;transition:all .15s}
+.ptab.active{background:var(--primary);color:var(--primary-foreground);border-color:var(--primary)}
+.charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+/* price row */
+.price-row{display:flex;gap:8px;align-items:flex-end}
+.price-row input{flex:1}
+.btnfetch{height:36px;padding:0 14px;font-size:12px;font-weight:600;background:var(--accent);color:var(--accent-foreground);border:1px solid var(--ring);border-radius:var(--radius);cursor:pointer;font-family:inherit;white-space:nowrap;transition:opacity .15s}
+.btnfetch:hover{opacity:.8}
+.btnfetch:disabled{opacity:.4;cursor:not-allowed}
+.price-meta{display:flex;align-items:center;gap:8px;margin-top:5px;font-size:11px;color:var(--muted-foreground)}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--border);flex-shrink:0}
+.dot.live{background:var(--color-green);box-shadow:0 0 0 2px color-mix(in srgb,var(--color-green) 20%,transparent)}
+.dot.err{background:var(--destructive)}
+.dot.loading{background:var(--primary);animation:pulse .8s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.change-badge{font-size:10px;font-weight:600;padding:1px 5px;border-radius:var(--radius)}
+.change-badge.up{background:var(--color-green-bg);color:var(--color-green)}
+.change-badge.down{background:color-mix(in srgb,var(--destructive) 12%,transparent);color:var(--destructive)}
+
+.btncsv{padding:4px 12px;font-size:11px;font-weight:600;background:var(--secondary);color:var(--secondary-foreground);border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;font-family:inherit;transition:opacity .15s}
+.btncsv:hover{opacity:.75}
+@media(max-width:860px){.main-cols{grid-template-columns:1fr}}
+@media(max-width:560px){.grid3{grid-template-columns:1fr 1fr}.charts-grid{grid-template-columns:1fr}}
+
+/* ── Financial Health tab ── */
+.htabs{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+.htab{padding:7px 16px;font-size:13px;font-weight:600;border:1px solid var(--border);border-radius:var(--radius);background:var(--card);color:var(--muted-foreground);cursor:pointer;font-family:inherit;transition:all .15s}
+.htab.active{background:var(--primary);color:var(--primary-foreground);border-color:var(--primary)}
+.htab:hover:not(.active){border-color:var(--ring)}
+.hbadge{font-size:12px;font-weight:700;padding:4px 12px;border-radius:var(--radius)}
+.hgrid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:12px}
+.hbig{font-size:26px;font-weight:700;font-family:var(--font-mono);margin-top:2px}
+.htrack{position:relative;height:7px;background:var(--muted);border:1px solid var(--border);border-radius:99px;overflow:hidden;margin-top:8px}
+.htrack>span{position:absolute;left:0;top:0;bottom:0;border-radius:99px}
+.hopt{position:relative;height:13px;margin-top:2px}
+.hopt>b{position:absolute;left:10%;width:30%;height:4px;border:1px solid var(--muted-foreground);border-bottom:none;opacity:.45}
+.hopt>span{position:absolute;left:25%;transform:translateX(-50%);top:4px;font-size:9px;color:var(--muted-foreground)}
+.notag{font-size:10px;font-weight:600;padding:1px 6px;border-radius:var(--radius);background:var(--color-green-bg);color:var(--color-green);margin-left:6px;white-space:nowrap}
+.hmix{display:flex;height:12px;border-radius:99px;overflow:hidden;background:var(--muted)}
+.hmix>span{display:block}
+.hd-col{width:100%;padding:6px 4px;font-size:11px;border:1px solid var(--border);border-radius:var(--radius);background:var(--card);color:var(--foreground);font-family:inherit;outline:none;cursor:pointer}
+.hd-col:focus{border-color:var(--ring)}
+input[type="range"]{-webkit-appearance:auto;appearance:auto;border:none;background:transparent;padding:0;height:auto;accent-color:var(--primary);box-shadow:none}
+input[type="range"]:focus{box-shadow:none}
+@media(max-width:560px){.hgrid3{grid-template-columns:1fr}}
+
+/* ── site navbar (shared across all pages) ── */
+.cashual-nav{position:fixed;top:0;left:0;width:100%;background:rgba(15,15,15,0.95);backdrop-filter:blur(10px);border-bottom:1px solid #222;z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:0 2rem;height:72px}
+.cashual-nav-logo{font-size:22px;font-weight:700;color:#f7931a;letter-spacing:0.05em}
+.cashual-nav-links{display:flex;gap:2.5rem;list-style:none;margin:0;padding:0;align-items:center}
+.cashual-nav-links a{color:#aaa;text-decoration:none;font-size:17px;transition:color 0.2s}
+.cashual-nav-links a:hover{color:#f7931a}
+@media(max-width:640px){.cashual-nav{padding:0 1rem}.cashual-nav-links{gap:1rem}.cashual-nav-links a{font-size:14px;white-space:nowrap}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="cashual-nav">
+    <div class="cashual-nav-logo"><a href="index.html" style="text-decoration:none;color:inherit;">FreeyourtimeBitcoin</a></div>
+    <ul class="cashual-nav-links">
+      <li><a href="Bitcoin-DCA-Master.html">DCA Master</a></li>
+      <li><a href="dca-tracker.html">DCA Tracker</a></li>
+      <li><a href="Purchasing-Power.html">Purchasing Power</a></li>
+      <li><a href="wealth-planner.html">Wealth Planner</a></li>
+      <li><a href="retirement plan.html">Retirement Plan</a></li>
+      <li><a href="https://cashualme.com/" target="_blank">Cashualme</a></li>
+    </ul>
+  </nav>
+  <div class="topbar">
+    <h1>📈 DCA Bitcoin Tracker</h1>
+    <button class="btntheme" id="btn-theme" onclick="toggleTheme()" title="สลับธีม"></button>
+  </div>
+
+  <div class="htabs">
+    <button class="htab active" data-t="dca" onclick="setTab('dca')">📈 DCA Tracker</button>
+    <button class="htab" data-t="health" onclick="setTab('health')">🩺 สุขภาพการเงิน</button>
+  </div>
+
+  <div id="tab-dca">
+  <!-- Main 2-col -->
+  <div class="main-cols">
+  <div class="left-col">
+
+  <!-- Summary -->
+  <div class="card" style="padding:12px">
+    <div class="grid3" style="margin-bottom:8px">
+      <div class="scard"><div class="lbl">BTC สะสม</div><div class="val btc" id="s-btc">0</div></div>
+      <div class="scard"><div class="lbl">ลงทุนรวม</div><div class="val blue" id="s-thb">฿0</div></div>
+      <div class="scard"><div class="lbl">ราคาเฉลี่ย</div><div class="val" id="s-avg">-</div></div>
+    </div>
+    <div class="grid2" style="margin-bottom:0">
+      <div class="scard"><div class="lbl">มูลค่าตอนนี้</div><div class="val" id="s-val">-</div></div>
+      <div class="scard"><div class="lbl">กำไร / ขาดทุน</div><div class="val" id="s-pnl">-</div></div>
+    </div>
+  </div>
+
+  <!-- Current Price -->
+  <div class="card">
+    <div class="ct">ราคา BTC ปัจจุบัน</div>
+    <div class="grid2" style="margin:0">
+      <div>
+        <label>ราคา BTC ตอนนี้ (฿)</label>
+        <div class="price-row">
+          <input id="cur-price" type="text" inputmode="numeric" placeholder="กำลังดึงราคา…">
+          <button class="btnfetch" id="btn-fetch" onclick="fetchPrice(true)">↻ ดึงราคา</button>
+        </div>
+        <div class="price-meta">
+          <span class="dot" id="price-dot"></span>
+          <span id="price-status">—</span>
+          <span id="price-change" class="change-badge" style="display:none"></span>
+        </div>
+      </div>
+      <div style="display:flex;align-items:flex-end">
+        <div class="scard" style="width:100%;padding:8px 12px">
+          <div class="lbl">มูลค่า BTC ที่ถือ</div>
+          <div class="val" id="cur-val" style="font-size:16px">-</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add -->
+  <div class="card">
+    <div class="ct">เพิ่ม DCA รายการใหม่</div>
+    <div class="frow">
+      <div>
+        <label>วันที่</label>
+        <div style="display:flex;gap:4px;position:relative">
+          <input id="f-date" type="text" inputmode="numeric" placeholder="03/05/2026" maxlength="10" style="flex:1">
+          <button type="button" onclick="openCal()" style="padding:0 8px;border:0.5px solid var(--border);border-radius:var(--radius);background:var(--card);cursor:pointer;font-size:14px">📅</button>
+          <input id="f-date-native" type="date" style="position:absolute;opacity:0;width:0;height:0;pointer-events:none;top:0;left:0">
+        </div>
+      </div>
+      <div>
+        <label>THB ที่ซื้อ</label>
+        <input id="f-thb" type="text" inputmode="numeric" placeholder="5,000">
+      </div>
+      <div>
+        <label>ราคา BTC วันนั้น (฿)</label>
+        <input id="f-price" type="text" inputmode="numeric" placeholder="ไม่รู้ก็ปล่อยว่าง">
+      </div>
+      <div>
+        <label>BTC ที่ได้</label>
+        <input id="f-btc" type="text" inputmode="decimal" placeholder="0.000000">
+      </div>
+      <div class="addbtn" style="padding-bottom:0">
+        <button class="btnadd" id="btn-add">+ เพิ่ม</button>
+      </div>
+    </div>
+  </div>
+
+  </div><!-- /left-col -->
+
+  <!-- Charts -->
+  <div class="card" id="chart-card" style="display:none">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <div class="ct" style="margin-bottom:0">Charts</div>
+      <div class="period-tabs">
+        <button class="ptab active" data-p="month" onclick="setPeriod('month')">เดือน</button>
+        <button class="ptab" data-p="quarter" onclick="setPeriod('quarter')">3 เดือน</button>
+        <button class="ptab" data-p="year" onclick="setPeriod('year')">ปี</button>
+      </div>
+    </div>
+    <div class="charts-grid">
+      <div style="grid-column:1/-1">
+        <div style="font-size:11px;color:var(--muted-foreground);margin-bottom:6px">มูลค่า BTC vs ทุน</div>
+        <canvas id="c4" style="max-height:160px"></canvas>
+      </div>
+      <div>
+        <div style="font-size:11px;color:var(--muted-foreground);margin-bottom:6px">ราคาเฉลี่ย vs ราคาตลาด</div>
+        <canvas id="c3"></canvas>
+      </div>
+      <div>
+        <div style="font-size:11px;color:var(--muted-foreground);margin-bottom:6px">BTC สะสม (sats)</div>
+        <canvas id="c1"></canvas>
+      </div>
+      <div style="grid-column:1/-1">
+        <div style="font-size:11px;color:var(--muted-foreground);margin-bottom:6px" id="c2-label">THB ลงทุน / เดือน</div>
+        <canvas id="c2" style="max-height:120px"></canvas>
+      </div>
+    </div>
+  </div>
+
+  </div><!-- /main-cols -->
+
+  <!-- History -->
+  <div class="card">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <div class="ct" style="margin-bottom:0">ประวัติ <span id="ec" style="color:var(--muted-foreground);font-weight:400;text-transform:none;letter-spacing:0"></span></div>
+      <button class="btncsv" id="btn-csv" onclick="exportCSV()" style="display:none">↓ Export CSV</button>
+    </div>
+    <div id="hist"></div>
+    <button class="btnmore" id="btn-more" style="display:none" onclick="toggleAll()"></button>
+  </div>
+
+  </div><!-- /tab-dca -->
+
+  <div id="tab-health" style="display:none">
+
+    <div class="topbar" style="margin-bottom:12px">
+      <div class="ct" style="margin-bottom:0;font-size:13px">สุขภาพการเงิน · หนี้ · สภาพคล่อง · stress test</div>
+      <span class="hbadge" id="h-badge">—</span>
+    </div>
+
+    <div class="hgrid3">
+      <div class="card" style="margin-bottom:0">
+        <div class="ct" style="margin-bottom:0">หนี้ / สินทรัพย์</div>
+        <div class="hbig" id="h-daVal" style="color:var(--color-green)">0%</div>
+        <div class="htrack"><span id="h-daFill" style="width:0%"></span></div>
+        <div class="hopt"><b></b><span>optimal 10–40%</span></div>
+        <div id="h-daSub" style="font-size:10px;color:var(--muted-foreground);margin-top:3px;min-height:12px"></div>
+      </div>
+      <div class="card" style="margin-bottom:0">
+        <div class="ct" style="margin-bottom:0">หนี้ / รายได้ (เดือน)</div>
+        <div class="hbig" id="h-diVal" style="color:var(--color-green)">0%</div>
+        <div class="htrack"><span id="h-diFill" style="width:0%"></span></div>
+        <div class="hopt"><b></b><span>optimal 10–40%</span></div>
+      </div>
+      <div class="card" style="margin-bottom:0">
+        <div class="ct" style="margin-bottom:0">เงินสำรอง</div>
+        <div><span class="hbig" id="h-rwVal" style="color:var(--primary)">0</span> <span style="font-size:13px;color:var(--muted-foreground)">เดือน</span></div>
+        <div style="position:relative;margin-top:10px">
+          <div style="display:flex;height:7px;border-radius:99px;overflow:hidden">
+            <span style="flex:0 0 25%;background:color-mix(in srgb,var(--destructive) 22%,transparent)"></span>
+            <span style="flex:0 0 25%;background:color-mix(in srgb,var(--primary) 30%,transparent)"></span>
+            <span style="flex:0 0 50%;background:var(--color-green-bg)"></span>
+          </div>
+          <div id="h-rwMarker" style="position:absolute;top:-5px;left:0%;transform:translateX(-50%);width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:7px solid var(--foreground)"></div>
+        </div>
+        <div style="position:relative;height:13px;margin-top:3px;font-size:9px;color:var(--muted-foreground)">
+          <span style="position:absolute;left:0">0</span><span style="position:absolute;left:25%;transform:translateX(-50%)">3</span><span style="position:absolute;left:50%;transform:translateX(-50%)">6</span><span style="position:absolute;right:0">12+ ด.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="display:flex;flex-wrap:wrap;gap:4px 14px;align-items:baseline;font-size:13px;color:var(--muted-foreground)">
+      <span>สินทรัพย์รวม <b id="h-ta" style="color:var(--foreground);font-family:var(--font-mono);font-weight:400">฿0</b></span>
+      <span>−</span>
+      <span>หนี้รวม <b id="h-td" style="color:var(--foreground);font-family:var(--font-mono);font-weight:400">฿0</b></span>
+      <span>=</span>
+      <span>มูลค่าสุทธิ <b id="h-nw" style="color:var(--color-green);font-family:var(--font-mono)">฿0</b></span>
+    </div>
+
+    <div class="card">
+      <div class="ct">สินทรัพย์</div>
+      <div class="grid3">
+        <div><label>เงินสดสำรอง (฿)</label><input id="h-cash" inputmode="numeric" placeholder="0"></div>
+        <div>
+          <label>มูลค่า BTC (฿) <button type="button" id="h-btc-sync" style="border:none;background:none;color:var(--primary);cursor:pointer;font-size:10px;padding:0;font-family:inherit;font-weight:600">↻ จาก DCA</button></label>
+          <input id="h-btc" inputmode="numeric" placeholder="0">
+          <div id="h-btc-note" style="font-size:10px;color:var(--muted-foreground);margin-top:3px"></div>
+        </div>
+        <div><label>สินทรัพย์อื่น (฿)</label><input id="h-other" inputmode="numeric" placeholder="0"></div>
+      </div>
+      <div class="ct" style="margin-top:14px">รายรับ / รายจ่าย ต่อเดือน</div>
+      <div class="grid2" style="margin-bottom:0">
+        <div><label>รายได้/เดือน (฿)</label><input id="h-income" inputmode="numeric" placeholder="0"></div>
+        <div><label>ค่าใช้จ่าย/เดือน (฿)</label><input id="h-exp" inputmode="numeric" placeholder="0"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="ct">หนี้สิน</div>
+      <div style="display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr) minmax(0,.5fr) minmax(0,1fr) minmax(0,1fr) 24px;gap:6px;font-size:10px;color:var(--muted-foreground);margin-bottom:5px">
+        <span>ชื่อหนี้</span><span>ยอดคงเหลือ</span><span>ดอก%</span><span>ผ่อน/เดือน</span><span>ค้ำด้วย</span><span></span>
+      </div>
+      <div id="hdebt-rows"></div>
+      <button class="btnmore" id="h-add-debt" style="margin-top:4px">+ เพิ่มรายการหนี้</button>
+    </div>
+
+    <div class="card">
+      <div class="ct">กระแสเงินสด/เดือน &amp; แผนจัดสรร</div>
+      <div style="display:grid;grid-template-columns:1fr auto;gap:6px 14px;font-size:13px;max-width:340px">
+        <span style="color:var(--muted-foreground)">รายได้</span><span class="nr" id="h-cfIncome" style="font-family:var(--font-mono);color:var(--color-green)">฿0</span>
+        <span style="color:var(--muted-foreground)">− ผ่อนหนี้</span><span class="nr" id="h-cfDebt" style="font-family:var(--font-mono);color:var(--destructive)">฿0</span>
+        <span style="color:var(--muted-foreground)">− รายจ่าย</span><span class="nr" id="h-cfExp" style="font-family:var(--font-mono);color:var(--destructive)">฿0</span>
+        <span style="font-weight:700;border-top:1px solid var(--border);padding-top:6px">เหลือ/เดือน</span><span class="nr" id="h-cfNet" style="font-family:var(--font-mono);font-weight:700;border-top:1px solid var(--border);padding-top:6px">฿0</span>
+      </div>
+      <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">
+        <div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px;flex-wrap:wrap">
+          <span style="font-size:12px;color:var(--muted-foreground)">เงินสำรองที่ควรมี</span>
+          <span id="h-ef-fund" style="font-family:var(--font-mono);font-size:18px;font-weight:700">฿0</span>
+        </div>
+        <div id="h-ef-hint" style="font-size:11px;color:var(--muted-foreground);margin-top:3px"></div>
+        <div style="display:flex;align-items:center;gap:8px;margin-top:10px">
+          <label style="margin:0;font-size:11px;color:var(--muted-foreground)">เป้า (เดือน)</label>
+          <input id="h-ef-target" inputmode="numeric" value="6" style="width:56px">
+          <button type="button" id="h-ef-auto" class="btnmore" style="width:auto;margin:0;padding:5px 10px;font-size:11px">อัตโนมัติ ✓</button>
+        </div>
+      </div>
+      <div id="h-plan" style="margin-top:12px;border:1px solid var(--border);border-radius:calc(var(--radius)*2);padding:12px 14px;font-size:13px;line-height:1.6;display:flex;gap:10px;align-items:flex-start">
+        <span id="h-plan-icon" style="font-size:16px;flex:none">💡</span>
+        <div id="h-plan-text"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="ct">สัดส่วนสินทรัพย์</div>
+      <div class="hmix">
+        <span id="h-mxBtc" style="width:0%;background:var(--primary)"></span>
+        <span id="h-mxCash" style="width:0%;background:var(--color-green)"></span>
+        <span id="h-mxOther" style="width:0%;background:var(--muted-foreground)"></span>
+      </div>
+      <div style="display:flex;gap:16px;flex-wrap:wrap;font-size:11px;color:var(--muted-foreground);margin-top:8px">
+        <span><i style="display:inline-block;width:9px;height:9px;border-radius:2px;background:var(--primary);margin-right:5px"></i>BTC <b id="h-pBtc" style="font-family:var(--font-mono);font-weight:400">0%</b></span>
+        <span><i style="display:inline-block;width:9px;height:9px;border-radius:2px;background:var(--color-green);margin-right:5px"></i>เงินสด <b id="h-pCash" style="font-family:var(--font-mono);font-weight:400">0%</b></span>
+        <span><i style="display:inline-block;width:9px;height:9px;border-radius:2px;background:var(--muted-foreground);margin-right:5px"></i>อื่นๆ <b id="h-pOther" style="font-family:var(--font-mono);font-weight:400">0%</b></span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="ct">Stress test — สมมติ BTC ร่วง</div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <span style="font-size:12px;color:var(--muted-foreground);white-space:nowrap">BTC ร่วง</span>
+        <input id="h-stress" type="range" min="0" max="90" step="5" value="60" style="flex:1">
+        <span id="h-stressOut" style="font-family:var(--font-mono);font-size:16px;font-weight:700;color:var(--destructive);min-width:50px;text-align:right">−60%</span>
+      </div>
+      <div style="display:grid;grid-template-columns:minmax(0,1fr) auto 16px auto;gap:8px 10px;align-items:center;font-size:13px;margin-top:12px">
+        <span style="color:var(--muted-foreground)">มูลค่า BTC</span><span class="nr" id="h-sBtcNow" style="font-family:var(--font-mono);color:var(--muted-foreground)">฿0</span><span style="text-align:center;color:var(--muted-foreground)">→</span><span class="nr" id="h-sBtcNew" style="font-family:var(--font-mono);font-weight:700">฿0</span>
+        <span style="color:var(--muted-foreground)">มูลค่าสุทธิ</span><span class="nr" id="h-sNwNow" style="font-family:var(--font-mono);color:var(--muted-foreground)">฿0</span><span style="text-align:center;color:var(--muted-foreground)">→</span><span class="nr" id="h-sNwNew" style="font-family:var(--font-mono);font-weight:700">฿0</span>
+        <span style="color:var(--muted-foreground)">หนี้ / สินทรัพย์</span><span class="nr" id="h-sDaNow" style="font-family:var(--font-mono);color:var(--muted-foreground)">0%</span><span style="text-align:center;color:var(--muted-foreground)">→</span><span class="nr"><b id="h-sDaNew" style="font-family:var(--font-mono);font-weight:700">0%</b></span>
+        <span style="color:var(--muted-foreground)">หนี้ / รายได้</span><span class="nr" id="h-sDiNow" style="font-family:var(--font-mono);color:var(--muted-foreground)">0%</span><span style="text-align:center;color:var(--muted-foreground)">→</span><span class="nr" style="white-space:nowrap"><b id="h-sDiNew" style="font-family:var(--font-mono);font-weight:700">0%</b><span class="notag">ไม่ขยับ</span></span>
+        <span style="color:var(--muted-foreground)">เงินสำรอง</span><span class="nr" style="color:var(--muted-foreground)"><span id="h-sRwNow" style="font-family:var(--font-mono)">0</span> ด.</span><span style="text-align:center;color:var(--muted-foreground)">→</span><span class="nr" style="white-space:nowrap"><b id="h-sRwNew" style="font-family:var(--font-mono);font-weight:700">0</b> ด.<span class="notag">ไม่ขยับ</span></span>
+      </div>
+      <div id="h-sVerdict" style="margin-top:12px;padding-top:10px;border-top:1px solid var(--border);font-size:13px;line-height:1.7"></div>
+      <div id="h-stress-note" style="margin-top:6px;font-size:11px;line-height:1.5"></div>
+    </div>
+
+  </div><!-- /tab-health -->
+
+  <div style="font-size:11px;color:var(--muted-foreground);text-align:center;margin-top:8px">ข้อมูลเก็บในเครื่องของคุณ (localStorage)</div>
+</div>
+
+<script>
+const KEY='dca_v3', PAGE=30;
+let entries=[], showAll=false;
+let c1=null,c2=null,c3=null,c4=null;
+let lastPrice=0, refreshTimer=null;
+
+// ── date helpers ──
+function todayDMY(){
+  const d=new Date();
+  return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
+}
+function parseDMY(s){
+  const p=s.trim().split('/');
+  if(p.length!==3) return null;
+  const [d,m,y]=p;
+  if(y.length<4) return null;
+  const iso=`${y}-${m.padStart(2,'0')}-${d.padStart(2,'0')}`;
+  return isNaN(new Date(iso).getTime())?null:iso;
+}
+let lookupController=null;
+
+async function lookupHistPrice(iso){
+  const fp=document.getElementById('f-price');
+  if(lookupController) lookupController.abort();
+  lookupController=new AbortController();
+  const sig=lookupController.signal;
+
+  fp.value='';
+  fp.placeholder='กำลังดึง…';
+
+  const startMs=new Date(iso+'T00:00:00Z').getTime();
+  const endMs=startMs+86400000;
+
+  const sources=[
+    // Binance BTCTHB klines
+    ()=>fetch(`https://api.binance.com/api/v3/klines?symbol=BTCTHB&interval=1d&startTime=${startMs}&endTime=${endMs}&limit=1`,{signal:sig})
+        .then(r=>r.json()).then(d=>{ if(!d.length) throw new Error('no data'); return parseFloat(d[0][4]); }),
+    // Binance BTCUSDT klines × USD/THB
+    ()=>fetch(`https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1d&startTime=${startMs}&endTime=${endMs}&limit=1`,{signal:sig})
+        .then(r=>r.json()).then(d=>{ if(!d.length) throw new Error('no data'); return parseFloat(d[0][4])*USD_THB; }),
+  ];
+
+  for(const src of sources){
+    try{
+      const price=await src();
+      if(sig.aborted) return;
+      fp.value=Math.round(price).toLocaleString('th-TH');
+      fp.placeholder='ไม่รู้ก็ปล่อยว่าง';
+      calcBTC();
+      return;
+    }catch(e){ if(e.name==='AbortError') return; }
+  }
+  if(!sig.aborted) fp.placeholder='กรอกราคาเอง';
+}
+
+function autoLookupPrice(){
+  const iso=parseDMY(document.getElementById('f-date').value);
+  if(!iso) return;
+  const today=new Date().toISOString().slice(0,10);
+  if(iso===today){
+    const cp=strip(document.getElementById('cur-price').value);
+    if(cp>0){ document.getElementById('f-price').value=Math.round(cp).toLocaleString('th-TH'); calcBTC(); }
+  } else {
+    lookupHistPrice(iso);
+  }
+}
+function attachDate(id){
+  const el=document.getElementById(id);
+  el.addEventListener('input',()=>{
+    let v=el.value.replace(/\D/g,'');
+    if(v.length>2) v=v.slice(0,2)+'/'+v.slice(2);
+    if(v.length>5) v=v.slice(0,5)+'/'+v.slice(5);
+    if(v.length>10) v=v.slice(0,10);
+    el.value=v;
+    if(v.length===10) autoLookupPrice();
+  });
+}
+function openCal(){
+  const nd=document.getElementById('f-date-native');
+  const iso=parseDMY(document.getElementById('f-date').value);
+  if(iso) nd.value=iso;
+  try{ nd.showPicker(); }catch(e){ nd.click(); }
+}
+document.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('f-date-native').addEventListener('change',function(){
+    const[y,m,d]=this.value.split('-');
+    document.getElementById('f-date').value=`${d}/${m}/${y}`;
+    autoLookupPrice();
+  });
+});
+
+// ── num helpers ──
+const strip  = s => parseFloat(String(s).replace(/,/g,'').replace(/[^0-9.]/g,''))||0;
+const commas = v => { const n=strip(v); return (!n&&n!==0)||isNaN(n)?'':n.toLocaleString('th-TH'); };
+const fmt    = v => '฿'+Math.round(v).toLocaleString('th-TH');
+const fmtB   = v => v>=0.001?v.toFixed(6)+' BTC':(v*1e8).toFixed(0)+' sats';
+const fmtD   = s => new Date(s+'T00:00:00').toLocaleDateString('en-GB',{day:'numeric',month:'numeric',year:'numeric'});
+
+function attachCommaEl(el, decimal=false){
+  el.addEventListener('keydown',e=>{
+    const ok=['Backspace','Delete','ArrowLeft','ArrowRight','Tab','Enter','Home','End'];
+    if(ok.includes(e.key)) return;
+    if(e.ctrlKey||e.metaKey) return;
+    if(decimal && e.key==='.') return;
+    if(!/\d/.test(e.key)) e.preventDefault();
+  });
+  el.addEventListener('blur',()=>{
+    const v=strip(el.value);
+    el.value=v?commas(v):'';
+  });
+}
+function attachComma(id, decimal=false){ attachCommaEl(document.getElementById(id), decimal); }
+
+// ── storage ──
+function load(){ try{entries=JSON.parse(localStorage.getItem(KEY))||[];}catch(e){entries=[];} }
+function save(){ localStorage.setItem(KEY,JSON.stringify(entries)); }
+
+// ── theme ──
+const THEME_KEY='dca_theme';
+function applyTheme(t){
+  document.documentElement.classList.toggle('dark', t==='dark');
+  const btn=document.getElementById('btn-theme');
+  if(btn) btn.textContent = t==='dark' ? '☀️' : '🌙';
+}
+function toggleTheme(){
+  const next = document.documentElement.classList.contains('dark') ? 'light' : 'dark';
+  localStorage.setItem(THEME_KEY, next);
+  applyTheme(next);
+  renderAll(); // charts read colors from CSS vars
+}
+
+// ── demo data ──
+function loadDemo(){
+  if(entries.length && !confirm('จะแทนที่ข้อมูลเดิมด้วยข้อมูลตัวอย่างนะครับ ตกลงไหม?')) return;
+  const today=new Date();
+  const samples=[]; // monthly DCA 5,000฿ for the last 8 months at varying prices
+  const prices=[2350000,2480000,2310000,2560000,2720000,2610000,2840000,2900000];
+  for(let i=7;i>=0;i--){
+    const d=new Date(today.getFullYear(), today.getMonth()-i, 5);
+    const iso=d.toISOString().slice(0,10);
+    const thb=5000, price=prices[7-i];
+    samples.push({id:Date.now()+i, date:iso, thb, price, btc:+(thb/price).toFixed(8)});
+  }
+  entries=samples;
+  entries.sort((a,b)=>a.date.localeCompare(b.date));
+  save();
+  renderAll();
+}
+
+// ── real-time price ──
+const USD_THB = 33.5;
+const PRICE_SOURCES = [
+  {
+    name: 'Binance',
+    url: 'https://api.binance.com/api/v3/ticker/24hr?symbol=BTCTHB',
+    parse: d => ({ price: parseFloat(d.lastPrice), change24h: parseFloat(d.priceChangePercent) })
+  },
+  {
+    name: 'Bitkub',
+    url: 'https://api.bitkub.com/api/market/ticker?sym=THB_BTC',
+    parse: d => ({ price: d.result.THB_BTC.last, change24h: d.result.THB_BTC.percentChange })
+  },
+  {
+    name: 'Binance (USD→THB)',
+    url: 'https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT',
+    parse: d => ({ price: parseFloat(d.lastPrice)*USD_THB, change24h: parseFloat(d.priceChangePercent) })
+  },
+  {
+    name: 'CoinGecko',
+    url: 'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=thb&include_24hr_change=true',
+    parse: d => ({ price: d.bitcoin.thb, change24h: d.bitcoin.thb_24h_change })
+  }
+];
+
+async function fetchPrice(manual=false){
+  const btn=document.getElementById('btn-fetch');
+  const dot=document.getElementById('price-dot');
+  const status=document.getElementById('price-status');
+  const badge=document.getElementById('price-change');
+
+  btn.disabled=true;
+  dot.className='dot loading';
+  status.textContent='กำลังดึงราคา…';
+
+  let lastErr='';
+  for(const src of PRICE_SOURCES){
+    try {
+      const res = await fetch(src.url, {signal: AbortSignal.timeout(8000)});
+      if(!res.ok) throw new Error('HTTP '+res.status);
+      const data = await res.json();
+      const {price, change24h} = src.parse(data);
+      if(!price) throw new Error('no price');
+
+      document.getElementById('cur-price').value = Math.round(price).toLocaleString('th-TH');
+      document.getElementById('f-price').value   = Math.round(price).toLocaleString('th-TH');
+
+      dot.className='dot live';
+      const now=new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+      status.textContent=`${src.name} • ${now}`;
+
+      if(change24h!=null){
+        badge.style.display='inline';
+        const sign=change24h>=0?'+':'';
+        badge.textContent=sign+Number(change24h).toFixed(2)+'% (24h)';
+        badge.className='change-badge '+(change24h>=0?'up':'down');
+      }
+
+      lastPrice=price;
+      calcBTC();
+      renderAll();
+      scheduleRefresh();
+      btn.disabled=false;
+      return;
+    } catch(e){ lastErr=e.message||'error'; }
+  }
+
+  dot.className='dot err';
+  status.textContent='ดึงราคาไม่ได้ — '+lastErr;
+  badge.style.display='none';
+  if(manual) scheduleRefresh();
+  btn.disabled=false;
+}
+
+function scheduleRefresh(){
+  clearTimeout(refreshTimer);
+  refreshTimer = setTimeout(()=>fetchPrice(false), 60_000);
+}
+
+
+// ── auto calc BTC ──
+function calcBTC(){
+  const thb=strip(document.getElementById('f-thb').value);
+  const price=strip(document.getElementById('f-price').value);
+  if(thb>0&&price>0) document.getElementById('f-btc').value=(thb/price).toFixed(6);
+}
+
+// ── add ──
+function addEntry(){
+  const dateRaw = document.getElementById('f-date').value;
+  const date = parseDMY(dateRaw);
+  const thb  = strip(document.getElementById('f-thb').value);
+  const price= strip(document.getElementById('f-price').value) || strip(document.getElementById('cur-price').value);
+  const fbtc = strip(document.getElementById('f-btc').value);
+
+  const today=new Date().toISOString().slice(0,10);
+  if(!date){ alert('กรุณากรอกวันที่ให้ถูกต้อง เช่น 03/05/2026 ครับ'); return; }
+  if(date>today){ alert('ไม่สามารถเพิ่มวันที่ในอนาคตได้ครับ'); return; }
+  if(thb<=0){ alert('กรุณากรอกจำนวนเงิน (THB) ครับ'); return; }
+  if(price<=0 && fbtc<=0){ alert('กรุณากรอกราคา BTC หรือจำนวน BTC ที่ได้ครับ'); return; }
+
+  const btc = fbtc>0 ? fbtc : thb/price;
+  const priceUsed = price>0 ? price : thb/fbtc;
+
+  entries.push({id:Date.now(), date, thb, price:priceUsed, btc});
+  entries.sort((a,b)=>a.date.localeCompare(b.date));
+  save();
+
+  document.getElementById('f-thb').value='';
+  document.getElementById('f-price').value='';
+  document.getElementById('f-btc').value='';
+  renderAll();
+}
+
+// ── export CSV ──
+function exportCSV(){
+  if(!entries.length) return;
+  const rows=[['วันที่','THB','ราคา BTC (฿)','BTC']];
+  [...entries].reverse().forEach(e=>{
+    rows.push([fmtD(e.date), e.thb, Math.round(e.price), e.btc.toFixed(8)]);
+  });
+  const csv=rows.map(r=>r.join(',')).join('\n');
+  const blob=new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=`dca-bitcoin-${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+}
+
+// ── delete ──
+function del(id){ entries=entries.filter(e=>e.id!==id); save(); renderAll(); }
+
+// ── toggle all ──
+function toggleAll(){ showAll=!showAll; renderHist(); }
+
+// ── render ──
+function renderAll(){
+  const cp=strip(document.getElementById('cur-price').value);
+  const tT=entries.reduce((s,e)=>s+e.thb,0);
+  const tB=entries.reduce((s,e)=>s+e.btc,0);
+  const avg=tB>0?tT/tB:0;
+  const val=tB*cp;
+  const pnl=val-tT;
+
+  document.getElementById('s-btc').textContent=tB>0?fmtB(tB):'0';
+  document.getElementById('s-thb').textContent=fmt(tT);
+  document.getElementById('s-avg').textContent=avg>0?fmt(avg):'-';
+  document.getElementById('s-val').textContent=val>0?fmt(val):'-';
+  const pe=document.getElementById('s-pnl');
+  pe.textContent=tT>0?(pnl>=0?'+':'')+fmt(pnl):'-';
+  pe.className='val '+(pnl>0?'green':pnl<0?'red':'');
+  document.getElementById('cur-val').textContent=val>0?fmt(val):'-';
+
+  renderHist();
+  renderCharts(cp,avg);
+  syncHealthBtc();
+  renderHealth();
+}
+
+function renderHist(){
+  const wrap=document.getElementById('hist');
+  const bm=document.getElementById('btn-more');
+  document.getElementById('ec').textContent=entries.length?`(${entries.length} รายการ)`:'';
+  document.getElementById('btn-csv').style.display=entries.length?'block':'none';
+  if(!entries.length){
+    wrap.innerHTML='<div class="empty">ยังไม่มีรายการ<br>กรอกด้านบนแล้วกด + เพิ่ม ได้เลยครับ<br><button class="btndemo" onclick="loadDemo()">✨ ลองข้อมูลตัวอย่าง</button></div>';
+    bm.style.display='none'; return;
+  }
+  const rev=[...entries].reverse();
+  const shown=showAll?rev:rev.slice(0,PAGE);
+  wrap.innerHTML=`<table>
+    <thead><tr><th>วันที่</th><th class="nr">THB</th><th class="nr">ราคา BTC</th><th class="nr">BTC</th><th></th></tr></thead>
+    <tbody>
+    ${shown.map(e=>`<tr>
+      <td>${fmtD(e.date)}</td>
+      <td class="nr">${fmt(e.thb)}</td>
+      <td class="nr" style="color:var(--muted-foreground)">${fmt(e.price)}</td>
+      <td class="nr"><span class="tag">${e.btc.toFixed(6)}</span></td>
+      <td style="text-align:center"><button class="btndel" onclick="del(${e.id})">×</button></td>
+    </tr>`).join('')}
+    </tbody></table>`;
+  if(entries.length>PAGE){
+    bm.style.display='block';
+    bm.textContent=showAll?'ย่อ ▲':`ดูทั้งหมด ${entries.length} รายการ ▼`;
+  } else { bm.style.display='none'; }
+}
+
+let chartPeriod='month';
+function setPeriod(p){
+  chartPeriod=p;
+  document.querySelectorAll('.ptab').forEach(b=>b.classList.toggle('active',b.dataset.p===p));
+  const cp=strip(document.getElementById('cur-price').value);
+  const tB=entries.reduce((s,e)=>s+e.btc,0);
+  const tT=entries.reduce((s,e)=>s+e.thb,0);
+  renderCharts(cp, tB>0?tT/tB:0);
+}
+
+function groupKey(dateStr){
+  const[y,m]=dateStr.slice(0,7).split('-');
+  if(chartPeriod==='year') return y;
+  if(chartPeriod==='quarter') return `${y}-Q${Math.ceil(+m/3)}`;
+  return `${y}-${m}`;
+}
+function groupLabel(key){
+  if(chartPeriod==='year') return key;
+  if(chartPeriod==='quarter'){
+    const[y,q]=key.split('-'); return `${q}/${y.slice(2)}`;
+  }
+  const[y,m]=key.split('-'); return `${m}/${y.slice(2)}`;
+}
+
+function renderCharts(cp,avgCost){
+  const dcaTab=document.getElementById('tab-dca');
+  if(dcaTab && dcaTab.style.display==='none') return;
+  const card=document.getElementById('chart-card');
+  if(entries.length<2){card.style.display='none';return;}
+  card.style.display='block';
+
+  const c2lbl={month:'THB ลงทุน / เดือน',quarter:'THB ลงทุน / ไตรมาส',year:'THB ลงทุน / ปี'};
+  document.getElementById('c2-label').textContent=c2lbl[chartPeriod];
+
+  const byM={};
+  entries.forEach(e=>{
+    const m=groupKey(e.date);
+    if(!byM[m]) byM[m]={thb:0,btc:0};
+    byM[m].thb+=e.thb; byM[m].btc+=e.btc;
+  });
+  const months=Object.keys(byM).sort();
+  const mlbl=months.map(groupLabel);
+
+  let cumBtc=0, cumThb=0;
+  const cumBtcArr=[], cumValArr=[], cumThbArr=[], avgArr=[], thbArr=[];
+  months.forEach(m=>{
+    cumBtc+=byM[m].btc; cumThb+=byM[m].thb;
+    cumBtcArr.push(+cumBtc.toFixed(6));
+    cumThbArr.push(+cumThb.toFixed(0));
+    thbArr.push(byM[m].thb);
+    avgArr.push(+(cumThb/cumBtc).toFixed(0));
+    cumValArr.push(+(cumBtc*cp).toFixed(0));
+  });
+
+  const ss=getComputedStyle(document.documentElement);
+  const c1color=ss.getPropertyValue('--chart-3').trim();
+  const c2color=ss.getPropertyValue('--chart-1').trim();
+  const c3color=ss.getPropertyValue('--chart-2').trim();
+  const c4color=ss.getPropertyValue('--chart-4').trim();
+
+  const cumSatsArr=cumBtcArr.map(v=>Math.round(v*1e8));
+  const fmtSats=v=>v>=1e6?(v/1e6).toFixed(2)+'M':v>=1e3?(v/1e3).toFixed(0)+'k':v;
+  if(c1) c1.destroy();
+  c1=new Chart(document.getElementById('c1').getContext('2d'),{type:'line',data:{labels:mlbl,datasets:[{data:cumSatsArr,borderColor:c1color,backgroundColor:c1color+'22',borderWidth:2,pointRadius:2,fill:true,tension:0.3}]},options:{plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>ctx.parsed.y.toLocaleString()+' sats'}}},scales:{x:{ticks:{font:{size:9}}},y:{ticks:{font:{size:9},callback:fmtSats}}},animation:{duration:300}}});
+
+  if(c2) c2.destroy();
+  c2=new Chart(document.getElementById('c2').getContext('2d'),{type:'bar',data:{labels:mlbl,datasets:[{data:thbArr,backgroundColor:c2color+'99',borderRadius:3}]},options:{plugins:{legend:{display:false}},scales:{x:{ticks:{font:{size:9}}},y:{ticks:{font:{size:9},callback:v=>'฿'+v.toLocaleString()}}},animation:{duration:300}}});
+
+  if(c3) c3.destroy();
+  const ds3=[{label:'ราคาเฉลี่ย',data:avgArr,borderColor:c3color,borderWidth:2,pointRadius:2,tension:0.3,fill:false}];
+  if(cp>0) ds3.push({label:'ราคาตลาด',data:months.map(()=>cp),borderColor:c1color,borderWidth:1.5,borderDash:[4,3],pointRadius:0,tension:0,fill:false});
+  c3=new Chart(document.getElementById('c3').getContext('2d'),{type:'line',data:{labels:mlbl,datasets:ds3},options:{plugins:{legend:{position:'bottom',labels:{font:{size:9},boxWidth:8}}},scales:{x:{ticks:{font:{size:9}}},y:{ticks:{font:{size:9},callback:v=>'฿'+Math.round(v).toLocaleString()}}},animation:{duration:300}}});
+
+  if(c4) c4.destroy();
+  c4=new Chart(document.getElementById('c4').getContext('2d'),{type:'line',data:{labels:mlbl,datasets:[
+    {label:'มูลค่า',data:cumValArr,borderColor:c4color,backgroundColor:c4color+'18',borderWidth:2,pointRadius:2,fill:true,tension:0.3},
+    {label:'ทุน',data:cumThbArr,borderColor:'#aaa',borderWidth:1.5,borderDash:[4,3],pointRadius:0,tension:0.3,fill:false}
+  ]},options:{plugins:{legend:{position:'bottom',labels:{font:{size:9},boxWidth:8}}},scales:{x:{ticks:{font:{size:9}}},y:{ticks:{font:{size:9},callback:v=>'฿'+Math.round(v).toLocaleString()}}},animation:{duration:300}}});
+}
+
+// ══════════ Financial Health tab ══════════
+const HKEY='health_v1';
+const HST={
+  ok:  {c:'var(--color-green)',  bg:'var(--color-green-bg)',                              fill:'var(--color-green)'},
+  warn:{c:'var(--accent-foreground)', bg:'var(--accent)',                                 fill:'var(--primary)'},
+  bad: {c:'var(--destructive)',  bg:'color-mix(in srgb,var(--destructive) 14%,transparent)', fill:'var(--destructive)'}
+};
+let health={cash:'',other:'',income:'',exp:'',btc:'',btcManual:false,stress:60,efTarget:6,efManual:false,debts:[]};
+let healthSaved=false, hbase={};
+
+function loadHealth(){
+  const raw=localStorage.getItem(HKEY);
+  healthSaved = raw!=null;
+  try{ if(raw) health=Object.assign(health, JSON.parse(raw)); }catch(e){}
+}
+function saveHealth(){
+  health.cash  = strip(document.getElementById('h-cash').value);
+  health.other = strip(document.getElementById('h-other').value);
+  health.income= strip(document.getElementById('h-income').value);
+  health.exp   = strip(document.getElementById('h-exp').value);
+  health.btc   = strip(document.getElementById('h-btc').value);
+  health.stress= +document.getElementById('h-stress').value;
+  health.efTarget= Math.max(1, Math.round(strip(document.getElementById('h-ef-target').value)) || 6);
+  health.debts = [...document.querySelectorAll('#hdebt-rows .hdebt-row')].map(r=>({
+    name:r.querySelector('.hd-name').value,
+    bal: strip(r.querySelector('.hd-bal').value),
+    rate:r.querySelector('.hd-rate').value,
+    pay: strip(r.querySelector('.hd-pay').value),
+    col: r.querySelector('.hd-col').value
+  }));
+  healthSaved=true;
+  localStorage.setItem(HKEY, JSON.stringify(health));
+}
+
+function trackerBtcValue(){
+  const tB=entries.reduce((s,e)=>s+e.btc,0);
+  return tB*strip(document.getElementById('cur-price').value);
+}
+function updateHealthBtcNote(){
+  const note=document.getElementById('h-btc-note'); if(!note) return;
+  const tB=entries.reduce((s,e)=>s+e.btc,0);
+  note.textContent = health.btcManual ? 'กรอกเอง (ไม่ผูกกับ DCA)'
+    : (tB>0 ? `≈ ${fmtB(tB)} จาก DCA × ราคาล่าสุด` : 'ยังไม่มี BTC ใน DCA tracker');
+}
+function syncHealthBtc(){
+  const el=document.getElementById('h-btc'); if(!el) return;
+  if(!health.btcManual){
+    const v=trackerBtcValue();
+    el.value = v>0 ? commas(Math.round(v)) : '';
+  }
+  updateHealthBtcNote();
+}
+
+function hDebtRow(d={}){
+  const row=document.createElement('div');
+  row.className='hdebt-row';
+  row.style.cssText='display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr) minmax(0,.5fr) minmax(0,1fr) minmax(0,1fr) 24px;gap:6px;align-items:center;margin-bottom:6px';
+  row.innerHTML='<input class="hd-name" placeholder="ชื่อหนี้"><input class="hd-bal" inputmode="numeric" placeholder="ยอดคงเหลือ"><input class="hd-rate" inputmode="decimal" placeholder="ดอก%"><input class="hd-pay" inputmode="numeric" placeholder="ผ่อน/เดือน"><select class="hd-col"><option value="other">อื่นๆ</option><option value="home">บ้าน</option><option value="volatile">ผันผวน</option></select><button class="btndel" type="button">×</button>';
+  row.querySelector('.hd-name').value=d.name||'';
+  row.querySelector('.hd-bal').value =d.bal?commas(d.bal):'';
+  row.querySelector('.hd-rate').value=d.rate||'';
+  row.querySelector('.hd-pay').value =d.pay?commas(d.pay):'';
+  row.querySelector('.hd-col').value =d.col||'other';
+  attachCommaEl(row.querySelector('.hd-bal'));
+  attachCommaEl(row.querySelector('.hd-pay'));
+  row.querySelectorAll('input').forEach(inp=>inp.addEventListener('input',()=>{saveHealth();renderHealth();}));
+  row.querySelector('.hd-col').addEventListener('change',()=>{saveHealth();renderHealth();});
+  row.querySelector('.btndel').addEventListener('click',()=>{row.remove();saveHealth();renderHealth();});
+  return row;
+}
+function addHDebt(d){ document.getElementById('hdebt-rows').appendChild(hDebtRow(d)); }
+
+function setRatioCard(p,val,k){
+  const v=document.getElementById('h-'+p+'Val'); v.textContent=Math.round(val)+'%'; v.style.color=HST[k].c;
+  const f=document.getElementById('h-'+p+'Fill'); f.style.width=Math.min(val,100)+'%'; f.style.background=HST[k].fill;
+}
+
+function renderHealth(){
+  if(!document.getElementById('h-cash')) return;
+  const cash=strip(document.getElementById('h-cash').value);
+  const btc =strip(document.getElementById('h-btc').value);
+  const other=strip(document.getElementById('h-other').value);
+  const income=strip(document.getElementById('h-income').value);
+  const exp=strip(document.getElementById('h-exp').value);
+  let debt=0, pay=0, homeDebt=0, volDebt=0;
+  document.querySelectorAll('#hdebt-rows .hdebt-row').forEach(r=>{
+    const b=strip(r.querySelector('.hd-bal').value);
+    debt+=b; pay +=strip(r.querySelector('.hd-pay').value);
+    const col=r.querySelector('.hd-col') ? r.querySelector('.hd-col').value : 'other';
+    if(col==='home') homeDebt+=b; else if(col==='volatile') volDebt+=b;
+  });
+  const riskDebt=debt-homeDebt;
+  const assets=cash+btc+other;
+  const daTotal=assets>0?debt/assets*100:0;
+  const da=assets>0?riskDebt/assets*100:0;
+  const di=income>0?pay/income*100:0;
+  const rw=(exp+pay)>0?cash/(exp+pay):0;
+  const daK=da<40?'ok':da<60?'warn':'bad';
+  document.getElementById('h-daSub').textContent = homeDebt>0 ? `ไม่รวมหนี้บ้าน · รวม ${Math.round(daTotal)}%` : '';
+  const diK=di<35?'ok':di<43?'warn':'bad';
+  const rwK=rw<3?'bad':rw<6?'warn':'ok';
+
+  setRatioCard('da',da,daK);
+  setRatioCard('di',di,diK);
+  const rwEl=document.getElementById('h-rwVal'); rwEl.textContent=rw.toFixed(1); rwEl.style.color=HST[rwK].c;
+  document.getElementById('h-rwMarker').style.left=Math.min(rw,12)/12*100+'%';
+
+  document.getElementById('h-ta').textContent=fmt(assets);
+  document.getElementById('h-td').textContent=fmt(debt);
+  const nw=document.getElementById('h-nw'); nw.textContent=fmt(assets-debt);
+  nw.style.color=(assets-debt)>=0?'var(--color-green)':'var(--destructive)';
+
+  const bp=assets>0?btc/assets*100:0, cp2=assets>0?cash/assets*100:0, op=assets>0?other/assets*100:0;
+  document.getElementById('h-mxBtc').style.width=bp+'%';
+  document.getElementById('h-mxCash').style.width=cp2+'%';
+  document.getElementById('h-mxOther').style.width=op+'%';
+  document.getElementById('h-pBtc').textContent=Math.round(bp)+'%';
+  document.getElementById('h-pCash').textContent=Math.round(cp2)+'%';
+  document.getElementById('h-pOther').textContent=Math.round(op)+'%';
+
+  const sev={ok:0,warn:1,bad:2}, worst=Math.max(sev[daK],sev[diK],sev[rwK]);
+  const bk=worst===2?'bad':worst===1?'warn':'ok';
+  const bd=document.getElementById('h-badge');
+  bd.textContent=worst===2?'ต้องระวัง':worst===1?'พอใช้ได้':'แข็งแรง';
+  bd.style.background=HST[bk].bg; bd.style.color=HST[bk].c;
+
+  // ── cashflow & allocation plan ──
+  const obligations=exp+pay;
+  const recMonths=di>=40?12:di>=25?9:6;
+  const efInput=document.getElementById('h-ef-target');
+  const effMonths=health.efManual?(Math.max(1,Math.round(strip(efInput.value))||6)):recMonths;
+  if(!health.efManual) efInput.value=effMonths;
+  const targetFund=obligations*effMonths, recFund=obligations*recMonths;
+  document.getElementById('h-ef-fund').textContent=fmt(targetFund);
+  const efHint=document.getElementById('h-ef-hint');
+  let hintTxt=`${effMonths} เดือน × (รายจ่าย+ผ่อนหนี้ ${fmt(obligations)}/ด.)`+(health.efManual?' · ตั้งเอง':' · อัตโนมัติตาม D/I');
+  if(!health.efManual && di>=25) hintTxt+=` · ภาระผ่อน (D/I) ${Math.round(di)}% จึงเพิ่มเป็น ${recMonths} เดือน`;
+  efHint.textContent=hintTxt;
+  efHint.style.color=di>=40?'var(--destructive)':di>=25?'var(--accent-foreground)':'var(--muted-foreground)';
+  const efAuto=document.getElementById('h-ef-auto');
+  efAuto.textContent=health.efManual?'↻ ใช้อัตโนมัติ':'อัตโนมัติ ✓';
+  efAuto.style.opacity=health.efManual?'1':'.55';
+  const cashflow=income-pay-exp;
+  document.getElementById('h-cfIncome').textContent='+'+fmt(income);
+  document.getElementById('h-cfDebt').textContent='−'+fmt(pay);
+  document.getElementById('h-cfExp').textContent='−'+fmt(exp);
+  const cfNet=document.getElementById('h-cfNet');
+  cfNet.textContent=(cashflow>0?'+':'')+fmt(cashflow);
+  cfNet.style.color=cashflow>0?'var(--color-green)':cashflow<0?'var(--destructive)':'var(--foreground)';
+  let planK,planIcon,planTxt;
+  if(income<=0){
+    planK='warn'; planIcon='💡';
+    planTxt='กรอกรายได้/รายจ่ายต่อเดือนเพื่อดูแผนจัดสรร (เติมเงินฉุกเฉิน → DCA)';
+  } else if(cashflow<=0){
+    planK='bad'; planIcon='⚠️';
+    planTxt=cashflow===0
+      ? 'กระแสเงินสดพอดีตัว — ไม่เหลือไปเติมเงินฉุกเฉินหรือ DCA ลองลดรายจ่าย/หนี้ หรือเพิ่มรายได้ก่อน'
+      : `กระแสเงินสดติดลบ ${fmt(Math.abs(cashflow))}/เดือน — รายจ่าย+ผ่อนหนี้เกินรายได้ ต้องแก้ตรงนี้ก่อน ยังไม่ควร DCA`;
+  } else if(cash<targetFund){
+    planK='warn'; planIcon='🛟';
+    const need=targetFund-cash, mTo=Math.ceil(need/cashflow);
+    planTxt=`เหลือ ${fmt(cashflow)}/เดือน → เติมเงินฉุกเฉินให้ถึง ${fmt(targetFund)} ก่อน (มีแล้ว ${fmt(cash)} ขาด ${fmt(need)} ≈ ${mTo} เดือน) แล้วค่อยเริ่ม DCA`;
+  } else {
+    planK='ok'; planIcon='✅';
+    planTxt=`เงินฉุกเฉินครบแล้ว (${fmt(cash)} ≥ ${fmt(targetFund)}) — เหลือ ${fmt(cashflow)}/เดือน เอาไป DCA Bitcoin ได้เต็มที่ 🚀`;
+  }
+  document.getElementById('h-plan').style.background=HST[planK].bg;
+  document.getElementById('h-plan-icon').textContent=planIcon;
+  document.getElementById('h-plan-text').textContent=planTxt;
+
+  hbase={cash,btc,other,debt,riskDebt,volDebt,assets,nw:assets-debt,da,di,rw};
+  renderStress();
+  updateHealthBtcNote();
+}
+
+function renderStress(){
+  const drop=+document.getElementById('h-stress').value||0;
+  document.getElementById('h-stressOut').textContent='−'+drop+'%';
+  const sBtc=hbase.btc*(1-drop/100), sAssets=hbase.cash+sBtc+hbase.other;
+  const sDa=sAssets>0?hbase.riskDebt/sAssets*100:0, sNw=sAssets-hbase.debt;
+  const sK=sDa<40?'ok':sDa<60?'warn':'bad';
+  document.getElementById('h-sBtcNow').textContent=fmt(hbase.btc);
+  document.getElementById('h-sBtcNew').textContent=fmt(sBtc);
+  document.getElementById('h-sNwNow').textContent=fmt(hbase.nw);
+  const nwNew=document.getElementById('h-sNwNew'); nwNew.textContent=fmt(sNw);
+  nwNew.style.color=sNw>=0?'var(--foreground)':'var(--destructive)';
+  document.getElementById('h-sDaNow').textContent=Math.round(hbase.da)+'%';
+  const daNew=document.getElementById('h-sDaNew'); daNew.textContent=Math.round(sDa)+'%'; daNew.style.color=HST[sK].c;
+  document.getElementById('h-sDiNow').textContent=Math.round(hbase.di)+'%';
+  document.getElementById('h-sDiNew').textContent=Math.round(hbase.di)+'%';
+  document.getElementById('h-sRwNow').textContent=hbase.rw.toFixed(1);
+  document.getElementById('h-sRwNew').textContent=hbase.rw.toFixed(1);
+  const head=`ที่ BTC −${drop}% : หนี้/สินทรัพย์ ขยับจาก ${Math.round(hbase.da)}% เป็น ${Math.round(sDa)}%`;
+  const stable=`หนี้/รายได้ (${Math.round(hbase.di)}%) และ เงินสำรอง (${hbase.rw.toFixed(1)} เดือน) ไม่ขยับ`;
+  let verdict, vColor;
+  if(sNw<0){
+    verdict=`${head} และมูลค่าสุทธิติดลบ ${fmt(sNw)} — หนี้มากกว่าสินทรัพย์ทั้งหมด คือภาวะ "ล้มละลายทางเทคนิค" ⚠️ แม้ ${stable} (ผ่อนรายเดือนยังไหว) แต่ถ้าต้องขายทุกอย่างก็ยังไม่พอปิดหนี้ เจอช็อตซ้ำจะอันตรายมาก — ควรลดหนี้/เพิ่มสภาพคล่องด่วน`;
+    vColor='var(--destructive)';
+  } else if(sDa>=60){
+    verdict=`${head} (สูงมาก) — ${stable} จึงยังจ่ายหนี้ได้ทุกงวด แต่ส่วนเผื่อสินทรัพย์บางลงมาก เหลือพื้นที่พลาดน้อย ควรเตรียมลดหนี้/เพิ่มเงินสด`;
+    vColor='var(--accent-foreground)';
+  } else {
+    verdict=`${head} (${sDa<40?'ยังอยู่ในเกณฑ์ปลอดภัย':'เริ่มสูงแต่ยังบริหารได้'}) — แต่ ${stable} เลย คุณยังจ่ายหนี้ได้ทุกงวด${hbase.volDebt>0?' (จ่ายไหว แต่หนี้ทับ BTC ดูหมายเหตุล่าง)':' ไม่ถูกบังคับขาย'}`;
+    vColor='var(--foreground)';
+  }
+  const sv=document.getElementById('h-sVerdict'); sv.textContent=verdict; sv.style.color=vColor;
+  const note=document.getElementById('h-stress-note');
+  if(hbase.volDebt>0){
+    note.textContent=`⚠️ มีหนี้ค้ำด้วยสินทรัพย์ผันผวน ${fmt(hbase.volDebt)} — ถ้า BTC ร่วงจริง LTV จะพุ่งจนอาจถูกบังคับขายก่อนถึงจุดด้านบน (stress นี้คิดเฉพาะกระแสเงินสด ยังไม่รวมการบังคับขาย ผลจริงอาจแย่กว่า)`;
+    note.style.color='var(--destructive)';
+  } else {
+    note.textContent='หนี้ของคุณไม่มีที่ค้ำด้วย BTC/ผันผวน → ราคา BTC ร่วงไม่ทำให้ถูกบังคับขาย ตราบใดที่ผ่อนไหว';
+    note.style.color='var(--muted-foreground)';
+  }
+}
+
+function setTab(t){
+  document.getElementById('tab-dca').style.display    = t==='dca'?'':'none';
+  document.getElementById('tab-health').style.display = t==='health'?'':'none';
+  document.querySelectorAll('.htab').forEach(b=>b.classList.toggle('active', b.dataset.t===t));
+  localStorage.setItem('health_tab', t);
+  if(t==='dca') renderAll(); else renderHealth();
+}
+
+function initHealth(){
+  loadHealth();
+  document.getElementById('h-cash').value  = health.cash  ? commas(health.cash)  : '';
+  document.getElementById('h-other').value = health.other ? commas(health.other) : '';
+  document.getElementById('h-income').value= health.income? commas(health.income): '';
+  document.getElementById('h-exp').value   = health.exp   ? commas(health.exp)   : '';
+  document.getElementById('h-stress').value= health.stress || 60;
+  document.getElementById('h-ef-target').value= health.efTarget || 6;
+
+  if(healthSaved){ (health.debts||[]).forEach(d=>addHDebt(d)); }
+  else { addHDebt({name:'ตัวอย่าง: ผ่อนรถ', bal:300000, rate:'6', pay:8000}); }
+
+  if(health.btcManual && health.btc){ document.getElementById('h-btc').value=commas(health.btc); }
+  else { health.btcManual=false; syncHealthBtc(); }
+
+  ['h-cash','h-other','h-income','h-exp'].forEach(id=>{
+    attachComma(id);
+    document.getElementById(id).addEventListener('input',()=>{saveHealth();renderHealth();});
+  });
+  attachComma('h-btc');
+  document.getElementById('h-btc').addEventListener('input',()=>{ health.btcManual=true; saveHealth(); renderHealth(); });
+  document.getElementById('h-btc-sync').addEventListener('click',()=>{ health.btcManual=false; syncHealthBtc(); saveHealth(); renderHealth(); });
+  document.getElementById('h-add-debt').addEventListener('click',()=>{ addHDebt(); saveHealth(); renderHealth(); });
+  document.getElementById('h-stress').addEventListener('input',()=>{ saveHealth(); renderStress(); });
+  document.getElementById('h-ef-target').addEventListener('input',()=>{ health.efManual=true; saveHealth(); renderHealth(); });
+  document.getElementById('h-ef-auto').addEventListener('click',()=>{ health.efManual=false; saveHealth(); renderHealth(); });
+
+  renderHealth();
+}
+
+// ── init ──
+applyTheme(localStorage.getItem(THEME_KEY) || 'dark');
+load();
+document.getElementById('f-date').value=todayDMY();
+document.getElementById('f-date-native').max=new Date().toISOString().slice(0,10);
+attachDate('f-date');
+attachComma('f-thb'); attachComma('f-price'); attachComma('cur-price');
+document.getElementById('cur-price').addEventListener('input',renderAll);
+document.getElementById('f-thb').addEventListener('input',calcBTC);
+document.getElementById('f-price').addEventListener('input',calcBTC);
+document.getElementById('f-thb').addEventListener('blur',calcBTC);
+document.getElementById('f-price').addEventListener('blur',calcBTC);
+document.getElementById('btn-add').addEventListener('click',addEntry);
+['f-date','f-thb','f-price','f-btc'].forEach(id=>{
+  document.getElementById(id).addEventListener('keydown',e=>{ if(e.key==='Enter') addEntry(); });
+});
+initHealth();
+renderAll();
+setTab(localStorage.getItem('health_tab')||'dca');
+fetchPrice(false);  // auto-fetch on load
+</script>
+</body>
+</html>
