@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="description" content="แดชบอร์ดคำนวณการสะสม Bitcoin แบบปรับค่าได้ทุกตัว พร้อมเป้าหมาย 1 BTC">
+<title>1 BTC — เครื่องคำนวณการสะสมบิตคอยน์</title>
+<style>
+  :root{
+    --bg:#F3EEE2; --surface:#FBF8F1; --surface-2:#FFFFFF;
+    --ink:#1C1710; --ink-2:#6C6353; --ink-3:#9A9080;
+    --border:rgba(28,23,16,.12); --border-2:rgba(28,23,16,.22);
+    --accent:#D9790A; --accent-2:#B4620A; --accent-soft:rgba(217,121,10,.13);
+    --grid:rgba(28,23,16,.08);
+    --good:#1E8A4C; --good-bg:rgba(30,138,76,.12);
+    --warn:#B26A12; --warn-bg:rgba(178,106,18,.12);
+    --bad:#BE3A2C; --bad-bg:rgba(190,58,44,.12);
+    --mono:ui-monospace,"SF Mono","Cascadia Code","Segoe UI Mono",Consolas,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,"Noto Sans Thai",sans-serif;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --bg:#0E0C09; --surface:#17140F; --surface-2:#201B13;
+      --ink:#F3ECDD; --ink-2:#A79E8C; --ink-3:#746C5C;
+      --border:rgba(243,236,221,.13); --border-2:rgba(243,236,221,.24);
+      --accent:#F7931A; --accent-2:#FBA83E; --accent-soft:rgba(247,147,26,.15);
+      --grid:rgba(243,236,221,.07);
+      --good:#3FB765; --good-bg:rgba(63,183,101,.14);
+      --warn:#E0A44A; --warn-bg:rgba(224,164,74,.14);
+      --bad:#E5604F; --bad-bg:rgba(229,96,79,.15);
+    }
+  }
+  :root[data-theme="light"]{
+    --bg:#F3EEE2; --surface:#FBF8F1; --surface-2:#FFFFFF;
+    --ink:#1C1710; --ink-2:#6C6353; --ink-3:#9A9080;
+    --border:rgba(28,23,16,.12); --border-2:rgba(28,23,16,.22);
+    --accent:#D9790A; --accent-2:#B4620A; --accent-soft:rgba(217,121,10,.13);
+    --grid:rgba(28,23,16,.08);
+    --good:#1E8A4C; --good-bg:rgba(30,138,76,.12);
+    --warn:#B26A12; --warn-bg:rgba(178,106,18,.12);
+    --bad:#BE3A2C; --bad-bg:rgba(190,58,44,.12);
+  }
+  :root[data-theme="dark"]{
+    --bg:#0E0C09; --surface:#17140F; --surface-2:#201B13;
+    --ink:#F3ECDD; --ink-2:#A79E8C; --ink-3:#746C5C;
+    --border:rgba(243,236,221,.13); --border-2:rgba(243,236,221,.24);
+    --accent:#F7931A; --accent-2:#FBA83E; --accent-soft:rgba(247,147,26,.15);
+    --grid:rgba(243,236,221,.07);
+    --good:#3FB765; --good-bg:rgba(63,183,101,.14);
+    --warn:#E0A44A; --warn-bg:rgba(224,164,74,.14);
+    --bad:#E5604F; --bad-bg:rgba(229,96,79,.15);
+  }
+
+  html,body{margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:var(--sans)}
+  *{box-sizing:border-box}
+  .wrap{color:var(--ink);max-width:1120px;margin:0 auto;padding:22px 20px 40px;line-height:1.55;
+    animation:fade .5s ease both}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){.wrap{animation:none}.fill{transition:none!important}}
+
+  .top{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:18px}
+  .brand{display:flex;align-items:center;gap:13px}
+  .coin{width:44px;height:44px;border-radius:50%;background:var(--accent);color:#1C1305;display:flex;
+    align-items:center;justify-content:center;font-family:var(--mono);font-weight:700;font-size:24px;flex:0 0 auto}
+  .brand h1{margin:0;font-size:26px;font-weight:600;letter-spacing:-.01em;line-height:1.05}
+  .brand p{margin:2px 0 0;color:var(--ink-2);font-size:13px}
+  .actions{display:flex;gap:8px}
+  .btn{font-family:var(--sans);font-size:13px;color:var(--ink-2);background:transparent;border:1px solid var(--border-2);
+    border-radius:8px;padding:8px 13px;cursor:pointer;transition:background .15s,color .15s;white-space:nowrap}
+  .btn:hover{background:var(--surface);color:var(--ink)}
+  .btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+  .verdict{display:flex;align-items:flex-start;gap:12px;border:1px solid var(--border);border-left-width:4px;
+    border-radius:12px;padding:14px 16px;margin-bottom:20px;background:var(--surface)}
+  .verdict.good{border-left-color:var(--good);background:var(--good-bg)}
+  .verdict.warn{border-left-color:var(--warn);background:var(--warn-bg)}
+  .verdict.bad{border-left-color:var(--accent);background:var(--accent-soft)}
+  .vmark{width:24px;height:24px;border-radius:50%;flex:0 0 auto;display:flex;align-items:center;justify-content:center;
+    font-size:15px;font-weight:700;color:#fff;margin-top:1px}
+  .good .vmark{background:var(--good)} .warn .vmark{background:var(--warn)} .bad .vmark{background:var(--accent)}
+  .verdict b{font-weight:600}
+  #vtext{font-size:14.5px}
+
+  .board{display:grid;grid-template-columns:298px 1fr;gap:20px;align-items:start}
+  @media (max-width:820px){.board{grid-template-columns:1fr}}
+
+  .panel{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px}
+  .controls{position:sticky;top:14px}
+  @media (max-width:820px){.controls{position:static}}
+  .controls h2{margin:0 0 4px;font-size:13px;font-weight:600;color:var(--ink-2);letter-spacing:.02em}
+  .controls .hint{margin:0 0 14px;font-size:12px;color:var(--ink-3)}
+
+  .ctrl{padding:13px 0;border-top:1px solid var(--border)}
+  .ctrl:first-of-type{border-top:0;padding-top:4px}
+  .ctrl-head{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:8px}
+  .ctrl-head label{font-size:13.5px;font-weight:500}
+  .ctrl-head .unit{font-size:11px;color:var(--ink-3)}
+  .numwrap{display:flex;align-items:center;gap:6px;margin-bottom:9px}
+  .numwrap .pre{font-family:var(--mono);font-size:14px;color:var(--ink-3)}
+  input.num{flex:1;font-family:var(--mono);font-size:16px;font-weight:600;color:var(--ink);background:var(--surface-2);
+    border:1px solid var(--border-2);border-radius:8px;padding:8px 10px;width:100%;font-variant-numeric:tabular-nums}
+  input.num:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:transparent}
+
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:4px;
+    background:var(--border-2);cursor:pointer;margin:2px 0}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:18px;height:18px;border-radius:50%;
+    background:var(--accent);border:3px solid var(--surface);box-shadow:0 0 0 1px var(--border-2);cursor:pointer}
+  input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;background:var(--accent);
+    border:3px solid var(--surface);cursor:pointer}
+  input[type=range]:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+
+  .hero{border:1px solid var(--border);border-radius:14px;padding:20px 22px;background:var(--surface);margin-bottom:16px}
+  .hero .lab{font-size:13px;color:var(--ink-2)}
+  .hero .big{font-family:var(--mono);font-weight:700;font-size:clamp(40px,9vw,62px);line-height:1;letter-spacing:-.02em;
+    color:var(--accent);margin:6px 0 2px;font-variant-numeric:tabular-nums}
+  .hero .big .sym{font-size:.5em;color:var(--ink-2);font-weight:500;margin-left:6px}
+  .prog{position:relative;height:12px;background:var(--surface-2);border:1px solid var(--border);border-radius:20px;
+    margin:16px 0 8px;overflow:hidden}
+  .fill{position:absolute;left:0;top:0;bottom:0;border-radius:20px;background:var(--accent);width:0;transition:width .5s ease,background .3s}
+  .fill.good{background:var(--good)} .fill.warn{background:var(--accent)} .fill.bad{background:var(--accent)}
+  .goaltick{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--ink);opacity:.55}
+  .prlabels{display:flex;justify-content:space-between;font-size:11.5px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+  .hero .sub{font-size:13.5px;color:var(--ink-2);margin-top:6px}
+  .hero .sub b{color:var(--ink);font-weight:600}
+
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(158px,1fr));gap:12px;margin-bottom:16px}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:13px 14px}
+  .card .k{font-size:12px;color:var(--ink-2);margin-bottom:6px;min-height:30px}
+  .card .v{font-family:var(--mono);font-size:19px;font-weight:600;letter-spacing:-.01em;font-variant-numeric:tabular-nums;
+    color:var(--ink);word-break:break-word}
+  .card .v .u{font-size:12px;color:var(--ink-3);font-weight:500;margin-left:3px}
+  .card .s{font-size:11.5px;color:var(--ink-3);margin-top:3px}
+  .card.accent .v{color:var(--accent)}
+
+  .chartcard{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px 18px 12px;margin-bottom:16px}
+  .chartcard .ch-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px;flex-wrap:wrap}
+  .chartcard h3{margin:0;font-size:14px;font-weight:600}
+  .legend{display:flex;gap:14px;font-size:12px;color:var(--ink-2)}
+  .legend span{display:flex;align-items:center;gap:6px}
+  .swatch{width:14px;height:3px;border-radius:2px;display:inline-block}
+  .swatch.line{background:var(--accent)}
+  .swatch.dash{background:repeating-linear-gradient(90deg,var(--bad) 0 4px,transparent 4px 7px);height:2px}
+  .canvas-box{position:relative;width:100%;height:300px}
+  canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none}
+
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  .tablecard{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:6px 4px;overflow-x:auto}
+  th,td{text-align:right;padding:9px 14px;font-variant-numeric:tabular-nums;white-space:nowrap}
+  th:first-child,td:first-child{text-align:left}
+  thead th{font-size:11.5px;font-weight:600;color:var(--ink-3);border-bottom:1px solid var(--border)}
+  tbody td{font-family:var(--mono);color:var(--ink)}
+  tbody td:first-child{font-family:var(--sans);color:var(--ink-2)}
+  tbody tr:not(:last-child) td{border-bottom:1px solid var(--grid)}
+  tbody tr.hit td{color:var(--accent)}
+  td.hl{color:var(--accent);font-weight:600}
+  .tbl-head{padding:14px 16px 8px}
+  .tbl-head h3{margin:0;font-size:14px;font-weight:600}
+  .tbl-head p{margin:4px 0 0;font-size:12px;color:var(--ink-3)}
+
+  footer{margin-top:22px;font-size:12px;color:var(--ink-3);line-height:1.7}
+  footer b{color:var(--ink-2);font-weight:600}
+
+  /* ── site navbar (shared across all pages) ── */
+  html{overflow-y:scroll}
+  body{padding-top:72px}
+  .cashual-nav{position:fixed;top:0;left:0;width:100%;background:rgba(15,15,15,0.95);backdrop-filter:blur(10px);border-bottom:1px solid #222;z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:0 2rem;height:72px}
+  .cashual-nav-logo{font-size:22px;font-weight:700;color:#f7931a;letter-spacing:0.05em}
+  .cashual-nav-links{display:flex;gap:2.5rem;list-style:none;margin:0;padding:0;align-items:center}
+  .cashual-nav-links a{color:#aaa;text-decoration:none;font-size:17px;transition:color 0.2s}
+  .cashual-nav-links a:hover{color:#f7931a}
+  @media(max-width:640px){.cashual-nav{padding:0 1rem}.cashual-nav-links{gap:1rem}.cashual-nav-links a{font-size:14px;white-space:nowrap}}
+</style>
+</head>
+<body>
+<nav class="cashual-nav">
+  <div class="cashual-nav-logo"><a href="index.html" style="text-decoration:none;color:inherit;">FreeyourtimeBitcoin</a></div>
+  <ul class="cashual-nav-links">
+    <li><a href="1-btc-dashboard.html">1 BTC</a></li>
+    <li><a href="Bitcoin-DCA-Master.html">DCA Master</a></li>
+    <li><a href="dca-tracker.html">DCA Tracker</a></li>
+    <li><a href="Purchasing-Power.html">Purchasing Power</a></li>
+    <li><a href="wealth-planner.html">Wealth Planner</a></li>
+    <li><a href="retirement plan.html">Retirement Plan</a></li>
+    <li><a href="https://cashualme.com/" target="_blank">Cashualme</a></li>
+  </ul>
+</nav>
+<div class="wrap">
+  <div class="top">
+    <div class="brand">
+      <div class="coin">&#8383;</div>
+      <div><h1>1 BTC</h1><p>เครื่องคำนวณการสะสมบิตคอยน์ &mdash; ปรับค่าได้ทุกตัว</p></div>
+    </div>
+    <div class="actions">
+      <button class="btn" id="theme">&#9680; ธีม</button>
+      <button class="btn" id="reset">&#8635; รีเซ็ต</button>
+    </div>
+  </div>
+
+  <div class="verdict" id="verdict">
+    <div class="vmark" id="vmark">!</div>
+    <div id="vtext"></div>
+  </div>
+
+  <div class="board">
+    <aside class="panel controls">
+      <h2>ตั้งค่าสมมติฐาน</h2>
+      <p class="hint">เลื่อนแถบหรือพิมพ์ตัวเลขได้เลย ผลลัพธ์อัปเดตทันที</p>
+
+      <div class="ctrl">
+        <div class="ctrl-head"><label for="price">ราคา BTC ตอนนี้</label><span class="unit">บาท / BTC</span></div>
+        <div class="numwrap"><span class="pre">&#3647;</span><input class="num" type="text" inputmode="numeric" autocomplete="off" id="price"></div>
+        <input type="range" id="priceR" min="50000" max="10000000" step="1000">
+      </div>
+
+      <div class="ctrl">
+        <div class="ctrl-head"><label for="monthly">เก็บเดือนละ</label><span class="unit">บาท / เดือน</span></div>
+        <div class="numwrap"><span class="pre">&#3647;</span><input class="num" type="text" inputmode="numeric" autocomplete="off" id="monthly"></div>
+        <input type="range" id="monthlyR" min="500" max="500000" step="500">
+      </div>
+
+      <div class="ctrl">
+        <div class="ctrl-head"><label for="years">ระยะเวลา</label><span class="unit">ปี</span></div>
+        <div class="numwrap"><input class="num" type="number" id="years" min="1" max="50" step="1"></div>
+        <input type="range" id="yearsR" min="1" max="50" step="1">
+      </div>
+
+      <div class="ctrl">
+        <div class="ctrl-head"><label for="growth">BTC โตปีละ</label><span class="unit">% ต่อปี</span></div>
+        <div class="numwrap"><input class="num" type="number" id="growth" min="-20" max="100" step="0.5"><span class="pre">%</span></div>
+        <input type="range" id="growthR" min="-20" max="100" step="1">
+      </div>
+
+      <div class="ctrl">
+        <div class="ctrl-head"><label for="existing">BTC ที่มีอยู่แล้ว</label><span class="unit">&#8383; (ถ้ามี)</span></div>
+        <div class="numwrap"><input class="num" type="number" id="existing" min="0" max="2" step="0.001"><span class="pre">&#8383;</span></div>
+        <input type="range" id="existingR" min="0" max="2" step="0.005">
+      </div>
+    </aside>
+
+    <main>
+      <div class="hero">
+        <div class="lab">สะสมได้เมื่อครบ <b id="hYears">30</b> ปี</div>
+        <div class="big"><span id="hBtc">0</span><span class="sym">&#8383;</span></div>
+        <div class="prog"><div class="fill" id="fill"></div><div class="goaltick" id="gtick"></div></div>
+        <div class="prlabels"><span>0</span><span id="hPct">0% ของ 1 BTC</span></div>
+        <div class="sub" id="hSub"></div>
+      </div>
+
+      <div class="cards" id="cards"></div>
+
+      <div class="chartcard">
+        <div class="ch-top">
+          <h3>เส้นทางการสะสม BTC</h3>
+          <div class="legend">
+            <span><i class="swatch line"></i>BTC สะสม</span>
+            <span><i class="swatch dash"></i>เป้าหมาย 1 BTC</span>
+          </div>
+        </div>
+        <div class="canvas-box"><canvas id="chart"></canvas></div>
+      </div>
+
+      <div class="tablecard">
+        <div class="tbl-head"><h3>ตารางสะสมรายปี</h3></div>
+        <table>
+          <thead><tr><th>ปีที่</th><th>BTC สะสม</th><th>% ของ 1 BTC</th><th>มูลค่า (บาท)</th></tr></thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+
+      <div class="tablecard" style="margin-top:16px">
+        <div class="tbl-head">
+          <h3>ต้องเก็บเดือนละเท่าไหร่ ถึงได้ 1 BTC ตอนเกษียณอายุ 60</h3>
+          <p>เริ่มเก็บ &ldquo;วันนี้&rdquo; ที่ราคา &amp; อัตราโตด้านซ้าย ไปจนถึงอายุ 60 &mdash; ปรับ 2 ค่านั้นแล้วตัวเลขเปลี่ยนตาม</p>
+        </div>
+        <table>
+          <thead><tr><th>เริ่มตอนอายุ</th><th>ระยะเวลา</th><th>ต้องเก็บ/เดือน</th><th>ลงทุนรวม</th><th>มูลค่า 1 BTC ตอน 60</th></tr></thead>
+          <tbody id="retire"></tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+
+  <footer>
+    <b>ข้อสมมติของโมเดล:</b> ซื้อด้วยเงินก้อนคงที่ทุกต้นเดือน ราคาโตแบบทบต้นสม่ำเสมอตามอัตราที่ตั้งไว้ (ราคาเดือนที่ m = ราคาปัจจุบัน &times; (1+อัตราโต)<sup>m/12</sup>) ไม่รวมค่าธรรมเนียม/ภาษี<br>
+    <b>ราคาเริ่มต้น</b> &#3647;2,098,474/BTC (&asymp; $62,621) ดึงสดจาก CoinGecko เมื่อ 14 ก.ค. 2026 &mdash; ปรับได้ตามจริง<br>
+    <b>หมายเหตุ:</b> เป็นแบบจำลองเชิงคณิตศาสตร์เพื่อการศึกษา ไม่ใช่คำแนะนำการลงทุน ราคา BTC จริงผันผวนสูงและไม่โตคงที่
+  </footer>
+</div>
+
+<script>
+(function(){
+  var DEF={price:2098474,monthly:10000,years:30,growth:20,existing:0};
+  var CFG={
+    price:{min:50000,max:10000000,comma:true},
+    monthly:{min:500,max:500000,comma:true},
+    years:{min:1,max:50,comma:false},
+    growth:{min:-20,max:100,comma:false},
+    existing:{min:0,max:2,comma:false}
+  };
+  var $=function(id){return document.getElementById(id)};
+
+  // theme toggle: auto -> light -> dark
+  var themes=["auto","light","dark"], tlabel={auto:"อัตโนมัติ",light:"สว่าง",dark:"มืด"}, ti=0;
+  function applyTheme(){var t=themes[ti],r=document.documentElement;
+    if(t==="auto")r.removeAttribute("data-theme"); else r.setAttribute("data-theme",t);
+    $("theme").innerHTML="&#9680; "+tlabel[t]; }
+  $("theme").addEventListener("click",function(){ti=(ti+1)%3;applyTheme();draw(null);});
+
+  // read a field's numeric value (strip commas), clamp to its range
+  function num(id){var cfg=CFG[id],raw=(''+$(id).value).replace(/,/g,''),v=parseFloat(raw);
+    if(isNaN(v))v=cfg.min; if(v<cfg.min)v=cfg.min; if(v>cfg.max)v=cfg.max; return v;}
+  function grp(v){return Number(Math.round(v)).toLocaleString('en-US');}
+  // live thousands-separator formatting that preserves caret position
+  function commafy(el){
+    var val=el.value, sel=el.selectionStart||0;
+    var before=val.slice(0,sel).replace(/\D/g,'').length;
+    var digits=val.replace(/\D/g,'');
+    if(digits===''){el.value='';return;}
+    var f=Number(digits).toLocaleString('en-US'); el.value=f;
+    var pos=0,seen=0; while(pos<f.length&&seen<before){var c=f.charCodeAt(pos); if(c>=48&&c<=57)seen++; pos++;}
+    try{el.setSelectionRange(pos,pos);}catch(e){}
+  }
+
+  Object.keys(CFG).forEach(function(id){
+    var el=$(id),rng=$(id+"R"),cfg=CFG[id];
+    el.addEventListener("input",function(){ if(cfg.comma)commafy(el); rng.value=num(id); render(); });
+    el.addEventListener("blur",function(){ var v=num(id); el.value=cfg.comma?grp(v):v; rng.value=v; render(); });
+    rng.addEventListener("input",function(){ el.value=cfg.comma?grp(rng.value):rng.value; render(); });
+  });
+  $("reset").addEventListener("click",function(){setVals(DEF);render();});
+
+  function setVals(v){for(var k in v){var cfg=CFG[k]; $(k).value=cfg.comma?grp(v[k]):v[k]; $(k+"R").value=v[k];}}
+  function getVals(){return{
+    price:num("price"),
+    monthly:num("monthly"),
+    years:Math.round(num("years")),
+    growth:num("growth"),
+    existing:num("existing")
+  };}
+
+  function sumMonths(m,g){ // sum_{k=0}^{m-1} (1/g)^k
+    if(m<=0)return 0;
+    if(Math.abs(g-1)<1e-12)return m;
+    var r=1/g; return (1-Math.pow(r,m))/(1-r);
+  }
+
+  var nf0=new Intl.NumberFormat("en-US",{maximumFractionDigits:0});
+  function fBaht(v){return "฿"+nf0.format(Math.round(v));}
+  function fThaiMil(v){
+    if(!isFinite(v))return "—";
+    if(Math.abs(v)>=1e12)return (v/1e12).toLocaleString("en-US",{maximumFractionDigits:2})+" ล้านล้านบาท";
+    if(Math.abs(v)>=1e6)return (v/1e6).toLocaleString("en-US",{maximumFractionDigits:1})+" ล้านบาท";
+    return fBaht(v);
+  }
+  function fBtc(v){return v.toFixed(v<0.1?4:3);}
+
+  var last=null;
+  function render(){
+    var s=getVals();
+    var P0=s.price,C=s.monthly,years=s.years,rate=s.growth/100;
+    var g=Math.pow(1+rate,1/12);
+    var N=years*12;
+    var sumN=sumMonths(N,g);
+    var have=s.existing;
+    var btc=have+(C/P0)*sumN;
+    var ceilingSum=(g>1)?g/(g-1):Infinity;
+    var ceiling=isFinite(ceilingSum)?have+(C/P0)*ceilingSum:Infinity;
+    var finalPrice=P0*Math.pow(1+rate,years);
+    var value=btc*finalPrice;
+    var invested=C*N;
+    var target=Math.max(0,1-have);
+    var monthlyFor1=target<=0?0:target*P0/sumN;
+    var pct=btc*100;
+
+    var yearHit=null;
+    for(var y=0;y<=years;y++){ if(have+(C/P0)*sumMonths(y*12,g)>=1){yearHit=y;break;} }
+
+    var state = btc>=1 ? "good" : (isFinite(ceiling)&&ceiling<1 ? "bad" : "warn");
+
+    $("hYears").textContent=years;
+    $("hBtc").textContent=fBtc(btc);
+    var mx=Math.max(1,btc);
+    var fill=$("fill");
+    fill.className="fill "+state;
+    fill.style.width=Math.min(100,(btc/mx)*100)+"%";
+    $("gtick").style.left=(1/mx*100)+"%";
+    $("hPct").textContent=(pct>=100?"≥ 100":Math.round(pct))+"% ของ 1 BTC";
+    $("hSub").innerHTML = state==="good"
+      ? "ถึงเป้าแล้ว — มูลค่ารวม <b>"+fThaiMil(value)+"</b>"
+      : "เหลืออีก <b>"+fBtc(Math.max(0,1-btc))+" ฿</b> ก็ครบ 1 BTC สู้ๆ!";
+
+    var v=$("verdict"),vm=$("vmark"),vt=$("vtext");
+    v.className="verdict "+state;
+    var own = have>0 ? " (รวมของเดิม "+fBtc(have)+" ฿)" : "";
+    if(state==="good"){
+      vm.textContent="✓";
+      if(have>=1){
+        vt.innerHTML="<b>มีครบ 1 BTC อยู่แล้ว!</b> ถืออยู่ "+fBtc(have)+" ฿ &middot; ครบ "+years+" ปีจะเป็น "+fBtc(btc)+" ฿";
+      }else{
+        vt.innerHTML="<b>ถึงเป้า 1 BTC!</b> รวมได้ "+fBtc(btc)+" ฿"+own+(yearHit>0?" — แตะ 1 BTC ประมาณปีที่ "+yearHit:"");
+      }
+    }else if(state==="bad"){
+      vm.textContent="↗";
+      vt.innerHTML="<b>ค่อยๆ เก็บไปเรื่อยๆ ทุกบาทมีค่า!</b> จังหวะนี้พาไปได้ราว "+fBtc(ceiling)+" ฿"+own+" — อยากได้เต็ม 1 BTC ลองขยับเป็นเดือนละ <b>"+fBaht(monthlyFor1)+"</b> ตั้งใจเก็บสม่ำเสมอ ไม่มีคำว่าสาย";
+    }else{
+      vm.textContent="↗";
+      vt.innerHTML="<b>มาถูกทางแล้ว เก็บต่อไปเรื่อยๆ!</b> ตอนนี้ได้ "+fBtc(btc)+" ฿"+own+" ใน "+years+" ปี — เพิ่มอีกนิดเป็นเดือนละ <b>"+fBaht(monthlyFor1)+"</b> เดี๋ยวก็แตะ 1 BTC สู้ๆ!";
+    }
+
+    var cards=[
+      {k:"% ของ 1 BTC ที่ทำได้",v:(pct>=100?"≥100":Math.round(pct)),u:"%",accent:true,s:btc>=1?"ถึงเป้า":"เหลืออีก "+fBtc(Math.max(0,1-btc))+" ฿"},
+      {k:"เพดานสูงสุด (เก็บตลอดชีพ)",v:isFinite(ceiling)?fBtc(ceiling):"∞",u:isFinite(ceiling)?"฿":"",s:isFinite(ceiling)?"คงจังหวะนี้ไปเรื่อยๆ":"ราคาไม่โต — ไม่จำกัด"},
+      {k:"เงินลงทุนรวมทั้งหมด",v:fThaiMil(invested),s:nf0.format(N)+" เดือน"},
+      {k:"มูลค่า BTC ปลายทาง",v:fThaiMil(value),s:"ตอนสิ้นปีที่ "+years},
+      {k:"ราคา BTC ปีที่ "+years,v:fThaiMil(finalPrice),s:"ต่อ 1 BTC"},
+      {k:"ต้องเก็บ/เดือน เพื่อ 1 BTC",v:monthlyFor1<=0?"ครบแล้ว":fBaht(monthlyFor1),s:monthlyFor1<=0?"มี 1 BTC อยู่แล้ว":"ใน "+years+" ปี (ราคา/โตนี้)"}
+    ];
+    $("cards").innerHTML=cards.map(function(c){
+      return '<div class="card'+(c.accent?' accent':'')+'"><div class="k">'+c.k+'</div><div class="v">'+c.v+(c.u?'<span class="u">'+c.u+'</span>':'')+'</div>'+(c.s?'<div class="s">'+c.s+'</div>':'')+'</div>';
+    }).join("");
+
+    var marks=[]; var raw=[1,Math.round(years/6),Math.round(years/3),Math.round(years/2),Math.round(2*years/3),Math.round(5*years/6),years];
+    raw.forEach(function(y){if(y>=1&&y<=years&&marks.indexOf(y)<0)marks.push(y)});
+    marks.sort(function(a,b){return a-b});
+    $("rows").innerHTML=marks.map(function(y){
+      var b=have+(C/P0)*sumMonths(y*12,g); var val=b*P0*Math.pow(1+rate,y);
+      var hit=b>=1?" class=\"hit\"":"";
+      return "<tr"+hit+"><td>ปี "+y+"</td><td>"+fBtc(b)+" ฿</td><td>"+(b>=1?"≥100":Math.round(b*100))+"%</td><td>"+fThaiMil(val)+"</td></tr>";
+    }).join("");
+
+    // retirement table: monthly needed to reach 1 BTC by age 60, from various start ages
+    var RET=60, ages=[20,30,40,50];
+    $("retire").innerHTML=ages.map(function(a){
+      var yrs=RET-a, mo=yrs*12, sm=sumMonths(mo,g);
+      var need=target<=0?0:target*P0/sm, inv=need*mo, valAt=P0*Math.pow(1+rate,yrs);
+      return "<tr><td>อายุ "+a+"</td><td>"+yrs+" ปี</td><td class=\"hl\">"+(need<=0?"ครบแล้ว":fBaht(need))+"</td><td>"+(need<=0?"—":fThaiMil(inv))+"</td><td>"+fThaiMil(valAt)+"</td></tr>";
+    }).join("");
+
+    last={P0:P0,C:C,years:years,g:g,rate:rate,btc:btc,mx:mx,state:state,have:have};
+    draw(null);
+  }
+
+  // ---- canvas chart ----
+  var cv=$("chart"),ctx=cv.getContext("2d");
+  function css(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim();}
+  function draw(hy){
+    if(!last)return;
+    var box=cv.parentNode.getBoundingClientRect();
+    var dpr=window.devicePixelRatio||1, W=box.width, H=box.height;
+    cv.width=W*dpr; cv.height=H*dpr; ctx.setTransform(dpr,0,0,dpr,0,0);
+    ctx.clearRect(0,0,W,H);
+    var padL=44,padR=14,padT=14,padB=26;
+    var pw=W-padL-padR, ph=H-padT-padB;
+    var years=last.years, C=last.C, P0=last.P0, g=last.g, have=last.have||0;
+    var steps=Math.max(24,Math.min(120,years*6));
+    var pts=[],peak=0;
+    for(var i=0;i<=steps;i++){var t=i/steps*years; var b=have+(C/P0)*sumMonths(t*12,g); pts.push([t,b]); if(b>peak)peak=b;}
+    var ymax=Math.max(1.08,peak*1.12);
+    var xOf=function(t){return padL+t/years*pw;};
+    var yOf=function(b){return padT+ph-(b/ymax)*ph;};
+
+    var cInk3=css("--ink-3"),cGrid=css("--grid"),cAcc=css("--accent"),cSoft=css("--accent-soft"),cBad=css("--bad"),cSurf=css("--surface");
+
+    ctx.font="11px "+css("--sans"); ctx.textBaseline="middle";
+    var yticks=[0,0.25,0.5,0.75,1]; if(ymax>1.2)yticks=[0,0.5,1,Math.round(ymax*10)/10];
+    yticks.forEach(function(gy){ if(gy>ymax)return; var y=yOf(gy);
+      ctx.strokeStyle=cGrid; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(padL,y); ctx.lineTo(W-padR,y); ctx.stroke();
+      ctx.fillStyle=cInk3; ctx.textAlign="right"; ctx.fillText(gy.toFixed(gy%1===0?0:2),padL-8,y);
+    });
+    ctx.textAlign="center"; ctx.textBaseline="top";
+    var xt=[0,Math.round(years/2),years]; if(years>=4)xt=[0,Math.round(years/4),Math.round(years/2),Math.round(3*years/4),years];
+    xt=xt.filter(function(v,i,a){return a.indexOf(v)===i});
+    xt.forEach(function(t){ctx.fillStyle=cInk3; ctx.fillText(t+(t===years?" ปี":""),xOf(t),H-padB+7);});
+
+    if(1<=ymax){var gy1=yOf(1); ctx.strokeStyle=cBad; ctx.lineWidth=2; ctx.setLineDash([5,4]);
+      ctx.beginPath(); ctx.moveTo(padL,gy1); ctx.lineTo(W-padR,gy1); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle=cBad; ctx.textAlign="left"; ctx.textBaseline="bottom"; ctx.fillText("1 ฿",padL+4,gy1-3);}
+
+    ctx.beginPath(); ctx.moveTo(xOf(0),yOf(0));
+    pts.forEach(function(p){ctx.lineTo(xOf(p[0]),yOf(p[1]));});
+    ctx.lineTo(xOf(years),yOf(0)); ctx.closePath(); ctx.fillStyle=cSoft; ctx.fill();
+    ctx.beginPath(); pts.forEach(function(p,i){var x=xOf(p[0]),y=yOf(p[1]); i?ctx.lineTo(x,y):ctx.moveTo(x,y);});
+    ctx.strokeStyle=cAcc; ctx.lineWidth=2.4; ctx.lineJoin="round"; ctx.stroke();
+    var ep=pts[pts.length-1];
+    ctx.beginPath(); ctx.arc(xOf(ep[0]),yOf(ep[1]),4.5,0,7); ctx.fillStyle=cAcc; ctx.fill();
+    ctx.lineWidth=2; ctx.strokeStyle=cSurf; ctx.stroke();
+
+    if(hy!=null){
+      var t=Math.max(0,Math.min(years,(hy-padL)/pw*years));
+      var b=have+(C/P0)*sumMonths(t*12,g); var x=xOf(t),y=yOf(b);
+      ctx.strokeStyle=cInk3; ctx.lineWidth=1; ctx.setLineDash([3,3]);
+      ctx.beginPath(); ctx.moveTo(x,padT); ctx.lineTo(x,padT+ph); ctx.stroke(); ctx.setLineDash([]);
+      ctx.beginPath(); ctx.arc(x,y,4,0,7); ctx.fillStyle=cAcc; ctx.fill(); ctx.strokeStyle=cSurf; ctx.lineWidth=2; ctx.stroke();
+      var lab="ปี "+t.toFixed(1)+"  ·  "+b.toFixed(3)+" ฿";
+      ctx.font="12px "+css("--sans"); var tw=ctx.measureText(lab).width+16;
+      var bx=Math.min(W-padR-tw,Math.max(padL,x-tw/2)), by=padT+2;
+      ctx.fillStyle=css("--surface-2"); ctx.strokeStyle=css("--border-2"); ctx.lineWidth=1;
+      if(ctx.roundRect){ctx.beginPath();ctx.roundRect(bx,by,tw,22,6);ctx.fill();ctx.stroke();}
+      else{ctx.fillRect(bx,by,tw,22);ctx.strokeRect(bx,by,tw,22);}
+      ctx.fillStyle=css("--ink"); ctx.textAlign="left"; ctx.textBaseline="middle"; ctx.fillText(lab,bx+8,by+11);
+    }
+  }
+  cv.addEventListener("pointermove",function(e){var r=cv.getBoundingClientRect(); draw(e.clientX-r.left);});
+  cv.addEventListener("pointerleave",function(){draw(null);});
+
+  var rt;
+  window.addEventListener("resize",function(){clearTimeout(rt);rt=setTimeout(function(){draw(null)},80);});
+  if(window.matchMedia){var mq=window.matchMedia("(prefers-color-scheme:dark)");
+    if(mq.addEventListener)mq.addEventListener("change",function(){draw(null)});
+    else if(mq.addListener)mq.addListener(function(){draw(null)});}
+
+  applyTheme();
+  setVals(DEF);
+  render();
+})();
+</script>
+</body>
+</html>
