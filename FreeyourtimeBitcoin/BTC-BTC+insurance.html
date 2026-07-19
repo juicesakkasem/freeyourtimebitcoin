@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="th" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bitcoin vs ประกันสุขภาพ</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <style>
+:root {
+  --card: #ffffff;
+  --ring: #f59e0b;
+  --input: #e5e7eb;
+  --muted: #f9fafb;
+  --accent: #fffbeb;
+  --border: #e5e7eb;
+  --radius: 0.375rem;
+  --primary: #f59e0b;
+  --background: #ffffff;
+  --foreground: #262626;
+  --destructive: #ef4444;
+  --muted-foreground: #6b7280;
+  --secondary: #f3f4f6;
+  --secondary-foreground: #4b5563;
+  --accent-foreground: #92400e;
+  --primary-foreground: #000000;
+  --font-sans: 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --color-green: #3B6D11;
+  --color-green-bg: #eaf3e0;
+  --color-blue: #3b82f6;
+  --color-orange: #f59e0b;
+  --warning-bg: #fffbeb;
+  --warning-border: #d97706;
+  --warning-text: #92400e;
+}
+.dark {
+  --card: #262626;
+  --ring: #f59e0b;
+  --input: #404040;
+  --muted: #1f1f1f;
+  --accent: #92400e;
+  --border: #404040;
+  --primary: #f59e0b;
+  --background: #171717;
+  --foreground: #e5e5e5;
+  --destructive: #ef4444;
+  --muted-foreground: #a3a3a3;
+  --secondary: #262626;
+  --secondary-foreground: #e5e5e5;
+  --accent-foreground: #fde68a;
+  --primary-foreground: #000000;
+  --color-green: #5aa832;
+  --color-green-bg: rgba(90,168,50,.15);
+  --color-blue: #60a5fa;
+  --color-orange: #fb923c;
+  --warning-bg: rgba(161,98,7,.15);
+  --warning-border: #b45309;
+  --warning-text: #fde68a;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{overflow-y:scroll}
+body{font-family:var(--font-sans);background:var(--background);color:var(--foreground);min-height:100vh;padding-top:72px}
+.wrap{max-width:1280px;margin:0 auto;padding:1.5rem 16px 3rem}
+
+/* Topbar */
+.topbar{display:flex;align-items:flex-start;justify-content:space-between;padding-bottom:14px;border-bottom:1px solid var(--border);margin-bottom:16px;gap:12px}
+.topbar-left h1{font-size:18px;font-weight:700;color:var(--color-orange)}
+.topbar-left p{font-size:12px;color:var(--muted-foreground);margin-top:3px}
+.topbar-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.header-badge{background:var(--card);border:1px solid var(--border);border-radius:calc(var(--radius)*2);padding:8px 14px;display:flex;align-items:center;gap:8px}
+.header-badge .lbl{font-size:10px;color:var(--muted-foreground);display:block}
+.header-badge .val{font-size:16px;font-weight:700;color:var(--color-green)}
+.btntheme{width:34px;height:34px;border-radius:var(--radius);border:1px solid var(--border);background:var(--card);color:var(--foreground);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .15s,border-color .15s}
+.btntheme:hover{background:var(--secondary);border-color:var(--ring)}
+
+/* Warning */
+.warning{background:var(--warning-bg);border:1px solid var(--warning-border);color:var(--warning-text);font-size:12px;border-radius:calc(var(--radius)*2);padding:10px 14px;margin-bottom:16px;line-height:1.6}
+
+/* Layout */
+.main-cols{display:grid;grid-template-columns:280px 1fr;gap:12px;align-items:start}
+.left-col{display:flex;flex-direction:column;gap:12px}
+
+/* Cards */
+.card{background:var(--card);border:1px solid var(--border);border-radius:calc(var(--radius)*2);padding:14px;margin-bottom:0}
+.ct{font-size:11px;font-weight:600;color:var(--muted-foreground);letter-spacing:.8px;text-transform:uppercase;margin-bottom:12px}
+.ct-orange{color:var(--color-orange)}
+.ct-red{color:var(--destructive)}
+
+/* Inputs */
+label{display:block;font-size:11px;color:var(--muted-foreground);margin-bottom:3px}
+input,select{width:100%;padding:7px 10px;font-size:13px;border:1px solid var(--border);border-radius:var(--radius);background:var(--card);color:var(--foreground);outline:none;font-family:inherit}
+input:focus,select:focus{border-color:var(--ring);box-shadow:0 0 0 2px color-mix(in srgb,var(--ring) 20%,transparent)}
+.input-highlight{border-color:color-mix(in srgb,var(--color-orange) 60%,transparent)!important}
+.input-green{border-color:color-mix(in srgb,var(--color-green) 60%,transparent)!important}
+.input-mono{font-family:var(--font-mono)}
+
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.fblock{background:var(--secondary);border:1px solid var(--border);border-radius:var(--radius);padding:10px}
+.fblock-orange{border-color:color-mix(in srgb,var(--color-orange) 40%,transparent)}
+.fblock-green{border-color:color-mix(in srgb,var(--color-green) 40%,transparent)}
+.fblock label{color:var(--color-orange);font-weight:600}
+.fblock-green label{color:var(--color-green)}
+
+/* Toggle buttons */
+.toggle-group{display:flex;background:var(--secondary);border:1px solid var(--border);border-radius:var(--radius);padding:2px;gap:2px}
+.toggle-btn{flex:1;padding:5px 0;font-size:12px;font-weight:600;border:none;border-radius:calc(var(--radius) - 2px);background:transparent;color:var(--muted-foreground);cursor:pointer;font-family:inherit;transition:all .15s}
+.toggle-btn.active{background:var(--card);color:var(--foreground);box-shadow:0 1px 3px rgba(0,0,0,.15)}
+
+/* Stats cards row */
+.scards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.scard{background:var(--card);border:1px solid var(--border);border-radius:calc(var(--radius)*2);padding:12px 14px}
+.scard .lbl{font-size:11px;color:var(--muted-foreground);margin-bottom:4px;display:flex;justify-content:space-between;align-items:center}
+.scard .val{font-size:20px;font-weight:700}
+.scard .sub{font-size:11px;color:var(--muted-foreground);margin-top:3px}
+
+/* Mode 2 banner */
+.mode2-banner{background:var(--secondary);border:1px solid color-mix(in srgb,var(--color-orange) 40%,transparent);border-radius:calc(var(--radius)*2);padding:14px}
+.mode2-inner{display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+.mode2-label{font-size:13px;color:var(--foreground)}
+.mode2-input{width:70px;text-align:center;font-family:var(--font-mono)}
+.mode2-result{flex:1;min-width:200px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:10px 14px;text-align:center}
+.mode2-result .rlbl{font-size:11px;color:var(--muted-foreground);margin-bottom:4px}
+.mode2-result .rval{font-size:26px;font-weight:800;font-family:var(--font-mono);color:var(--color-green)}
+.mode2-result .rsub{font-size:10px;color:var(--muted-foreground);margin-top:3px}
+.btnapply{padding:8px 16px;font-size:12px;font-weight:600;background:var(--primary);color:var(--primary-foreground);border:none;border-radius:var(--radius);cursor:pointer;font-family:inherit;white-space:nowrap;transition:opacity .15s}
+.btnapply:hover{opacity:.85}
+
+/* Sick list */
+.sick-item{background:var(--secondary);border:1px solid var(--border);border-radius:var(--radius);padding:10px;position:relative;margin-bottom:8px}
+.btndel{width:22px;height:22px;border-radius:var(--radius);border:1px solid var(--border);background:transparent;color:var(--muted-foreground);font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;position:absolute;top:8px;right:8px}
+.btndel:hover{background:color-mix(in srgb,var(--destructive) 10%,transparent);color:var(--destructive);border-color:var(--destructive)}
+.btnadd{width:100%;padding:6px;font-size:12px;border:1px dashed var(--border);border-radius:var(--radius);background:transparent;color:var(--muted-foreground);cursor:pointer;font-family:inherit;margin-top:6px}
+.btnadd:hover{background:var(--secondary)}
+
+/* Chart */
+.chart-tabs{display:flex;background:var(--secondary);border:1px solid var(--border);border-radius:var(--radius);padding:2px;gap:2px;width:fit-content}
+.chart-tab{padding:5px 12px;font-size:11px;font-weight:600;border:none;border-radius:calc(var(--radius) - 2px);background:transparent;color:var(--muted-foreground);cursor:pointer;font-family:inherit;transition:all .15s}
+.chart-tab.active{background:var(--card);color:var(--foreground);box-shadow:0 1px 3px rgba(0,0,0,.15)}
+
+/* Table */
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{text-align:left;font-size:10px;color:var(--muted-foreground);font-weight:600;letter-spacing:.5px;padding:8px 14px;border-bottom:1px solid var(--border);background:var(--secondary)}
+td{padding:9px 14px;border-bottom:1px solid var(--muted);color:var(--foreground)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--muted)}
+.td-green{color:var(--color-green);font-weight:600}
+.td-muted{color:var(--muted-foreground)}
+
+/* Color utils */
+.orange{color:var(--color-orange)}
+.green{color:var(--color-green)}
+.red{color:var(--destructive)}
+.blue{color:var(--color-blue)}
+.yellow{color:#fbbf24}
+.bold{font-weight:700}
+.mono{font-family:var(--font-mono)}
+
+/* Footer */
+.footer{text-align:center;font-size:11px;color:var(--muted-foreground);margin-top:24px;line-height:1.8}
+
+@media(max-width:860px){.main-cols{grid-template-columns:1fr}.scards{grid-template-columns:1fr 1fr}}
+@media(max-width:480px){.scards{grid-template-columns:1fr}.mode2-inner{flex-direction:column;align-items:flex-start}}
+
+/* ── site navbar (shared across all pages) ── */
+.cashual-nav{position:fixed;top:0;left:0;width:100%;background:rgba(15,15,15,0.95);backdrop-filter:blur(10px);border-bottom:1px solid #222;z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:0 2rem;height:72px}
+.cashual-nav-logo{font-size:22px;font-weight:700;color:#f7931a;letter-spacing:0.05em}
+.cashual-nav-links{display:flex;gap:2.5rem;list-style:none;margin:0;padding:0;align-items:center}
+.cashual-nav-links a{color:#aaa;text-decoration:none;font-size:17px;transition:color 0.2s}
+.cashual-nav-links a:hover{color:#f7931a}
+.cashual-nav-toggle{display:none;background:transparent;border:0;color:#f7931a;font-size:26px;line-height:1;cursor:pointer;padding:4px 8px}
+@media(max-width:640px){.cashual-nav{padding:0 1rem}.cashual-nav-toggle{display:block}.cashual-nav-links{display:none;position:absolute;top:72px;left:0;width:100%;flex-direction:column;gap:0;background:rgba(15,15,15,0.98);backdrop-filter:blur(10px);border-bottom:1px solid #222;padding:6px 0;max-height:calc(100vh - 72px);overflow-y:auto}.cashual-nav.open .cashual-nav-links{display:flex}.cashual-nav-links li{width:100%}.cashual-nav-links a{display:block;padding:14px 1.5rem;font-size:16px}}
+  </style>
+</head>
+<body>
+<nav class="cashual-nav">
+  <div class="cashual-nav-logo"><a href="index.html" style="text-decoration:none;color:inherit;">FreeyourtimeBitcoin</a></div>
+  <button class="cashual-nav-toggle" aria-label="เมนู" onclick="this.closest('.cashual-nav').classList.toggle('open')">&#9776;</button>
+  <ul class="cashual-nav-links">
+    <li><a href="1-btc-dashboard.html">1 BTC</a></li>
+    <li><a href="Bitcoin-DCA-Master.html">DCA Master</a></li>
+    <li><a href="dca-tracker.html">DCA Tracker</a></li>
+    <li><a href="Purchasing-Power.html">Purchasing Power</a></li>
+    <li><a href="wealth-planner.html">Wealth Planner</a></li>
+    <li><a href="retirement plan.html">Retirement Plan</a></li>
+    <li><a href="BTC-BTC+insurance.html">BTC + ประกัน</a></li>
+    <li><a href="https://cashualme.com/" target="_blank">Cashualme</a></li>
+  </ul>
+</nav>
+<div class="wrap">
+
+  <!-- Topbar -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <h1>เก็บ BTC อย่างเดียว vs BTC + ประกัน — แต่ละวัย "ป่วยได้ไม่เกินเท่าไหร่"</h1>
+      <p style="font-size:12px;color:var(--muted-foreground);margin-top:4px;line-height:1.6">เปรียบเทียบถือ BTC อย่างเดียว กับ BTC + ประกันสุขภาพ<br>ถ้าป่วยแบบไม่มีประกัน ต้องจ่ายบิลไม่เกินเท่าไหร่ถึงเทียบเท่าทำประกัน</p>
+    </div>
+    <div class="topbar-right">
+      <div class="header-badge">
+        <span style="font-size:18px">🎯</span>
+        <div>
+          <span class="lbl">วงเงินประกันที่เลือก</span>
+          <span id="header-limit" class="val">5,000,000 บาท</span>
+        </div>
+      </div>
+      <button class="btntheme" id="btn-theme" onclick="toggleTheme()" title="สลับธีม">🌙</button>
+    </div>
+  </div>
+
+  <!-- Disclaimer -->
+  <div class="warning">
+    ⚠️ <b>เป็นการจำลองด้วยสมมติฐาน ไม่ใช่การทำนายราคา</b> — โมเดล: BTC โต
+    <span id="disc-g" class="bold">20%</span>/ปี แล้วแสดงเป็น <b>"มูลค่าปัจจุบัน"</b>
+    (หักเงินเฟ้อ <span id="disc-i" class="bold">7%</span>/ปี)
+  </div>
+
+  <!-- Main layout -->
+  <div class="main-cols">
+
+    <!-- LEFT -->
+    <div class="left-col">
+
+      <!-- Parameters -->
+      <div class="card">
+        <div class="ct">ข้อมูล</div>
+
+        <div class="g2" style="margin-bottom:10px">
+          <div>
+            <label>เริ่มอายุ</label>
+            <input id="startAge" type="number" value="30" oninput="updateAll()">
+          </div>
+          <div>
+            <label>เกษียณอายุ</label>
+            <input id="retireAge" type="number" value="60" oninput="updateAll()">
+          </div>
+        </div>
+
+        <div style="margin-bottom:10px">
+          <label>เพศ (เบี้ยต่างกัน)</label>
+          <div class="toggle-group">
+            <button id="g-male" class="toggle-btn active" onclick="setGender('male')">ชาย</button>
+            <button id="g-female" class="toggle-btn" onclick="setGender('female')">หญิง</button>
+          </div>
+        </div>
+
+        <div class="fblock fblock-orange" style="margin-bottom:10px">
+          <label>เงินตั้งต้น (บาท)</label>
+          <input id="initCap" type="text" value="0" class="input-mono" oninput="formatInput(this); updateAll()">
+        </div>
+
+        <div style="margin-bottom:10px">
+          <label>เก็บเดือนละ (บาท)</label>
+          <input id="monthlySave" type="text" value="10,000" class="input-mono" oninput="formatInput(this); updateAll()">
+        </div>
+
+        <div class="g2" style="margin-bottom:10px">
+          <div>
+            <label>BTC โต %/ปี</label>
+            <input id="btcGrowth" type="number" value="20" oninput="updateAll()">
+          </div>
+          <div>
+            <label>เงินเฟ้อ %/ปี</label>
+            <input id="inflation" type="number" value="7" oninput="updateAll()">
+          </div>
+        </div>
+
+        <div class="fblock fblock-green">
+          <label>แผนประกัน (วงเงิน)</label>
+          <select id="planSelect" onchange="updateAll()" class="input-green" style="margin-top:6px">
+            <option value="0">แผน 1 — วงเงิน 1 ล้าน</option>
+            <option value="1" selected>แผน 2 — วงเงิน 5 ล้าน</option>
+            <option value="2">แผน 3 — วงเงิน 15 ล้าน</option>
+            <option value="3">แผน 4 — วงเงิน 25 ล้าน</option>
+          </select>
+          <p id="premNow" style="font-size:11px;color:var(--muted-foreground);margin-top:6px">เบี้ยปีนี้: –</p>
+        </div>
+      </div>
+
+      <!-- Mode 1: Manual sick events -->
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <div class="ct ct-red" style="margin-bottom:0">❤️‍🩹 โหมด 1: ใส่เหตุการณ์ป่วยเอง</div>
+          <button onclick="addSick()" class="btnapply" style="font-size:11px;padding:5px 10px">+ เพิ่ม</button>
+        </div>
+        <p style="font-size:11px;color:var(--muted-foreground);margin-bottom:10px">กำหนดเองว่าป่วยอายุไหน บิลเท่าไหร่</p>
+        <div id="sickList"></div>
+      </div>
+
+    </div><!-- /left-col -->
+
+    <!-- RIGHT -->
+    <div style="display:flex;flex-direction:column;gap:12px">
+
+      <!-- Mode 2 -->
+      <div class="card">
+        <div class="ct ct-orange">หาจำนวนเงินรักษาอัตโนมัติ ที่ถือ BTC แล้วเทียบเท่าซื้อประกันสุขภาพ</div>
+        <div class="mode2-inner">
+          <span class="mode2-label">ถ้าป่วยตอนอายุ</span>
+          <input id="focusAge" type="number" value="35" class="mode2-input" oninput="updateAll()">
+          <span class="mode2-label">ปี</span>
+          <div class="mode2-result">
+            <div class="rlbl">ถ้าไม่มีประกัน — บิลค่ารักษาต้องไม่เกิน</div>
+            <div id="threshold-value" class="rval">-</div>
+            <div class="rsub">BTC อย่างเดียวถึงจะยังคุ้มกว่ามีประกัน (เทียบมูลค่าตอนเกษียณ)</div>
+          </div>
+          <button onclick="applyFocusToChart()" class="btnapply">↧ ใส่ลงกราฟ</button>
+        </div>
+      </div>
+
+      <!-- Stat cards -->
+      <div class="scards">
+        <div class="scard">
+          <div class="lbl">อายุที่ดูแลตัวเองได้ (Self-Insure) <span>🔓</span></div>
+          <div id="card-time" class="val blue">-</div>
+          <div id="card-time-sub" class="sub">-</div>
+        </div>
+        <div class="scard">
+          <div class="lbl">มูลค่าตอนเกษียณ (BTC ล้วน) <span>📈</span></div>
+          <div id="card-wealth" class="val orange">-</div>
+          <div class="sub">ณ อายุเกษียณ (มูลค่าปัจจุบัน)</div>
+        </div>
+        <div class="scard">
+          <div class="lbl">สถานะ ณ อายุเกษียณ</div>
+          <div id="card-worst" class="val">-</div>
+          <div id="card-worst-sub" class="sub">-</div>
+        </div>
+      </div>
+
+      <!-- Chart -->
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px">
+          <span style="font-size:14px;font-weight:700">มูลค่าพอร์ตตามเวลา (มูลค่าปัจจุบัน)</span>
+          <div class="chart-tabs">
+            <button onclick="setChartView('accumulation')" id="btn-zoom" class="chart-tab active">ซูมช่วงวัยทำงาน</button>
+            <button onclick="setChartView('lifetime')" id="btn-life" class="chart-tab">ตลอดชีพ</button>
+          </div>
+        </div>
+        <div id="chart-fallback" style="display:none;text-align:center;padding:40px;color:var(--destructive);font-weight:700">
+          โหลด Chart.js ไม่ได้ — เช็กอินเทอร์เน็ต
+        </div>
+        <div style="position:relative;height:380px;width:100%">
+          <canvas id="myChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Threshold table -->
+      <div class="card" style="padding:0;overflow:hidden">
+        <div style="padding:14px 16px;border-bottom:1px solid var(--border)">
+          <div style="font-size:14px;font-weight:700">📋 เพดาน "ป่วยได้ไม่เกิน" ตามอายุ</div>
+          <p style="font-size:11px;color:var(--muted-foreground);margin-top:4px">ถ้าเลือก BTC อย่างเดียว ค่ารักษาต้องไม่เกินตัวเลขนี้ ถึงจะยังคุ้มกว่ามีประกัน</p>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>อายุที่ป่วย</th>
+                <th style="color:var(--color-green)">ป่วยได้ไม่เกิน</th>
+                <th>พอร์ต BTC ล้วน ณ อายุนั้น</th>
+              </tr>
+            </thead>
+            <tbody id="thresholdTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div><!-- /right -->
+  </div><!-- /main-cols -->
+
+  <p class="footer">
+    ที่มาเบี้ยประกัน: <b>AIA Health Happy</b> (ตารางเบี้ยมาตรฐาน แยกชาย/หญิง 4 แผน) · เบี้ยจริงขึ้นกับเงื่อนไข อายุ และสุขภาพผู้เอาประกัน<br>
+    สร้างเพื่อการศึกษา · ไม่ใช่คำแนะนำการลงทุนหรือการซื้อประกัน
+  </p>
+
+</div><!-- /wrap -->
+
+<script>
+  // ===== AIA Health Happy premium table (ต่อปี, บาท) =====
+  const AGE_BANDS = [[11,15],[16,20],[21,25],[26,30],[31,35],[36,40],[41,45],[46,50],[51,55],[56,59],[60,65],[66,70],[71,75],[76,80],[81,85],[86,90],[91,95],[96,98]];
+  const PREMIUMS = {
+    male: [
+      [16400,20200,25500,33400],[13500,16500,20100,26200],[13700,16900,21600,28000],
+      [14700,18300,26100,33800],[15100,18900,29400,37800],[17000,20800,31800,40900],
+      [19200,23800,36000,47300],[21600,26700,40200,52400],[28300,35000,50100,65300],
+      [34100,42300,63900,83000],[40900,50600,72300,94100],[59400,72100,105000,136700],
+      [85400,104000,152100,197800],[122900,150000,219900,286300],[177800,217100,318300,414700],
+      [204500,249700,366000,476900],[235200,287200,420900,548400],[270500,330300,484200,630700]
+    ],
+    female: [
+      [14400,18200,21600,27900],[15200,19100,23100,30300],[17200,21500,27000,35300],
+      [17500,21800,30600,38000],[18400,22700,34200,42300],[20400,25100,37200,46000],
+      [22300,27800,42900,53600],[24500,30400,46500,60700],[28500,35200,50700,65500],
+      [34400,42500,65100,84600],[41500,50800,73500,95700],[60800,74000,107100,139300],
+      [88200,107500,155700,202000],[126300,154400,224700,291800],[182700,223400,325500,422700],
+      [210100,256900,374400,486100],[241600,295400,430500,559000],[277800,339700,495000,642900]
+    ]
+  };
+  const PLAN_COVERAGE = [1000000,5000000,15000000,25000000];
+
+  let gender = 'male';
+  let sickEvents = [];
+  let currentView = 'accumulation';
+  let myChart = null;
+
+  // Theme
+  function toggleTheme(){
+    const isDark = document.documentElement.classList.toggle('dark');
+    document.getElementById('btn-theme').textContent = isDark ? '🌙' : '☀️';
+    if (myChart) updateAll();
+  }
+  function isDark(){ return document.documentElement.classList.contains('dark'); }
+
+  function formatInput(el){ let v=el.value.replace(/[^0-9]/g,''); el.value=v!==''?parseInt(v,10).toLocaleString('en-US'):''; }
+  function getNumberValue(id){ let el=document.getElementById(id); if(!el) return 0; return parseInt(el.value.replace(/,/g,''))||0; }
+
+  function getPremium(age, planIdx){
+    let bi=AGE_BANDS.findIndex(b=>age>=b[0]&&age<=b[1]);
+    if(bi<0) bi=(age<AGE_BANDS[0][0])?0:AGE_BANDS.length-1;
+    return PREMIUMS[gender][bi][planIdx];
+  }
+
+  function formatMoney(v){
+    if(isNaN(v)) return '0';
+    const a=Math.abs(v), s=v<0?'-':'';
+    if(a>=1000000000) return s+(a/1000000000).toFixed(2)+'B';
+    if(a>=1000000) return s+(a/1000000).toFixed(2)+'M';
+    return s+Math.round(a).toLocaleString('en-US');
+  }
+
+  function getParams(){
+    const planIdx=parseInt(document.getElementById('planSelect').value)||0;
+    return {
+      startAge: parseInt(document.getElementById('startAge').value)||30,
+      retireAge: parseInt(document.getElementById('retireAge').value)||60,
+      btcGrowth: parseFloat(document.getElementById('btcGrowth').value)||0,
+      inflation: parseFloat(document.getElementById('inflation').value)||0,
+      initCap: getNumberValue('initCap'),
+      monthlySave: getNumberValue('monthlySave'),
+      planIdx, planLimit: PLAN_COVERAGE[planIdx]
+    };
+  }
+
+  function simulate(p, events){
+    const g=p.btcGrowth/100, infl=p.inflation/100;
+    let s1=p.initCap, s2=p.initCap, selfInsureAge=null, worstDiff=0, isBankrupt=false, data=[];
+    for(let age=p.startAge; age<=80; age++){
+      let yi=age-p.startAge, isWorking=age<p.retireAge;
+      let annSave=isWorking?p.monthlySave*12:0;
+      let prem=getPremium(age,p.planIdx);
+      let ev=events.find(e=>e.age==age), medCost=ev?ev.cost:0;
+      let g1=(yi>0&&s1>0)?s1*g:0, s1_pre=s1+g1+annSave;
+      if(s1_pre<medCost) isBankrupt=true;
+      s1=s1_pre-medCost;
+      let g2=(yi>0&&s2>0)?s2*g:0, outPocket=Math.max(0,medCost-p.planLimit);
+      s2=s2+g2+annSave-prem-outPocket;
+      let disc=Math.pow(1+infl,yi), s1pv=s1/disc, s2pv=s2/disc;
+      if(selfInsureAge===null&&s1pv>=p.planLimit) selfInsureAge=age;
+      if(s1pv-s2pv<worstDiff) worstDiff=s1pv-s2pv;
+      data.push({age,s1:s1pv,s2:s2pv,medCost,outPocket,isWorking,limit:p.planLimit,premiumPaid:prem});
+    }
+    return {data,selfInsureAge,worstDiff,isBankrupt};
+  }
+
+  function valAt(d,age,k){ const r=d.find(x=>x.age==age); return r?r[k]:d[d.length-1][k]; }
+
+  function findThreshold(focusAge,p){
+    const cmp=(bill)=>{ const {data}=simulate(p,[{age:focusAge,cost:bill}]); return valAt(data,p.retireAge,'s1')-valAt(data,p.retireAge,'s2'); };
+    if(cmp(p.planLimit)>=0) return p.planLimit;
+    if(cmp(0)<0) return 0;
+    let lo=0, hi=p.planLimit;
+    for(let i=0;i<44;i++){ let mid=(lo+hi)/2; if(cmp(mid)>=0) lo=mid; else hi=mid; }
+    return lo;
+  }
+
+  function renderSickList(){
+    let h='';
+    sickEvents.forEach(e=>{
+      h+=`<div class="sick-item">
+        <button onclick="removeSick(${e.id})" class="btndel">✕</button>
+        <div class="g2" style="padding-right:28px">
+          <div>
+            <label>อายุ</label>
+            <input type="number" value="${e.age}" oninput="updateSick(${e.id},'age',this.value)">
+          </div>
+          <div>
+            <label>ค่ารักษา (บาท)</label>
+            <input type="text" value="${e.cost.toLocaleString('en-US')}" class="input-mono red" style="color:var(--destructive)"
+              oninput="formatInput(this);updateSick(${e.id},'cost',this.value)">
+          </div>
+        </div>
+      </div>`;
+    });
+    if(sickEvents.length===0) h='<p style="font-size:12px;color:var(--muted-foreground);text-align:center;padding:8px 0">ยังไม่ได้ใส่เหตุการณ์ป่วย</p>';
+    document.getElementById('sickList').innerHTML = h;
+  }
+
+  function addSick(){ const s=parseInt(document.getElementById('startAge').value)||30; sickEvents.push({id:Date.now(),age:s+10,cost:5000000}); renderSickList(); updateAll(); }
+  function updateSick(id,f,v){ const e=sickEvents.find(x=>x.id==id); if(e){ e[f]=f==='cost'?(parseInt(v.replace(/,/g,''))||0):(parseInt(v)||0); } updateAll(); }
+  function removeSick(id){ sickEvents=sickEvents.filter(x=>x.id!=id); renderSickList(); updateAll(); }
+
+  function applyFocusToChart(){
+    const p=getParams(), fa=parseInt(document.getElementById('focusAge').value)||35;
+    const th=findThreshold(fa,p);
+    sickEvents=[{id:Date.now(),age:fa,cost:Math.round(th)}];
+    renderSickList(); updateAll();
+  }
+
+  function setChartView(v){
+    currentView=v;
+    document.getElementById('btn-zoom').className='chart-tab'+(v==='accumulation'?' active':'');
+    document.getElementById('btn-life').className='chart-tab'+(v==='lifetime'?' active':'');
+    updateAll();
+  }
+
+  function setGender(g){
+    gender=g;
+    document.getElementById('g-male').className='toggle-btn'+(g==='male'?' active':'');
+    document.getElementById('g-female').className='toggle-btn'+(g==='female'?' active':'');
+    updateAll();
+  }
+
+  function renderThresholdTable(p){
+    let ages=[]; for(let a=p.startAge;a<=p.retireAge-5;a+=5) ages.push(a);
+    let h=''; const clean=simulate(p,[]).data;
+    ages.forEach(a=>{
+      const th=findThreshold(a,p), port=valAt(clean,a,'s1');
+      const thCell=th>=p.planLimit
+        ?'<span class="blue bold">self-insured (≥ วงเงิน)</span>'
+        :'<span class="td-green">'+formatMoney(th)+' บาท</span>';
+      h+=`<tr><td class="bold">${a} ปี</td><td>${thCell}</td><td class="td-muted">${formatMoney(port)}</td></tr>`;
+    });
+    document.getElementById('thresholdTableBody').innerHTML=h;
+  }
+
+  function getChartColors(){
+    return isDark()
+      ? { grid:'#303030', tick:'#a3a3a3', orange:'#fb923c', green:'#4ade80', red:'#ef4444', bg:'#1f2937', text:'#e5e7eb' }
+      : { grid:'#e5e7eb', tick:'#6b7280', orange:'#d97706', green:'#16a34a', red:'#ef4444', bg:'#ffffff', text:'#111827' };
+  }
+
+  function updateAll(){
+    if(typeof Chart==='undefined') return;
+    const p=getParams();
+    document.getElementById('header-limit').innerText=p.planLimit.toLocaleString('en-US')+' บาท';
+    document.getElementById('disc-g').innerText=p.btcGrowth+'%';
+    document.getElementById('disc-i').innerText=p.inflation+'%';
+    document.getElementById('premNow').innerText='เบี้ยปีนี้ (อายุ '+p.startAge+', '+(gender==='male'?'ชาย':'หญิง')+'): '+getPremium(p.startAge,p.planIdx).toLocaleString('en-US')+' บาท/ปี';
+
+    const {data,selfInsureAge,worstDiff,isBankrupt}=simulate(p,sickEvents);
+
+    document.getElementById('card-time').innerText=selfInsureAge?(selfInsureAge-p.startAge)+' ปี (อายุ '+selfInsureAge+')':'ไม่ถึง';
+    document.getElementById('card-time-sub').innerText=selfInsureAge?'พอร์ตเกินวงเงินประกันแล้ว':'พอร์ตไม่เคยเกินวงเงิน';
+
+    const wRetire=valAt(data,p.retireAge,'s1');
+    const wEl=document.getElementById('card-wealth');
+    wEl.innerText=formatMoney(wRetire);
+    wEl.className=wRetire<0?'val red':'val orange';
+
+    const s2Retire = valAt(data, p.retireAge, 's2');
+    const finalDiff = wRetire - s2Retire;
+    const woEl=document.getElementById('card-worst'), woSub=document.getElementById('card-worst-sub');
+    if(isBankrupt){
+      woEl.innerText='ติดหนี้'; woEl.className='val red';
+      woSub.innerText='BTC ล้วนติดลบ จ่ายค่ารักษาไม่ไหว';
+    } else if(finalDiff >= 0){
+      woEl.innerText='BTC มากกว่า ฿'+formatMoney(finalDiff); woEl.className='val green';
+      woSub.innerText='เทียบกับ BTC+ประกัน ณ อายุเกษียณ';
+    } else {
+      woEl.innerText='ประกันมากกว่า ฿'+formatMoney(Math.abs(finalDiff)); woEl.className='val yellow';
+      woSub.innerText='เทียบกับ BTC อย่างเดียว ณ อายุเกษียณ';
+    }
+
+    const fa=parseInt(document.getElementById('focusAge').value)||35;
+    const th=findThreshold(fa,p);
+    const thEl=document.getElementById('threshold-value');
+    if(th>=p.planLimit){ thEl.innerText='ไม่ต้องมีประกันแล้ว'; thEl.style.color='var(--color-blue)'; }
+    else { thEl.innerText='฿'+formatMoney(th); thEl.style.color='var(--color-green)'; }
+
+    renderThresholdTable(p);
+
+    const cd=currentView==='accumulation'?data.filter(d=>d.age<=p.retireAge):data;
+    const labels=cd.map(d=>d.age);
+    const c=getChartColors();
+    if(myChart) myChart.destroy();
+    const ctx=document.getElementById('myChart').getContext('2d');
+    myChart=new Chart(ctx,{
+      type:'line',
+      data:{ labels, datasets:[
+        {label:'BTC อย่างเดียว (S1)', data:cd.map(d=>Math.round(d.s1)), borderColor:c.orange, borderWidth:2.5, tension:0.1, pointRadius:0, pointHoverRadius:5},
+        {label:'BTC + ประกัน (S2)', data:cd.map(d=>Math.round(d.s2)), borderColor:c.green, borderWidth:2.5, tension:0.1, pointRadius:0, pointHoverRadius:5},
+        {label:'วงเงินประกัน', data:cd.map(d=>d.limit), borderColor:c.red, borderWidth:1.5, borderDash:[5,5], pointRadius:0}
+      ]},
+      options:{
+        responsive:true, maintainAspectRatio:false,
+        interaction:{mode:'index',intersect:false},
+        scales:{
+          x:{grid:{color:c.grid},ticks:{color:c.tick,font:{size:11}}},
+          y:{grid:{color:c.grid},ticks:{color:c.tick,font:{size:11},callback:v=>{const s=v<0?'-':'';const a=Math.abs(v);if(a>=1000000)return s+(a/1000000).toFixed(1)+'M';return s+(a/1000).toFixed(0)+'k';}}}
+        },
+        plugins:{
+          legend:{labels:{color:c.text,usePointStyle:true,boxWidth:8,font:{size:11}}},
+          tooltip:{backgroundColor:c.bg,titleColor:c.text,bodyColor:c.tick,borderColor:c.grid,borderWidth:1,callbacks:{label:ctx2=>ctx2.dataset.label+': '+formatMoney(ctx2.parsed.y)+' บาท'}}
+        }
+      }
+    });
+  }
+
+  window.onload=function(){
+    if(typeof Chart==='undefined'){ document.getElementById('chart-fallback').style.display='block'; return; }
+    document.getElementById('btn-theme').textContent='🌙';
+    setGender('male'); renderSickList(); updateAll();
+  };
+</script>
+</body>
+</html>

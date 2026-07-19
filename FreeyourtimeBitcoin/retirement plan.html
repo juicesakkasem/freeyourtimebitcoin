@@ -91,7 +91,8 @@ body{font-family:var(--font-sans);background:var(--background);color:var(--foreg
 .cashual-nav-links a:hover{color:#f7931a}
 .btntheme{width:34px;height:34px;border-radius:var(--radius);border:1px solid var(--border);background:var(--card);color:var(--foreground);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s,border-color .15s;flex-shrink:0}
 .btntheme:hover{border-color:var(--ring);opacity:1}
-@media(max-width:640px){.cashual-nav{padding:0 1rem}.cashual-nav-links{gap:1rem}.cashual-nav-links a{font-size:14px;white-space:nowrap}}
+.cashual-nav-toggle{display:none;background:transparent;border:0;color:#f7931a;font-size:26px;line-height:1;cursor:pointer;padding:4px 8px}
+@media(max-width:640px){.cashual-nav{padding:0 1rem}.cashual-nav-toggle{display:block}.cashual-nav-links{display:none;position:absolute;top:72px;left:0;width:100%;flex-direction:column;gap:0;background:rgba(15,15,15,0.98);backdrop-filter:blur(10px);border-bottom:1px solid #222;padding:6px 0;max-height:calc(100vh - 72px);overflow-y:auto}.cashual-nav.open .cashual-nav-links{display:flex}.cashual-nav-links li{width:100%}.cashual-nav-links a{display:block;padding:14px 1.5rem;font-size:16px}}
 input,select{font-family:inherit;width:100%;padding:7px 10px;font-size:13px;border:0.5px solid var(--border);border-radius:6px;background:var(--card);color:var(--foreground);outline:none}
 input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
 input[type=number]{-moz-appearance:textfield}
@@ -142,6 +143,7 @@ button{cursor:pointer;font-family:inherit}button:hover{opacity:.85}
 <div id="pv"></div>
 <nav class="cashual-nav no-print">
   <div class="cashual-nav-logo"><a href="index.html" style="text-decoration:none;color:inherit;">FreeyourtimeBitcoin</a></div>
+  <button class="cashual-nav-toggle" aria-label="เมนู" onclick="this.closest('.cashual-nav').classList.toggle('open')">&#9776;</button>
   <ul class="cashual-nav-links">
     <li><a href="1-btc-dashboard.html">1 BTC</a></li>
     <li><a href="Bitcoin-DCA-Master.html">DCA Master</a></li>
@@ -149,6 +151,7 @@ button{cursor:pointer;font-family:inherit}button:hover{opacity:.85}
     <li><a href="Purchasing-Power.html">Purchasing Power</a></li>
     <li><a href="wealth-planner.html">Wealth Planner</a></li>
     <li><a href="retirement plan.html">Retirement Plan</a></li>
+    <li><a href="BTC-BTC+insurance.html">BTC + ประกัน</a></li>
     <li><a href="https://cashualme.com/" target="_blank">Cashualme</a></li>
   </ul>
 </nav>
