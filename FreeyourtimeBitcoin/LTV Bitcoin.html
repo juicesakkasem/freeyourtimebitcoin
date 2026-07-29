@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="description" content="ค้ำ Bitcoin กู้เงินสด — เลือกได้ว่าจะถอนคงที่เดือนละเท่าไหร่ หรือคุม LTV ไว้แล้วดูว่าถอนได้ปีละเท่าไหร่ พร้อมประเมินความเสี่ยงและทดสอบกับวิกฤตจริง">
+<title>LTV Bitcoin — ค้ำ BTC ถอนใช้ได้เท่าไหร่</title>
+<style>
+  :root{
+    --bg:#F3EEE2; --surface:#FBF8F1; --surface-2:#FFFFFF;
+    --ink:#1C1710; --ink-2:#6C6353; --ink-3:#9A9080;
+    --border:rgba(28,23,16,.12); --border-2:rgba(28,23,16,.22);
+    --accent:#D9790A; --accent-2:#B4620A; --accent-soft:rgba(217,121,10,.13);
+    --grid:rgba(28,23,16,.08);
+    --good:#1E8A4C; --good-bg:rgba(30,138,76,.12);
+    --warn:#B26A12; --warn-bg:rgba(178,106,18,.12);
+    --bad:#BE3A2C; --bad-bg:rgba(190,58,44,.12);
+    --mono:ui-monospace,"SF Mono","Cascadia Code","Segoe UI Mono",Consolas,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,"Noto Sans Thai",sans-serif;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --bg:#0E0C09; --surface:#17140F; --surface-2:#201B13;
+      --ink:#F3ECDD; --ink-2:#A79E8C; --ink-3:#746C5C;
+      --border:rgba(243,236,221,.13); --border-2:rgba(243,236,221,.24);
+      --accent:#F7931A; --accent-2:#FBA83E; --accent-soft:rgba(247,147,26,.15);
+      --grid:rgba(243,236,221,.07);
+      --good:#3FB765; --good-bg:rgba(63,183,101,.14);
+      --warn:#E0A44A; --warn-bg:rgba(224,164,74,.14);
+      --bad:#E5604F; --bad-bg:rgba(229,96,79,.15);
+    }
+  }
+  :root[data-theme="light"]{
+    --bg:#F3EEE2; --surface:#FBF8F1; --surface-2:#FFFFFF;
+    --ink:#1C1710; --ink-2:#6C6353; --ink-3:#9A9080;
+    --border:rgba(28,23,16,.12); --border-2:rgba(28,23,16,.22);
+    --accent:#D9790A; --accent-2:#B4620A; --accent-soft:rgba(217,121,10,.13);
+    --grid:rgba(28,23,16,.08);
+    --good:#1E8A4C; --good-bg:rgba(30,138,76,.12);
+    --warn:#B26A12; --warn-bg:rgba(178,106,18,.12);
+    --bad:#BE3A2C; --bad-bg:rgba(190,58,44,.12);
+  }
+  :root[data-theme="dark"]{
+    --bg:#0E0C09; --surface:#17140F; --surface-2:#201B13;
+    --ink:#F3ECDD; --ink-2:#A79E8C; --ink-3:#746C5C;
+    --border:rgba(243,236,221,.13); --border-2:rgba(243,236,221,.24);
+    --accent:#F7931A; --accent-2:#FBA83E; --accent-soft:rgba(247,147,26,.15);
+    --grid:rgba(243,236,221,.07);
+    --good:#3FB765; --good-bg:rgba(63,183,101,.14);
+    --warn:#E0A44A; --warn-bg:rgba(224,164,74,.14);
+    --bad:#E5604F; --bad-bg:rgba(229,96,79,.15);
+  }
+
+  html,body{margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:var(--sans)}
+  *{box-sizing:border-box}
+  .wrap{color:var(--ink);max-width:1120px;margin:0 auto;padding:22px 20px 40px;line-height:1.55;
+    animation:fade .5s ease both}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){.wrap{animation:none}}
+  .hide{display:none!important}
+
+  .top{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:18px}
+  .brand{display:flex;align-items:center;gap:13px}
+  .coin{width:44px;height:44px;border-radius:50%;background:var(--accent);color:#1C1305;display:flex;
+    align-items:center;justify-content:center;font-family:var(--mono);font-weight:700;font-size:24px;flex:0 0 auto}
+  .brand h1{margin:0;font-size:26px;font-weight:600;letter-spacing:-.01em;line-height:1.05}
+  .brand p{margin:2px 0 0;color:var(--ink-2);font-size:13px}
+  .actions{display:flex;gap:8px}
+  .btn{font-family:var(--sans);font-size:13px;color:var(--ink-2);background:transparent;border:1px solid var(--border-2);
+    border-radius:8px;padding:8px 13px;cursor:pointer;transition:background .15s,color .15s;white-space:nowrap}
+  .btn:hover{background:var(--surface);color:var(--ink)}
+  .btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+  .verdict{display:flex;align-items:flex-start;gap:12px;border:1px solid var(--border);border-left-width:4px;
+    border-radius:12px;padding:14px 16px;margin-bottom:20px;background:var(--surface)}
+  .verdict.good{border-left-color:var(--good);background:var(--good-bg)}
+  .verdict.warn{border-left-color:var(--warn);background:var(--warn-bg)}
+  .verdict.bad{border-left-color:var(--bad);background:var(--bad-bg)}
+  .vmark{width:24px;height:24px;border-radius:50%;flex:0 0 auto;display:flex;align-items:center;justify-content:center;
+    font-size:15px;font-weight:700;color:#fff;margin-top:1px}
+  .good .vmark{background:var(--good)} .warn .vmark{background:var(--warn)} .bad .vmark{background:var(--bad)}
+  .verdict b{font-weight:600}
+  #vtext{font-size:14.5px}
+
+  .board{display:grid;grid-template-columns:298px 1fr;gap:20px;align-items:start}
+  @media (max-width:820px){.board{grid-template-columns:1fr}}
+
+  .panel{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px}
+  .controls{position:sticky;top:14px}
+  @media (max-width:820px){.controls{position:static}}
+  .controls h2{margin:0 0 4px;font-size:13px;font-weight:600;color:var(--ink-2);letter-spacing:.02em}
+  .controls .hint{margin:0 0 14px;font-size:12px;color:var(--ink-3)}
+
+  .ctrl{padding:13px 0;border-top:1px solid var(--border)}
+  .ctrl:first-of-type{border-top:0;padding-top:4px}
+  .ctrl-head{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:8px}
+  .ctrl-head label{font-size:13.5px;font-weight:500}
+  .ctrl-head .unit{font-size:11px;color:var(--ink-3)}
+  .numwrap{display:flex;align-items:center;gap:6px;margin-bottom:9px}
+  .numwrap .pre{font-family:var(--mono);font-size:14px;color:var(--ink-3)}
+  input.num{flex:1;font-family:var(--mono);font-size:16px;font-weight:600;color:var(--ink);background:var(--surface-2);
+    border:1px solid var(--border-2);border-radius:8px;padding:8px 10px;width:100%;font-variant-numeric:tabular-nums}
+  input.num:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:transparent}
+  .ctrl .note{margin:7px 0 0;font-size:11.5px;color:var(--ink-3)}
+  .ctrl.star{background:var(--accent-soft);margin:0 -18px;padding:14px 18px;border-top:0;border-radius:10px}
+  .ctrl.star+.ctrl{border-top:0}
+
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:4px;
+    background:var(--border-2);cursor:pointer;margin:2px 0}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:18px;height:18px;border-radius:50%;
+    background:var(--accent);border:3px solid var(--surface);box-shadow:0 0 0 1px var(--border-2);cursor:pointer}
+  input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;background:var(--accent);
+    border:3px solid var(--surface);cursor:pointer}
+  input[type=range]:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+
+  .seg{display:inline-flex;border:1px solid var(--border-2);border-radius:8px;overflow:hidden}
+  .seg button{border:none;background:transparent;padding:6px 12px;font-size:12px;color:var(--ink-2);
+    cursor:pointer;font-family:var(--sans);transition:background .15s,color .15s}
+  .seg button.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+  .seg button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+  .seg.full{display:flex;width:100%;margin-bottom:12px;background:var(--surface-2)}
+  .seg.full button{flex:1;padding:8px 8px;font-size:13px}
+
+  /* ---- การ์ดยอดของคุณ ---- */
+  .mecard{background:var(--surface);border:1px solid var(--border);border-top-width:3px;border-radius:14px;
+    padding:16px 18px 14px;margin-bottom:14px}
+  .mecard.good{border-top-color:var(--good)} .mecard.warn{border-top-color:var(--warn)} .mecard.bad{border-top-color:var(--bad)}
+  .mecard .chip{margin-bottom:8px}
+  .mecard .mv{font-family:var(--mono);font-weight:700;font-size:clamp(30px,5vw,40px);letter-spacing:-.02em;
+    font-variant-numeric:tabular-nums;line-height:1.1}
+  .mecard.good .mv{color:var(--good)} .mecard.warn .mv{color:var(--warn)} .mecard.bad .mv{color:var(--bad)}
+  .mecard .mu{font-size:13px;color:var(--ink-3);margin-left:8px;font-weight:400}
+  .mecard .mstat{font-size:12.5px;color:var(--ink-2);margin-top:4px}
+  .mecard .mstat b{color:var(--ink);font-weight:600}
+  .zwrap{position:relative;margin:16px 0 2px}
+  .zmeter{position:relative;height:14px;border:1px solid var(--border);border-radius:20px;overflow:hidden;
+    background:var(--surface-2);display:flex}
+  .zseg{height:100%}
+  .zseg.g{background:var(--good-bg)} .zseg.w{background:var(--warn-bg)} .zseg.b{background:var(--bad-bg)}
+  .zseg.d{background:repeating-linear-gradient(45deg,var(--bad-bg) 0 6px,transparent 6px 12px)}
+  .zmark{position:absolute;top:-4px;height:22px;width:3px;background:var(--ink);border-radius:2px;z-index:2;
+    transform:translateX(-50%);transition:left .3s ease}
+  .zlabs{position:relative;height:15px;font-size:10.5px;color:var(--ink-3);margin-top:4px}
+  .zlabs span{position:absolute;transform:translateX(-50%);white-space:nowrap}
+
+  /* ---- การ์ดปิดหนี้ด้วยการขาย ---- */
+  .payoff{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px 18px;margin-bottom:16px}
+  .payoff h3{margin:0 0 12px;font-size:14px;font-weight:600}
+  .payoff .pg{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  @media (max-width:640px){.payoff .pg{grid-template-columns:1fr;gap:12px}}
+  .payoff .pk{font-size:12px;color:var(--ink-2);margin-bottom:4px}
+  .payoff .pv{font-family:var(--mono);font-weight:700;font-size:clamp(20px,2.6vw,25px);letter-spacing:-.01em;
+    font-variant-numeric:tabular-nums;color:var(--accent);line-height:1.15}
+  .payoff .ps{font-size:11.5px;color:var(--ink-3);margin-top:3px}
+  .payoff .pnote{font-size:13px;color:var(--bad);line-height:1.5}
+
+  /* ---- tier cards ---- */
+  .tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
+  @media (max-width:980px){.tiers{grid-template-columns:1fr}}
+  .tier{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px 18px;position:relative;
+    border-top-width:3px}
+  .tier.good{border-top-color:var(--good)} .tier.warn{border-top-color:var(--warn)} .tier.bad{border-top-color:var(--bad)}
+  .chip{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;border-radius:20px;padding:3px 10px;margin-bottom:10px}
+  .tier.good .chip,.chip.good{background:var(--good-bg);color:var(--good)}
+  .tier.warn .chip,.chip.warn{background:var(--warn-bg);color:var(--warn)}
+  .tier.bad .chip,.chip.bad{background:var(--bad-bg);color:var(--bad)}
+  .tier .tk{font-size:12.5px;color:var(--ink-2)}
+  .tier .tv{font-family:var(--mono);font-weight:700;font-size:clamp(24px,3vw,31px);letter-spacing:-.02em;
+    font-variant-numeric:tabular-nums;line-height:1.15;margin:2px 0 1px}
+  .tier.good .tv{color:var(--good)} .tier.warn .tv{color:var(--warn)} .tier.bad .tv{color:var(--bad)}
+  .tier .ts{font-size:12px;color:var(--ink-3);margin-bottom:10px}
+  .tier ul{list-style:none;margin:0;padding:10px 0 0;border-top:1px solid var(--border);font-size:12.5px;color:var(--ink-2)}
+  .tier li{padding:2.5px 0;display:flex;justify-content:space-between;gap:8px}
+  .tier li b{color:var(--ink);font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .usebtn{position:absolute;top:13px;right:13px;font-size:11px;padding:4px 10px;border-radius:7px;cursor:pointer;
+    font-family:var(--sans);background:transparent;color:var(--ink-2);border:1px solid var(--border-2);
+    transition:background .15s,color .15s}
+  .usebtn:hover{background:var(--surface-2);color:var(--ink)}
+
+  .chartcard{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px 18px 12px;margin-bottom:16px}
+  .chartcard .ch-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px;flex-wrap:wrap}
+  .chartcard h3{margin:0;font-size:14px;font-weight:600}
+  .legend{display:flex;gap:14px;font-size:12px;color:var(--ink-2);flex-wrap:wrap}
+  .legend span{display:flex;align-items:center;gap:6px}
+  .swatch{width:14px;height:3px;border-radius:2px;display:inline-block}
+  .swatch.me{background:var(--accent);height:4px}
+  .swatch.g{background:var(--good)} .swatch.w{background:var(--warn)} .swatch.b{background:var(--bad)}
+  .swatch.liq{background:repeating-linear-gradient(90deg,var(--ink-2) 0 4px,transparent 4px 7px);height:2px}
+  .canvas-box{position:relative;width:100%;height:280px}
+  canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none}
+
+  /* ---- crash test ---- */
+  .crashwrap{position:relative;padding:30px 0 4px;margin:4px 2px 2px}
+  .cmark{position:absolute;top:26px;bottom:4px;border-left:2px dashed var(--border-2);z-index:3}
+  .cmark b{position:absolute;top:-22px;left:0;transform:translateX(-50%);font-size:10.5px;color:var(--ink-3);
+    font-weight:500;white-space:nowrap}
+  .crow{height:36px;margin:9px 0;position:relative;background:var(--surface-2);border:1px solid var(--border);
+    border-radius:9px;overflow:hidden}
+  .cbar{position:absolute;top:0;bottom:0;left:0;display:flex;align-items:center;gap:8px;padding:0 12px;
+    font-size:12px;font-weight:500;border-radius:8px 0 0 8px;white-space:nowrap;z-index:2}
+  .cbar b{font-family:var(--mono);font-weight:700}
+  .cbar.me{background:var(--accent-soft);color:var(--accent-2);border-right:3px solid var(--accent)}
+  .cbar.good{background:var(--good-bg);color:var(--good);border-right:3px solid var(--good)}
+  .cbar.warn{background:var(--warn-bg);color:var(--warn);border-right:3px solid var(--warn)}
+  .cbar.bad{background:var(--bad-bg);color:var(--bad);border-right:3px solid var(--bad)}
+  .cfree{position:absolute;inset:0;display:flex;align-items:center;padding:0 12px;font-size:12px;font-weight:500;
+    color:var(--bad);z-index:2}
+  .crashnote{margin:8px 0 4px;font-size:11.5px;color:var(--ink-3)}
+
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  .tablecard{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:6px 4px;overflow-x:auto}
+  th,td{text-align:right;padding:9px 14px;font-variant-numeric:tabular-nums;white-space:nowrap}
+  th:first-child,td:first-child{text-align:left}
+  thead th{font-size:11.5px;font-weight:600;color:var(--ink-3);border-bottom:1px solid var(--border)}
+  tbody td{font-family:var(--mono);color:var(--ink)}
+  tbody td:first-child{font-family:var(--sans);color:var(--ink-2)}
+  tbody tr:not(:last-child) td{border-bottom:1px solid var(--grid)}
+  td.c-good{color:var(--good)} td.c-warn{color:var(--warn)} td.c-bad{color:var(--bad);font-weight:600}
+  tbody tr.liqrow td{background:var(--bad-bg)}
+  .tbl-head{padding:14px 16px 8px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+  .tbl-head h3{margin:0;font-size:14px;font-weight:600}
+  .tbl-head p{margin:4px 0 0;font-size:12px;color:var(--ink-3);flex-basis:100%}
+  .tierdesc{flex-basis:100%;margin:10px 0 2px;font-size:12.5px;border-radius:9px;padding:9px 13px;
+    border-left:3px solid;line-height:1.55}
+  .tierdesc b{font-weight:600}
+  .tierdesc.good{background:var(--good-bg);color:var(--good);border-color:var(--good)}
+  .tierdesc.warn{background:var(--warn-bg);color:var(--warn);border-color:var(--warn)}
+  .tierdesc.bad{background:var(--bad-bg);color:var(--bad);border-color:var(--bad)}
+  .tierdesc.accent{background:var(--accent-soft);color:var(--accent-2);border-color:var(--accent)}
+
+  footer{margin-top:22px;font-size:12px;color:var(--ink-3);line-height:1.7}
+  footer b{color:var(--ink-2);font-weight:600}
+
+  /* ── site navbar (shared across all pages) ── */
+  html{overflow-y:scroll}
+  body{padding-top:72px}
+  .cashual-nav{position:fixed;top:0;left:0;width:100%;background:rgba(15,15,15,0.95);backdrop-filter:blur(10px);border-bottom:1px solid #222;z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:0 2rem;height:72px}
+  .cashual-nav-logo{font-size:22px;font-weight:700;color:#f7931a;letter-spacing:0.05em}
+  .cashual-nav-links{display:flex;gap:2.5rem;list-style:none;margin:0;padding:0;align-items:center}
+  .cashual-nav-links a{color:#aaa;text-decoration:none;font-size:17px;transition:color 0.2s}
+  .cashual-nav-links a:hover{color:#f7931a}
+  .cashual-nav-toggle{display:none;background:transparent;border:0;color:#f7931a;font-size:26px;line-height:1;cursor:pointer;padding:4px 8px}
+  @media(max-width:640px){.cashual-nav{padding:0 1rem}.cashual-nav-toggle{display:block}.cashual-nav-links{display:none;position:absolute;top:72px;left:0;width:100%;flex-direction:column;gap:0;background:rgba(15,15,15,0.98);backdrop-filter:blur(10px);border-bottom:1px solid #222;padding:6px 0;max-height:calc(100vh - 72px);overflow-y:auto}.cashual-nav.open .cashual-nav-links{display:flex}.cashual-nav-links li{width:100%}.cashual-nav-links a{display:block;padding:14px 1.5rem;font-size:16px}}
+</style>
+</head>
+<body>
+<nav class="cashual-nav">
+  <div class="cashual-nav-logo"><a href="index.html" style="text-decoration:none;color:inherit;">FreeyourtimeBitcoin</a></div>
+  <button class="cashual-nav-toggle" aria-label="เมนู" onclick="this.closest('.cashual-nav').classList.toggle('open')">&#9776;</button>
+  <ul class="cashual-nav-links">
+    <li><a href="1-btc-dashboard.html">1 BTC</a></li>
+    <li><a href="Bitcoin-DCA-Master.html">DCA Master</a></li>
+    <li><a href="dca-tracker.html">DCA Tracker</a></li>
+    <li><a href="Purchasing-Power.html">Purchasing Power</a></li>
+    <li><a href="wealth-planner.html">Wealth Planner</a></li>
+    <li><a href="retirement plan.html">Retirement Plan</a></li>
+    <li><a href="BTC-BTC+insurance.html">BTC + ประกัน</a></li>
+    <li><a href="LTV Bitcoin.html">LTV Bitcoin</a></li>
+    <li><a href="https://cashualme.com/" target="_blank">Cashualme</a></li>
+  </ul>
+</nav>
+<div class="wrap">
+  <div class="top">
+    <div class="brand">
+      <div class="coin">&#8383;</div>
+      <div><h1>LTV Bitcoin</h1><p>ค้ำ BTC ไว้ ไม่ต้องขาย &mdash; ถอนคงที่เดือนละเท่าไหร่ หรือคุม LTV ก็ได้</p></div>
+    </div>
+    <div class="actions">
+      <button class="btn" id="theme">&#9680; ธีม</button>
+      <button class="btn" id="reset">&#8635; รีเซ็ต</button>
+    </div>
+  </div>
+
+  <div class="verdict" id="verdict">
+    <div class="vmark" id="vmark">!</div>
+    <div id="vtext"></div>
+  </div>
+
+  <div class="board">
+    <aside class="panel controls">
+      <div class="ctrl">
+        <div class="ctrl-head"><label for="btc">BTC ที่ถืออยู่</label><span class="unit">&#8383;</span></div>
+        <div class="numwrap"><input class="num" type="number" id="btc" min="0.01" max="21" step="0.01"><span class="pre">&#8383;</span></div>
+        <input type="range" id="btcR" min="0.05" max="5" step="0.05">
+      </div>
+
+      <div class="ctrl">
+        <div class="ctrl-head"><label for="price">ราคา BTC วันนี้</label><span class="unit">บาท / BTC</span></div>
+        <div class="numwrap"><span class="pre">&#3647;</span><input class="num" type="text" inputmode="numeric" autocomplete="off" id="price"></div>
+        <input type="range" id="priceR" min="500000" max="10000000" step="50000">
+        <p class="note" id="priceNote">กำลังดึงราคาสด&hellip;</p>
+      </div>
+
+      <div class="ctrl star">
+        <div class="seg full" id="meModeSeg">
+          <button data-mm="fixed" class="on">ถอนคงที่</button>
+          <button data-mm="ltv">คุม LTV</button>
+          <button data-mm="lump">กู้ครั้งเดียว</button>
+        </div>
+
+        <div id="ctlFixed">
+          <div class="ctrl-head"><label for="draw">ถอนเดือนละ</label><span class="unit">บาท / เดือน</span></div>
+          <div class="numwrap"><span class="pre">&#3647;</span><input class="num" type="text" inputmode="numeric" autocomplete="off" id="draw"></div>
+          <input type="range" id="drawR" min="0" max="150000" step="1000">
+          <p class="note">ตั้งยอดที่อยากถอนเท่ากันทุกเดือน ระบบบอกให้ว่าอยู่โซนไหน</p>
+        </div>
+
+        <div id="ctlLtv" class="hide">
+          <div class="ctrl-head"><label for="targetLtv">คุม LTV ไว้ที่</label><span class="unit">% ของหลักประกัน</span></div>
+          <div class="numwrap"><input class="num" type="number" id="targetLtv" min="5" max="60" step="1"><span class="pre">%</span></div>
+          <input type="range" id="targetLtvR" min="5" max="60" step="1">
+          <p class="note">ล็อกอัตราหนี้ต่อหลักประกันไว้ &mdash; ระบบคำนวณว่าถอนได้ปีละเท่าไหร่ (ยอดโตตามราคา BTC)</p>
+        </div>
+
+        <div id="ctlLump" class="hide">
+          <div class="ctrl-head"><label for="lump">กู้ก้อนเดียว</label><span class="unit">บาท (ครั้งเดียว)</span></div>
+          <div class="numwrap"><span class="pre">&#3647;</span><input class="num" type="text" inputmode="numeric" autocomplete="off" id="lump"></div>
+          <input type="range" id="lumpR" min="0" max="5000000" step="50000">
+          <p class="note">กู้ครั้งเดียวตอนนี้แล้วปล่อยไว้ ไม่กู้เพิ่ม &mdash; ลาก&ldquo;อยากใช้เงินไปอีก&rdquo;เป็น 20&ndash;30 ปี จะเห็น LTV ค่อยๆ ร่วง (ถ้าราคาโต &gt; ดอก)</p>
+        </div>
+      </div>
+
+      <div class="ctrl">
+        <div class="ctrl-head"><label for="rate">ดอกเบี้ยเงินกู้</label><span class="unit">% ต่อปี (ทบต้น)</span></div>
+        <div class="numwrap"><input class="num" type="number" id="rate" min="0" max="30" step="0.1"><span class="pre">%</span></div>
+        <input type="range" id="rateR" min="0" max="30" step="0.5">
+      </div>
+
+      <div class="ctrl">
+        <div class="ctrl-head"><label for="growth">คาดว่า BTC โตปีละ</label><span class="unit">% ต่อปี</span></div>
+        <div class="numwrap"><input class="num" type="number" id="growth" min="-20" max="100" step="0.5"><span class="pre">%</span></div>
+        <input type="range" id="growthR" min="-20" max="100" step="1">
+        <p class="note">ตัวเลขนี้กระทบยอดถอนได้มาก &mdash; ตั้งต่ำไว้ก่อนปลอดภัยกว่า</p>
+      </div>
+
+      <div class="ctrl">
+        <div class="ctrl-head"><label for="years">อยากใช้เงินไปอีก</label><span class="unit">ปี</span></div>
+        <div class="numwrap"><input class="num" type="number" id="years" min="2" max="30" step="1"></div>
+        <input type="range" id="yearsR" min="2" max="30" step="1">
+      </div>
+
+      <div class="ctrl">
+        <div class="ctrl-head"><label for="liq">LTV บังคับขาย</label><span class="unit">เพดานของแพลตฟอร์ม</span></div>
+        <div class="numwrap"><input class="num" type="number" id="liq" min="50" max="95" step="1"><span class="pre">%</span></div>
+        <input type="range" id="liqR" min="50" max="95" step="1">
+        <p class="note">แพลตฟอร์มกู้ค้ำ BTC ส่วนใหญ่บังคับขายแถว 80&ndash;85%</p>
+      </div>
+    </aside>
+
+    <main>
+      <div id="meWrap"></div>
+
+      <div id="payoffWrap"></div>
+
+      <div class="tiers" id="tiers"></div>
+
+      <div class="chartcard">
+        <div class="ch-top">
+          <h3>ทดสอบวิกฤต &mdash; ทนราคาร่วงได้แค่ไหนก่อนโดนบังคับขาย</h3>
+        </div>
+        <div class="crashwrap" id="crash"></div>
+        <p class="crashnote">เส้นประตั้ง = ตลาดหมีจริงในอดีต &middot; แท่งยื่นเลยเส้นไหน = รอดเหตุการณ์นั้น (วัด ณ จุดที่ LTV แตะสูงสุด)</p>
+      </div>
+
+      <div class="chartcard">
+        <div class="ch-top">
+          <h3>LTV เทียบเพดานบังคับขาย</h3>
+          <div class="legend">
+            <span><i class="swatch me"></i>ของคุณ</span>
+            <span><i class="swatch g"></i>แนะนำ</span>
+            <span><i class="swatch w"></i>เสี่ยงกลาง</span>
+            <span><i class="swatch b"></i>เสี่ยงสูง</span>
+            <span><i class="swatch liq"></i>เพดานบังคับขาย</span>
+          </div>
+        </div>
+        <div class="canvas-box"><canvas id="chart"></canvas></div>
+      </div>
+
+      <div class="tablecard">
+        <div class="tbl-head">
+          <h3>ตารางรายปี</h3>
+          <div class="seg" id="tierSeg">
+            <button data-t="3" class="on">ของคุณ</button>
+            <button data-t="0">แนะนำ</button>
+            <button data-t="1">เสี่ยงกลาง</button>
+            <button data-t="2">เสี่ยงสูง</button>
+          </div>
+          <div class="tierdesc" id="tierDesc"></div>
+        </div>
+        <table>
+          <thead><tr>
+            <th>ปี</th><th>ราคา BTC (คาด)</th><th>ถอนใช้</th><th>หนี้สะสม</th><th>LTV</th>
+            <th>ราคาบังคับขาย</th><th>% ก่อนโดนบังคับขาย</th><th>สุทธิหลังหักหนี้</th>
+          </tr></thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+
+  <footer>
+    <b>นิยามระดับความเสี่ยง</b> (วัดจากกันชนราคา ณ จุด LTV สูงสุด): แนะนำ ทนร่วง &minus;80% (รอดแทบทุกวัฏจักร) &middot; เสี่ยงกลาง ทนร่วง &minus;60% (ไม่รอดแบบปี 2018/2022) &middot; เสี่ยงสูง ทนร่วง &minus;40% (รอดแค่การย่อปกติ)<br>
+    <b>คำเตือน:</b> ราคาจริงไม่ได้โตเรียบๆ และวิกฤตมักมาตอนไม่คาด &mdash; แบบจำลองเพื่อการศึกษา ไม่ใช่คำแนะนำการลงทุน
+  </footer>
+</div>
+
+<script>
+(function(){
+  var DEF={btc:1,price:2187413,draw:15000,targetLtv:25,lump:500000,rate:12,growth:20,years:10,liq:80};
+  var CFG={
+    btc:{min:0.01,max:21,comma:false},
+    price:{min:100000,max:20000000,comma:true},
+    draw:{min:0,max:10000000,comma:true},
+    targetLtv:{min:5,max:60,comma:false},
+    lump:{min:0,max:20000000,comma:true},
+    rate:{min:0,max:30,comma:false},
+    growth:{min:-20,max:100,comma:false},
+    years:{min:2,max:30,comma:false},
+    liq:{min:50,max:95,comma:false}
+  };
+  var TIERS=[
+    {name:"แนะนำ",tag:"ปลอดภัยสุด",tol:80,cls:"good",crit:"ทนราคา BTC ร่วงได้ถึง <b>−80%</b> ก่อนโดนบังคับขาย"},
+    {name:"เสี่ยงกลาง",tag:"พอไหว",tol:60,cls:"warn",crit:"ทนราคา BTC ร่วงได้ถึง <b>−60%</b> ก่อนโดนบังคับขาย"},
+    {name:"เสี่ยงสูง",tag:"ใจถึง",tol:40,cls:"bad",crit:"ทนราคา BTC ร่วงได้ถึง <b>−40%</b> ก่อนโดนบังคับขาย"}
+  ];
+  var CRASHES=[{p:55,l:"กลางปี 2021 −55%"},{p:77,l:"2022 −77%"},{p:84,l:"2018 −84%"}];
+  var meMode="fixed";    // 'fixed' | 'ltv'
+  var selTier=3;         // 0-2 = tiers, 3 = ของคุณ
+  var $=function(id){return document.getElementById(id)};
+
+  // theme toggle
+  var themes=["auto","light","dark"], tlabel={auto:"อัตโนมัติ",light:"สว่าง",dark:"มืด"}, ti=0;
+  function applyTheme(){var t=themes[ti],r=document.documentElement;
+    if(t==="auto")r.removeAttribute("data-theme"); else r.setAttribute("data-theme",t);
+    $("theme").innerHTML="&#9680; "+tlabel[t]; }
+  $("theme").addEventListener("click",function(){ti=(ti+1)%3;applyTheme();draw(null);});
+
+  function num(id){var cfg=CFG[id],raw=(''+$(id).value).replace(/,/g,''),v=parseFloat(raw);
+    if(isNaN(v))v=cfg.min; if(v<cfg.min)v=cfg.min; if(v>cfg.max)v=cfg.max; return v;}
+  function grp(v){return Number(Math.round(v)).toLocaleString('en-US');}
+  function commafy(el){
+    var val=el.value, sel=el.selectionStart||0;
+    var before=val.slice(0,sel).replace(/\D/g,'').length;
+    var digits=val.replace(/\D/g,'');
+    if(digits===''){el.value='';return;}
+    var f=Number(digits).toLocaleString('en-US'); el.value=f;
+    var pos=0,seen=0; while(pos<f.length&&seen<before){var c=f.charCodeAt(pos); if(c>=48&&c<=57)seen++; pos++;}
+    try{el.setSelectionRange(pos,pos);}catch(e){}
+  }
+
+  Object.keys(CFG).forEach(function(id){
+    var el=$(id),rng=$(id+"R"),cfg=CFG[id];
+    el.addEventListener("input",function(){ if(cfg.comma)commafy(el); rng.value=num(id); render(); });
+    el.addEventListener("blur",function(){ var v=num(id); el.value=cfg.comma?grp(v):v; rng.value=v; render(); });
+    rng.addEventListener("input",function(){ el.value=cfg.comma?grp(rng.value):rng.value; render(); });
+  });
+  $("reset").addEventListener("click",function(){setMeMode("fixed");setVals(DEF);render();});
+
+  // ---- สลับโหมด ----
+  function setMeMode(m){
+    meMode=m;
+    var bs=$("meModeSeg").querySelectorAll("button");
+    for(var i=0;i<bs.length;i++)bs[i].className=bs[i].getAttribute("data-mm")===m?"on":"";
+    $("ctlFixed").className=m==="fixed"?"":"hide";
+    $("ctlLtv").className=m==="ltv"?"":"hide";
+    $("ctlLump").className=m==="lump"?"":"hide";
+  }
+  $("meModeSeg").addEventListener("click",function(e){
+    var b=e.target.closest("button"); if(!b)return;
+    setMeMode(b.getAttribute("data-mm")); render();
+  });
+  $("tierSeg").addEventListener("click",function(e){
+    var b=e.target.closest("button"); if(!b)return;
+    selTier=parseInt(b.getAttribute("data-t"),10);
+    var bs=$("tierSeg").querySelectorAll("button");
+    for(var i=0;i<bs.length;i++)bs[i].className=(parseInt(bs[i].getAttribute("data-t"),10)===selTier)?"on":"";
+    renderTable();
+  });
+  // ปุ่ม "ใช้ยอดนี้" → สลับเป็นโหมดถอนคงที่แล้วใส่ยอด
+  $("tiers").addEventListener("click",function(e){
+    var b=e.target.closest("button[data-w],button[data-ltv],button[data-lump]"); if(!b)return;
+    if(b.hasAttribute("data-ltv")){
+      var lv=parseInt(b.getAttribute("data-ltv"),10);
+      $("targetLtv").value=lv; $("targetLtvR").value=lv;
+      setMeMode("ltv");
+    } else if(b.hasAttribute("data-lump")){
+      var lm=parseInt(b.getAttribute("data-lump"),10);
+      $("lump").value=grp(lm); $("lumpR").value=lm;
+      setMeMode("lump");
+    } else {
+      var v=parseInt(b.getAttribute("data-w"),10);
+      $("draw").value=grp(v); $("drawR").value=v;
+      setMeMode("fixed");
+    }
+    render();
+  });
+
+  function setVals(v){for(var k in v){var cfg=CFG[k]; $(k).value=cfg.comma?grp(v[k]):v[k]; $(k+"R").value=v[k];}}
+  function getVals(){return{
+    btc:num("btc"), price:num("price"), draw:num("draw"), targetLtv:num("targetLtv"), lump:num("lump"),
+    rate:num("rate"), growth:num("growth"), years:Math.round(num("years")), liq:num("liq")
+  };}
+
+  // ---- formatting ----
+  var nf0=new Intl.NumberFormat("en-US",{maximumFractionDigits:0});
+  function fB(v){return "฿"+nf0.format(Math.round(v));}
+  function fMs(v){
+    if(v===null||v===undefined||!isFinite(v))return "—";
+    var s=v<0?"−":"",a=Math.abs(v);
+    if(a>=1e12)return s+"฿"+(a/1e12).toLocaleString('en-US',{maximumFractionDigits:2})+"ลล";
+    if(a>=1e6)return s+"฿"+(a/1e6).toLocaleString('en-US',{maximumFractionDigits:(a/1e6)<10?2:1})+"ล";
+    return s+fB(a);
+  }
+  function fM(v){
+    if(!isFinite(v))return "—";
+    var s=v<0?"−":"",a=Math.abs(v);
+    if(a>=1e12)return s+(a/1e12).toLocaleString("en-US",{maximumFractionDigits:2})+" ล้านล้านบาท";
+    if(a>=1e6)return s+(a/1e6).toLocaleString("en-US",{maximumFractionDigits:1})+" ล้านบาท";
+    return s+fB(a);
+  }
+  function fBtc(v){return v.toFixed(v<0.1&&v>0?4:3);}
+
+  // ---- core ----
+  // ยอดถอนคงที่สูงสุดที่ LTV ไม่ทะลุ cap ตลอดช่วง (ถอน W ต้นปี, D_n=W*A_n, A_n=(A_{n-1}+1)*(1+r))
+  function solveCap(s,capPct){
+    var cap=capPct/100, r=s.rate/100, g=s.growth/100;
+    var A=0, V=s.btc*s.price, minRatio=Infinity;
+    for(var n=1;n<=s.years;n++){ A=(A+1)*(1+r); if(V/A<minRatio)minRatio=V/A; V*=1+g; }
+    return cap*minRatio;
+  }
+  // เป้า LTV (%) ที่ทำให้ LTV สูงสุดแตะ capPct พอดี (maxLtv เป็นเชิงเส้นกับเป้า)
+  function solveCapDynamic(s,capPct){ var k=simDynamic(s,1).maxLtv; return k>0?capPct/k:0; }
+  // จำลองถอน "คงที่" W ต่อปี + ตรวจบังคับขาย
+  function simFixed(s,W){
+    var r=s.rate/100, g=s.growth/100;
+    var rows=[],D=0,V=s.btc*s.price,liqYear=null,liqCash=0,maxLtv=0,bindYear=1,cashTotal=0;
+    for(var n=1;n<=s.years;n++){
+      var price=V/s.btc;
+      if(liqYear===null){
+        D=(D+W)*(1+r);
+        var ltv=V>0?D/V*100:0, liqP=s.btc>0?D/(s.btc*(s.liq/100)):0, liqNow=ltv>=s.liq;
+        if(ltv>maxLtv+1e-9){maxLtv=ltv;bindYear=n;}
+        cashTotal+=W;
+        if(liqNow){liqYear=n;liqCash=Math.max(0,V-D);}
+        rows.push({y:n,price:price,cash:W,debt:D,ltv:ltv,liqP:liqP,
+          buf:price>0?(price-liqP)/price*100:0,nw:liqNow?liqCash:(V-D),liqNow:liqNow});
+      } else rows.push({y:n,price:price,cash:null,debt:null,ltv:null,liqP:null,buf:null,nw:liqCash,dead:true});
+      V*=1+g;
+    }
+    return finalize(s,rows,W,maxLtv,bindYear,liqYear,liqCash,cashTotal);
+  }
+  // จำลอง "คุม LTV" ถอนให้แตะเป้าทุกปี (ยอดถอนแปรผัน)
+  function simDynamic(s,tlPct){
+    var r=s.rate/100, g=s.growth/100, tl=tlPct/100;
+    var rows=[],D=0,V=s.btc*s.price,liqYear=null,liqCash=0,maxLtv=0,bindYear=1,cashTotal=0;
+    for(var n=1;n<=s.years;n++){
+      var price=V/s.btc;
+      if(liqYear===null){
+        var cash=Math.max(0, V*tl - D);
+        D=(D+cash)*(1+r);
+        var ltv=V>0?D/V*100:0, liqP=s.btc>0?D/(s.btc*(s.liq/100)):0, liqNow=ltv>=s.liq;
+        if(ltv>maxLtv+1e-9){maxLtv=ltv;bindYear=n;}
+        cashTotal+=cash;
+        if(liqNow){liqYear=n;liqCash=Math.max(0,V-D);}
+        rows.push({y:n,price:price,cash:cash,debt:D,ltv:ltv,liqP:liqP,
+          buf:price>0?(price-liqP)/price*100:0,nw:liqNow?liqCash:(V-D),liqNow:liqNow});
+      } else rows.push({y:n,price:price,cash:null,debt:null,ltv:null,liqP:null,buf:null,nw:liqCash,dead:true});
+      V*=1+g;
+    }
+    return finalize(s,rows,cashTotal,maxLtv,bindYear,liqYear,liqCash,cashTotal);
+  }
+  // จำลอง "กู้ครั้งเดียว" กู้ L ปีแรกครั้งเดียว แล้วปล่อยไว้ (ไม่กู้เพิ่ม)
+  function simLump(s,L){
+    var r=s.rate/100, g=s.growth/100;
+    var rows=[],D=0,V=s.btc*s.price,liqYear=null,liqCash=0,maxLtv=0,bindYear=1,cashTotal=0;
+    for(var n=1;n<=s.years;n++){
+      var price=V/s.btc;
+      if(liqYear===null){
+        var cash=(n===1)?L:0;
+        D=(D+cash)*(1+r);
+        var ltv=V>0?D/V*100:0, liqP=s.btc>0?D/(s.btc*(s.liq/100)):0, liqNow=ltv>=s.liq;
+        if(ltv>maxLtv+1e-9){maxLtv=ltv;bindYear=n;}
+        cashTotal+=cash;
+        if(liqNow){liqYear=n;liqCash=Math.max(0,V-D);}
+        rows.push({y:n,price:price,cash:cash,debt:D,ltv:ltv,liqP:liqP,
+          buf:price>0?(price-liqP)/price*100:0,nw:liqNow?liqCash:(V-D),liqNow:liqNow});
+      } else rows.push({y:n,price:price,cash:null,debt:null,ltv:null,liqP:null,buf:null,nw:liqCash,dead:true});
+      V*=1+g;
+    }
+    return finalize(s,rows,L,maxLtv,bindYear,liqYear,liqCash,cashTotal);
+  }
+  // ยอดกู้ครั้งเดียวสูงสุดที่ LTV ไม่ทะลุ cap (maxLtv เป็นเชิงเส้นกับยอดกู้)
+  function solveCapLump(s,capPct){ var k=simLump(s,1).maxLtv; return k>0?capPct/k:0; }
+  function finalize(s,rows,W,maxLtv,bindYear,liqYear,liqCash,cashTotal){
+    var live=rows.filter(function(w){return w.cash!==null;});
+    var lastLive=live[live.length-1]||rows[rows.length-1];
+    return {W:W,rows:rows,maxLtv:maxLtv,bindYear:bindYear,liqYear:liqYear,liqCash:liqCash,
+      cashTotal:cashTotal,firstCash:rows[0].cash||0,lastCash:lastLive.cash||0,
+      debtEnd:liqYear?null:rows[rows.length-1].debt,portEnd:liqYear?null:rows[rows.length-1].price*s.btc,
+      nwEnd:rows[rows.length-1].nw,tol:Math.max(0,(1-maxLtv/s.liq)*100)};
+  }
+  function zoneOf(me){
+    if(me.liqYear)return {i:4,n:"โดนบังคับขาย!",cls:"bad"};
+    if(me.cashTotal<=0)return {i:-1,n:"ยังไม่กู้",cls:"good"};
+    if(me.tol>=79.5)return {i:0,n:"โซนแนะนำ",cls:"good"};
+    if(me.tol>=59.5)return {i:1,n:"โซนเสี่ยงกลาง",cls:"warn"};
+    if(me.tol>=39.5)return {i:2,n:"โซนเสี่ยงสูง",cls:"bad"};
+    return {i:3,n:"เกินเสี่ยงสูง!",cls:"bad"};
+  }
+  var last=null;
+  function render(){
+    var s=getVals();
+    var out=TIERS.map(function(t){
+      var capPct=(1-t.tol/100)*s.liq, res, tgt=null, lump=null;
+      if(meMode==="ltv"){ tgt=solveCapDynamic(s,capPct); res=simDynamic(s,tgt); }
+      else if(meMode==="lump"){ lump=solveCapLump(s,capPct); res=simLump(s,lump); }
+      else res=simFixed(s,solveCap(s,capPct));
+      res.tier=t; res.cap=capPct; res.tgt=tgt; res.lump=lump; return res;
+    });
+    var me=(meMode==="ltv")?simDynamic(s,s.targetLtv):(meMode==="lump")?simLump(s,s.lump):simFixed(s,s.draw*12);
+    me.mode=meMode;
+    var zone=zoneOf(me);
+    last={s:s,out:out,me:me,zone:zone};
+
+    // ---- มาตรวัดความเสี่ยง (แกน = ทนร่วงได้กี่ %) ----
+    var mtol=me.liqYear?0:me.tol, pos=Math.max(0,Math.min(100,100-mtol));
+    var meter='<div class="zwrap"><div class="zmeter">'+
+        '<div class="zseg g" style="width:20%"></div>'+
+        '<div class="zseg w" style="width:20%"></div>'+
+        '<div class="zseg b" style="width:20%"></div>'+
+        '<div class="zseg d" style="width:40%"></div>'+
+      '</div><div class="zmark" style="left:'+pos+'%"></div>'+
+      '<div class="zlabs">'+
+        '<span style="left:0%">ปลอดภัย</span>'+
+        '<span style="left:20%">แนะนำ</span>'+
+        '<span style="left:40%">กลาง</span>'+
+        '<span style="left:60%">สูง</span>'+
+      '</div></div>';
+
+    // ---- การ์ดยอดของคุณ ----
+    var chip,headline,mstat;
+    if(me.mode==="fixed"){
+      chip='ยอดที่คุณตั้ง · '+zone.n;
+      headline='<span class="mv">'+fB(s.draw)+'</span><span class="mu">/เดือน · ปีละ '+fMs(me.W)+'</span>';
+      if(me.liqYear) mstat='ยอดนี้ทำหนี้ชนเพดานเอง <b>โดนบังคับขายปีที่ '+me.liqYear+'</b> แม้ราคาเดินตามคาด';
+      else if(me.cashTotal<=0) mstat='ยังไม่ตั้งยอด &mdash; ลองใส่เลข หรือกดใช้ยอดจากการ์ดแนะนำด้านล่าง';
+      else mstat='ทนราคาร่วงได้ <b>−'+me.tol.toFixed(0)+'%</b> · LTV แตะสูงสุด <b>'+me.maxLtv.toFixed(1)+'% (ปีที่ '+me.bindYear+')</b> · หนี้ปลายทาง <b>'+fMs(me.debtEnd)+'</b> เทียบพอร์ต <b>'+fMs(me.portEnd)+'</b>';
+    } else if(me.mode==="ltv"){
+      chip='คุม LTV ที่ '+s.targetLtv+'% · '+zone.n;
+      headline='<span class="mv">'+fMs(me.firstCash)+'</span><span class="mu">ถอนได้ปีแรก (ตั้งวงเงิน)</span>';
+      var ongF=me.rows[1]?me.rows[1].cash:0;
+      if(me.liqYear) mstat='ดอกเบี้ย '+s.rate+'% สูงกว่าโต '+s.growth+'% → LTV ไต่ขึ้นเรื่อยๆ <b>ชนเพดานเองปีที่ '+me.liqYear+'</b> · ลดเป้า LTV หรือลดดอกเบี้ย';
+      else if(s.growth>s.rate) mstat='จากนั้นถอนต่อได้ปีละ <b>'+fMs(ongF)+' → '+fMs(me.lastCash)+'</b> (โตตามราคา) · รวม '+s.years+' ปี <b>'+fMs(me.cashTotal)+'</b> · LTV คงราว <b>'+me.maxLtv.toFixed(1)+'%</b> ทนร่วง <b>−'+me.tol.toFixed(0)+'%</b>';
+      else mstat='จากนั้น<b>ถอนต่อแทบไม่ได้</b> (ดอก '+s.rate+'% สูงกว่าโต '+s.growth+'%) · LTV ไต่เป็น <b>'+me.maxLtv.toFixed(1)+'%</b> ทนร่วงเหลือ <b>−'+me.tol.toFixed(0)+'%</b>';
+    } else {
+      chip='กู้ครั้งเดียว · '+zone.n;
+      headline='<span class="mv">'+fMs(s.lump)+'</span><span class="mu">กู้ก้อนเดียว ปีแรก แล้วปล่อย</span>';
+      var liveL=me.rows.filter(function(w){return w.ltv!==null;});
+      var l1=liveL.length?liveL[0].ltv:0, lN=liveL.length?liveL[liveL.length-1].ltv:0;
+      if(me.liqYear) mstat='ดอกเบี้ยทบต้นดันหนี้ <b>ชนเพดานปีที่ '+me.liqYear+'</b> (ดอก '+s.rate+'% > โต '+s.growth+'%) · ลดยอดกู้ลง';
+      else if(lN<l1-0.05) mstat='LTV เริ่ม <b>'+l1.toFixed(1)+'%</b> แล้วร่วงเหลือ <b>'+lN.toFixed(1)+'%</b> ในปีที่ '+s.years+' &mdash; ราคาโตแซงดอก หนี้เล็กลงเรื่อยๆ · ทนร่วง <b>−'+me.tol.toFixed(0)+'%</b>';
+      else mstat='LTV ไต่จาก <b>'+l1.toFixed(1)+'%</b> เป็น <b>'+lN.toFixed(1)+'%</b> &mdash; ดอกแซงราคา หนี้โตเทียบพอร์ต · ทนร่วงเหลือ <b>−'+me.tol.toFixed(0)+'%</b>';
+    }
+    $("meWrap").innerHTML='<div class="mecard '+zone.cls+'">'+
+      '<span class="chip '+zone.cls+'">'+chip+'</span>'+
+      '<div>'+headline+'</div>'+meter+
+      '<div class="mstat">'+mstat+'</div></div>';
+
+    // ---- การ์ด "ถ้าปิดหนี้ด้วยการขาย BTC" ----
+    var pf="";
+    if(me.liqYear){
+      pf='<div class="payoff"><h3>ปิดหนี้ด้วยการขาย BTC</h3>'+
+         '<div class="pnote">พอร์ตโดนบังคับขายไปแล้วตั้งแต่ปีที่ '+me.liqYear+' — เหลือเงินสด '+fMs(me.liqCash)+' &middot; ถอนใช้ก่อนหน้ารวม '+fMs(me.cashTotal)+'</div></div>';
+    } else if(me.cashTotal>0){
+      var lastRow=me.rows[me.rows.length-1], priceN=lastRow.price, debtN=me.debtEnd;
+      var btcSold=priceN>0?debtN/priceN:0, btcLeft=s.btc-btcSold;
+      var valueLeft=me.nwEnd, orig=s.btc*s.price, mult=orig>0?valueLeft/orig:0;
+      pf='<div class="payoff"><h3>ถ้าปิดหนี้ด้วยการขาย BTC (สิ้นปีที่ '+s.years+')</h3><div class="pg">'+
+        '<div class="pi"><div class="pk">ขาย BTC ปิดหนี้</div><div class="pv">'+fBtc(btcSold)+' ₿</div>'+
+          '<div class="ps">= '+lastRow.ltv.toFixed(1)+'% ของพอร์ต &middot; เหลือ <b>'+fBtc(btcLeft)+' ₿</b></div></div>'+
+        '<div class="pi"><div class="pk">มูลค่าที่เหลือ</div><div class="pv">'+fMs(valueLeft)+'</div>'+
+          '<div class="ps">จากทุน '+fMs(orig)+' &middot; โต <b>'+mult.toFixed(1)+' เท่า</b></div></div>'+
+        '<div class="pi"><div class="pk">เงินที่ถอนใช้ไปแล้ว</div><div class="pv">'+fMs(me.cashTotal)+'</div>'+
+          '<div class="ps">ตลอด '+s.years+' ปี &middot; ใช้ฟรีโดยไม่ต้องขาย</div></div>'+
+        '</div></div>';
+    }
+    $("payoffWrap").innerHTML=pf;
+
+    // ---- การ์ด 3 ระดับแนะนำ (ยอดถอนคงที่) ----
+    $("tiers").innerHTML=out.map(function(r){
+      var t=r.tier,tk,tv,ts,useAttr;
+      if(meMode==="ltv"){
+        var tg=Math.floor(r.tgt);
+        tk='คุม LTV ได้ถึง'; tv=tg+'%';
+        ts='ปีแรก '+fMs(r.firstCash)+' · รวม '+fMs(r.cashTotal)+' ('+s.years+' ปี)';
+        useAttr='data-ltv="'+tg+'"';
+      } else if(meMode==="lump"){
+        var lv=r.rows.filter(function(x){return x.ltv!==null;});
+        var a=lv.length?lv[0].ltv:0, z=lv.length?lv[lv.length-1].ltv:0;
+        tk='กู้ครั้งเดียวได้ถึง'; tv=fMs(r.lump);
+        ts='LTV '+a.toFixed(0)+'% → '+z.toFixed(0)+'% (ปีที่ '+s.years+')';
+        useAttr='data-lump="'+Math.round(r.lump)+'"';
+      } else {
+        tk='ถอนคงที่ได้เดือนละ'; tv=fB(r.W/12);
+        ts='ปีละ '+fMs(r.W)+' · '+(r.W/(s.btc*s.price)*100).toFixed(1)+'% ของพอร์ต/ปี';
+        useAttr='data-w="'+Math.round(r.W/12)+'"';
+      }
+      return '<div class="tier '+t.cls+'">'+
+        '<button class="usebtn" '+useAttr+'>ใช้ค่านี้ &rarr;</button>'+
+        '<div class="chip">'+t.name+' · '+t.tag+'</div>'+
+        '<div class="tk">'+tk+'</div>'+
+        '<div class="tv">'+tv+'</div>'+
+        '<div class="ts">'+ts+'</div>'+
+        '<ul>'+
+        '<li>ทนราคาร่วงได้ <b>−'+t.tol+'%</b></li>'+
+        '<li>LTV แตะสูงสุด <b>'+r.maxLtv.toFixed(0)+'% (ปีที่ '+r.bindYear+')</b></li>'+
+        '<li>หนี้ปลายทาง <b>'+fMs(r.debtEnd)+'</b></li>'+
+        '<li>เทียบพอร์ตตอนนั้น <b>'+fMs(r.portEnd)+'</b></li>'+
+        '</ul></div>';
+    }).join("");
+
+    // ---- verdict (บอกแค่โซน + ทนราคาร่วงได้กี่ %) ----
+    var v=$("verdict"),vm=$("vmark"),vt=$("vtext"),mark,msg;
+    var who=(me.mode==="ltv")?("คุม LTV "+s.targetLtv+"%"):(me.mode==="lump")?("กู้ครั้งเดียว "+fMs(s.lump)):(fB(s.draw)+"/เดือน");
+    if(me.liqYear){
+      mark="✕"; msg="<b>"+who+"</b> — หนี้ไต่ชนเพดานเอง โดนบังคับขายปีที่ "+me.liqYear;
+    } else if(me.cashTotal<=0){
+      mark="!"; msg="ใส่ยอดกู้ หรือสลับโหมดทางซ้ายเพื่อดูผล";
+    } else {
+      mark=(zone.i===0)?"✓":"!";
+      msg="<b>"+who+" · "+zone.n+"</b> — ทนราคาร่วงได้ <b>−"+me.tol.toFixed(0)+"%</b>";
+    }
+    vm.textContent=mark; vt.innerHTML=msg;
+    v.className="verdict "+zone.cls;
+
+    // ---- crash test ----
+    var marks=CRASHES.map(function(c){return '<div class="cmark" style="left:'+c.p+'%"><b>'+c.l+'</b></div>';}).join("");
+    var meLab=me.mode==="ltv"?("ของคุณ · คุม LTV "+s.targetLtv+"%"):me.mode==="lump"?("ของคุณ · กู้ครั้งเดียว "+fMs(s.lump)):("ของคุณ · "+fB(s.draw)+"/เดือน");
+    var meBar;
+    if(me.liqYear) meBar='<div class="crow"><div class="cfree">'+meLab+' — LTV ชนเพดานเองปีที่ '+me.liqYear+' แม้ไม่มีวิกฤต</div></div>';
+    else if(me.cashTotal<=0) meBar='<div class="crow"><div class="cbar me" style="width:100%">ของคุณ · ยังไม่กู้ <b>ไม่มีความเสี่ยง</b></div></div>';
+    else meBar='<div class="crow"><div class="cbar me" style="width:'+Math.max(14,me.tol)+'%">'+meLab+' <b>ทนได้ −'+me.tol.toFixed(0)+'%</b></div></div>';
+    var bars=out.map(function(r){var t=r.tier;
+      return '<div class="crow"><div class="cbar '+t.cls+'" style="width:'+t.tol+'%">'+t.name+' <b>ทนได้ −'+t.tol+'%</b></div></div>';}).join("");
+    $("crash").innerHTML=marks+meBar+bars;
+
+    renderTable();
+    draw(null);
+  }
+
+  function getPlan(i){return i===3?last.me:last.out[i];}
+  function renderTable(){
+    if(!last)return;
+    var r=getPlan(selTier),td=$("tierDesc");
+    if(selTier===3){
+      var me=last.me,z=last.zone,modeTxt=me.mode==="ltv"?"คุม LTV "+last.s.targetLtv+"%":me.mode==="lump"?"กู้ครั้งเดียว "+fMs(last.s.lump):"ถอนคงที่ "+fB(last.s.draw)+"/เดือน";
+      td.className="tierdesc accent";
+      if(me.liqYear) td.innerHTML="<b>ของคุณ</b> (โหมด"+modeTxt+") — หนี้ไต่ชนเพดานเอง <b>โดนบังคับขายปีที่ "+me.liqYear+"</b> แม้ราคาเดินตามคาด";
+      else if(me.cashTotal<=0) td.innerHTML="<b>ของคุณ</b> — ยังไม่ตั้งยอดถอน ลองใส่เลขทางซ้าย หรือกด &ldquo;ใช้ยอดนี้&rdquo; จากการ์ดแนะนำ";
+      else td.innerHTML="<b>ของคุณ</b> (โหมด"+modeTxt+") — เกณฑ์ที่คุณตั้งเอง ตอนนี้ทนราคาร่วงได้ <b>−"+me.tol.toFixed(0)+"%</b> จัดอยู่ใน"+z.n;
+    } else {
+      var t=TIERS[selTier];
+      td.className="tierdesc "+t.cls;
+      td.innerHTML="<b>"+t.name+"</b> — "+t.crit;
+    }
+    $("rows").innerHTML=r.rows.map(function(w){
+      var ltvCell;
+      if(w.ltv===null)ltvCell='<td>—</td>';
+      else{var cls=w.liqNow?"c-bad":(w.ltv>=50?"c-bad":(w.ltv>=35?"c-warn":"c-good"));
+        ltvCell='<td class="'+cls+'">'+w.ltv.toFixed(1)+'%'+(w.liqNow?' ⚠':'')+'</td>';}
+      return '<tr'+(w.liqNow?' class="liqrow"':'')+'><td>ปี '+w.y+'</td>'+
+        '<td>'+fMs(w.price)+'</td><td>'+fMs(w.cash)+'</td><td>'+fMs(w.debt)+'</td>'+ltvCell+
+        '<td>'+fMs(w.liqP)+'</td><td>'+(w.buf===null?'—':'−'+w.buf.toFixed(0)+'%')+'</td>'+
+        '<td>'+fMs(w.nw)+'</td></tr>';
+    }).join("");
+  }
+
+  // ---- canvas chart ----
+  var cv=$("chart"),ctx=cv.getContext("2d");
+  function css(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim();}
+  function draw(hx){
+    if(!last)return;
+    var box=cv.parentNode.getBoundingClientRect();
+    var dpr=window.devicePixelRatio||1, W=box.width, H=box.height;
+    cv.width=W*dpr; cv.height=H*dpr; ctx.setTransform(dpr,0,0,dpr,0,0);
+    ctx.clearRect(0,0,W,H);
+    var padL=40,padR=14,padT=16,padB=26,pw=W-padL-padR,ph=H-padT-padB;
+    var s=last.s,out=last.out,me=last.me,years=s.years;
+    var mMax=0; me.rows.forEach(function(w){if(w.ltv!==null&&w.ltv>mMax)mMax=w.ltv;});
+    var ymax=Math.max(s.liq*1.15,Math.min(mMax*1.1,140),30);
+    var xOf=function(t){return padL+t/years*pw;}, yOf=function(v){return padT+ph-(v/ymax)*ph;};
+    var cInk2=css("--ink-2"),cInk3=css("--ink-3"),cGrid=css("--grid"),cSurf=css("--surface"),
+        cAcc=css("--accent"),cBad=css("--bad");
+    var tierCol=[css("--good"),css("--warn"),cBad];
+
+    ctx.font="11px "+css("--sans"); ctx.textBaseline="middle";
+    var step=ymax>60?25:10;
+    for(var gv=0;gv<=ymax;gv+=step){var y=yOf(gv);
+      ctx.strokeStyle=cGrid; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(padL,y); ctx.lineTo(W-padR,y); ctx.stroke();
+      ctx.fillStyle=cInk3; ctx.textAlign="right"; ctx.fillText(Math.round(gv)+"%",padL-7,y);}
+    ctx.textAlign="center"; ctx.textBaseline="top"; ctx.fillStyle=cInk3;
+    var xt=[0,Math.round(years/2),years];
+    if(years>=4)xt=[0,Math.round(years/4),Math.round(years/2),Math.round(3*years/4),years];
+    xt=xt.filter(function(v,i,a){return a.indexOf(v)===i});
+    xt.forEach(function(t){ctx.fillText(t+(t===years?" ปี":""),xOf(t),H-padB+7);});
+
+    var ly=yOf(s.liq);
+    ctx.strokeStyle=cInk2; ctx.lineWidth=2; ctx.setLineDash([5,4]);
+    ctx.beginPath(); ctx.moveTo(padL,ly); ctx.lineTo(W-padR,ly); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle=cInk2; ctx.textAlign="left"; ctx.textBaseline="bottom";
+    ctx.fillText("บังคับขาย "+s.liq+"%",padL+4,ly-3);
+
+    out.forEach(function(r,i){
+      ctx.beginPath(); ctx.moveTo(xOf(0),yOf(0));
+      r.rows.forEach(function(w){ctx.lineTo(xOf(w.y),yOf(w.ltv));});
+      ctx.strokeStyle=tierCol[i]; ctx.lineWidth=1.8; ctx.globalAlpha=.7; ctx.lineJoin="round"; ctx.stroke(); ctx.globalAlpha=1;
+    });
+    var mePts=[{y:0,ltv:0}];
+    me.rows.forEach(function(w){if(w.ltv!==null)mePts.push({y:w.y,ltv:w.ltv});});
+    if(me.cashTotal>0){
+      ctx.beginPath(); mePts.forEach(function(p,i){var x=xOf(p.y),y=yOf(Math.min(p.ltv,ymax)); i?ctx.lineTo(x,y):ctx.moveTo(x,y);});
+      ctx.strokeStyle=cAcc; ctx.lineWidth=3.2; ctx.lineJoin="round"; ctx.stroke();
+      var ep=mePts[mePts.length-1],ex=xOf(ep.y),ey=yOf(Math.min(ep.ltv,ymax));
+      if(me.liqYear){ctx.strokeStyle=cBad; ctx.lineWidth=3;
+        ctx.beginPath(); ctx.moveTo(ex-5,ey-5); ctx.lineTo(ex+5,ey+5); ctx.moveTo(ex+5,ey-5); ctx.lineTo(ex-5,ey+5); ctx.stroke();}
+      else{ctx.beginPath(); ctx.arc(ex,ey,4.5,0,7); ctx.fillStyle=cAcc; ctx.fill(); ctx.lineWidth=2; ctx.strokeStyle=cSurf; ctx.stroke();}
+    }
+
+    if(hx!=null){
+      var t=Math.round(Math.max(0,Math.min(years,(hx-padL)/pw*years)));
+      if(t>=1){
+        var x=xOf(t);
+        ctx.strokeStyle=cInk3; ctx.lineWidth=1; ctx.setLineDash([3,3]);
+        ctx.beginPath(); ctx.moveTo(x,padT); ctx.lineTo(x,padT+ph); ctx.stroke(); ctx.setLineDash([]);
+        var parts=["ปี "+t];
+        var mw=me.rows[t-1];
+        if(me.cashTotal>0)parts.push("คุณ "+(mw.ltv===null?"ปิดพอร์ต":mw.ltv.toFixed(0)+"%"));
+        out.forEach(function(r){parts.push(r.tier.name+" "+r.rows[t-1].ltv.toFixed(0)+"%");});
+        var lab=parts.join("  ·  ");
+        ctx.font="12px "+css("--sans");
+        var tw=ctx.measureText(lab).width+16, bx=Math.min(W-padR-tw,Math.max(padL,x-tw/2)), by=padT+2;
+        ctx.fillStyle=css("--surface-2"); ctx.strokeStyle=css("--border-2"); ctx.lineWidth=1;
+        if(ctx.roundRect){ctx.beginPath();ctx.roundRect(bx,by,tw,22,6);ctx.fill();ctx.stroke();}
+        else{ctx.fillRect(bx,by,tw,22);ctx.strokeRect(bx,by,tw,22);}
+        ctx.fillStyle=css("--ink"); ctx.textAlign="left"; ctx.textBaseline="middle"; ctx.fillText(lab,bx+8,by+11);
+      }
+    }
+  }
+  cv.addEventListener("pointermove",function(e){var r=cv.getBoundingClientRect();draw(e.clientX-r.left);});
+  cv.addEventListener("pointerleave",function(){draw(null);});
+
+  var rt;
+  window.addEventListener("resize",function(){clearTimeout(rt);rt=setTimeout(function(){draw(null)},80);});
+  if(window.matchMedia){var mq=window.matchMedia("(prefers-color-scheme:dark)");
+    if(mq.addEventListener)mq.addEventListener("change",function(){draw(null)});
+    else if(mq.addListener)mq.addListener(function(){draw(null)});}
+
+  // ดึงราคา BTC สดจาก CoinGecko (มี fallback เป็นค่าตั้งต้นถ้าออฟไลน์)
+  function fetchLivePrice(){
+    var note=$("priceNote"); if(!note)return;
+    note.textContent="กำลังดึงราคาสดจาก CoinGecko…";
+    fetch("https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=thb")
+      .then(function(r){ if(!r.ok)throw 0; return r.json(); })
+      .then(function(d){
+        var p=d&&d.bitcoin&&d.bitcoin.thb; if(!p)throw 0;
+        var v=Math.round(p);
+        $("price").value=grp(v);
+        $("priceR").value=Math.min(CFG.price.max,Math.max(CFG.price.min,v));
+        render();
+        var t=new Date().toLocaleTimeString("th-TH",{hour:"2-digit",minute:"2-digit"});
+        note.innerHTML="ราคาสดจาก CoinGecko · อัปเดต "+t+" น. (แก้เองได้)";
+      })
+      .catch(function(){ note.textContent="ดึงราคาสดไม่ได้ — ใช้ค่าตั้งต้น (แก้เองได้)"; });
+  }
+
+  applyTheme();
+  setMeMode("fixed");
+  setVals(DEF);
+  render();
+  fetchLivePrice();
+})();
+</script>
+</body>
+</html>
