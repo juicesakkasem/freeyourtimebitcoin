@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="description" content="เครื่องมือเปรียบเทียบ ควรเอาเงินโปะบ้าน หรือซื้อ store of value (บิตคอยน์ / ทองคำ / หุ้นสหรัฐ S&P 500) ดีกว่ากัน">
+<title>โปะบ้าน หรือ ซื้อ Store of Value? — เครื่องมือเทียบให้เห็นภาพ</title>
+<style>
+  :root{
+    --bg:#F3EEE2; --surface:#FBF8F1; --surface-2:#FFFFFF;
+    --ink:#1C1710; --ink-2:#6C6353; --ink-3:#9A9080;
+    --border:rgba(28,23,16,.12); --border-2:rgba(28,23,16,.22);
+    --accent:#D9790A; --accent-2:#B4620A; --accent-soft:rgba(217,121,10,.13);
+    --grid:rgba(28,23,16,.08);
+    --good:#1E8A4C; --good-bg:rgba(30,138,76,.12);
+    --warn:#B26A12; --warn-bg:rgba(178,106,18,.12);
+    --bad:#BE3A2C; --bad-bg:rgba(190,58,44,.12);
+    --mono:ui-monospace,"SF Mono","Cascadia Code","Segoe UI Mono",Consolas,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,"Noto Sans Thai",sans-serif;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --bg:#0E0C09; --surface:#17140F; --surface-2:#201B13;
+      --ink:#F3ECDD; --ink-2:#A79E8C; --ink-3:#746C5C;
+      --border:rgba(243,236,221,.13); --border-2:rgba(243,236,221,.24);
+      --accent:#F7931A; --accent-2:#FBA83E; --accent-soft:rgba(247,147,26,.15);
+      --grid:rgba(243,236,221,.07);
+      --good:#3FB765; --good-bg:rgba(63,183,101,.14);
+      --warn:#E0A44A; --warn-bg:rgba(224,164,74,.14);
+      --bad:#E5604F; --bad-bg:rgba(229,96,79,.15);
+    }
+  }
+  :root[data-theme="light"]{
+    --bg:#F3EEE2; --surface:#FBF8F1; --surface-2:#FFFFFF;
+    --ink:#1C1710; --ink-2:#6C6353; --ink-3:#9A9080;
+    --border:rgba(28,23,16,.12); --border-2:rgba(28,23,16,.22);
+    --accent:#D9790A; --accent-2:#B4620A; --accent-soft:rgba(217,121,10,.13);
+    --grid:rgba(28,23,16,.08);
+    --good:#1E8A4C; --good-bg:rgba(30,138,76,.12);
+    --warn:#B26A12; --warn-bg:rgba(178,106,18,.12);
+    --bad:#BE3A2C; --bad-bg:rgba(190,58,44,.12);
+  }
+  :root[data-theme="dark"]{
+    --bg:#0E0C09; --surface:#17140F; --surface-2:#201B13;
+    --ink:#F3ECDD; --ink-2:#A79E8C; --ink-3:#746C5C;
+    --border:rgba(243,236,221,.13); --border-2:rgba(243,236,221,.24);
+    --accent:#F7931A; --accent-2:#FBA83E; --accent-soft:rgba(247,147,26,.15);
+    --grid:rgba(243,236,221,.07);
+    --good:#3FB765; --good-bg:rgba(63,183,101,.14);
+    --warn:#E0A44A; --warn-bg:rgba(224,164,74,.14);
+    --bad:#E5604F; --bad-bg:rgba(229,96,79,.15);
+  }
+
+  html,body{margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:var(--sans)}
+  *{box-sizing:border-box}
+  .wrap{color:var(--ink);max-width:1120px;margin:0 auto;padding:22px 20px 40px;line-height:1.55;animation:fade .5s ease both}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){.wrap{animation:none}.fill{transition:none!important}}
+
+  .top{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:18px}
+  .brand{display:flex;align-items:center;gap:13px}
+  .coin{width:44px;height:44px;border-radius:50%;background:var(--accent);color:#1C1305;display:flex;
+    align-items:center;justify-content:center;font-family:var(--mono);font-weight:700;font-size:22px;flex:0 0 auto}
+  .brand h1{margin:0;font-size:24px;font-weight:600;letter-spacing:-.01em;line-height:1.05}
+  .brand p{margin:2px 0 0;color:var(--ink-2);font-size:13px}
+  .brand .disc{margin:5px 0 0;font-size:11.5px;color:var(--ink-3)}
+  .actions{display:flex;gap:8px}
+  .btn{font-family:var(--sans);font-size:13px;color:var(--ink-2);background:transparent;border:1px solid var(--border-2);
+    border-radius:8px;padding:8px 13px;cursor:pointer;transition:background .15s,color .15s;white-space:nowrap}
+  .btn:hover{background:var(--surface);color:var(--ink)}
+  .btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+
+  .board{display:grid;grid-template-columns:298px 1fr;gap:20px;align-items:start}
+  @media (max-width:860px){.board{grid-template-columns:1fr}}
+
+  .panel{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px}
+  .controls{position:sticky;top:14px}
+  @media (max-width:860px){.controls{position:static}}
+  .controls h2{margin:0 0 4px;font-size:13px;font-weight:600;color:var(--ink-2);letter-spacing:.02em}
+  .controls .hint{margin:0 0 14px;font-size:12px;color:var(--ink-3)}
+  .subhint{margin:9px 0 0;font-size:11.5px;color:var(--ink-3);line-height:1.55}
+  .subhint b{color:var(--ink-2);font-weight:600}
+
+  .ctrl{padding:13px 0;border-top:1px solid var(--border)}
+  .ctrl:first-of-type{border-top:0;padding-top:4px}
+  .ctrl-head{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:8px}
+  .ctrl-head label{font-size:13.5px;font-weight:500}
+  .ctrl-head .unit{font-size:11px;color:var(--ink-3)}
+  .numwrap{display:flex;align-items:center;gap:6px;margin-bottom:9px}
+  .numwrap .pre{font-family:var(--mono);font-size:14px;color:var(--ink-3)}
+  input.num{flex:1;font-family:var(--mono);font-size:16px;font-weight:600;color:var(--ink);background:var(--surface-2);
+    border:1px solid var(--border-2);border-radius:8px;padding:8px 10px;width:100%;font-variant-numeric:tabular-nums}
+  input.num:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:transparent}
+  input[type=number].num{-moz-appearance:textfield}
+  input[type=number].num::-webkit-outer-spin-button,input[type=number].num::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:4px;
+    background:var(--border-2);cursor:pointer;margin:2px 0}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:18px;height:18px;border-radius:50%;
+    background:var(--accent);border:3px solid var(--surface);box-shadow:0 0 0 1px var(--border-2);cursor:pointer}
+  input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;background:var(--accent);
+    border:3px solid var(--surface);cursor:pointer}
+  input[type=range]:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+
+  .seg{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+  .seg button{flex:1 1 auto;font-family:var(--sans);font-size:12.5px;color:var(--ink-2);background:var(--surface-2);
+    border:1px solid var(--border-2);border-radius:8px;padding:7px 6px;cursor:pointer;white-space:nowrap;transition:.15s}
+  .seg button:hover{color:var(--ink)}
+  .seg button.on{background:var(--accent);border-color:var(--accent);color:#1C1305;font-weight:600}
+  .seg button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+  .alloc-read{display:flex;justify-content:space-between;font-size:12.5px;margin-top:9px;font-variant-numeric:tabular-nums}
+  .alloc-read .m{color:var(--bad);font-weight:600}
+  .alloc-read .i{color:var(--good);font-weight:600}
+
+  .hero{border:1px solid var(--border);border-radius:14px;padding:20px 22px;background:var(--surface);margin-bottom:16px}
+  .hero .lab{font-size:13px;color:var(--ink-2)}
+  .hero .big{font-family:var(--mono);font-weight:700;font-size:clamp(34px,7.5vw,52px);line-height:1;letter-spacing:-.02em;
+    color:var(--accent);margin:6px 0 2px;font-variant-numeric:tabular-nums}
+  .prog{position:relative;height:12px;background:var(--surface-2);border:1px solid var(--border);border-radius:20px;
+    margin:16px 0 8px;overflow:hidden}
+  .fill{position:absolute;left:0;top:0;bottom:0;border-radius:20px;background:var(--accent);width:0;transition:width .5s ease,background .3s}
+  .prlabels{display:flex;justify-content:space-between;font-size:11.5px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+  .hero .sub{font-size:13.5px;color:var(--ink-2);margin-top:8px}
+  .hero .sub b{color:var(--ink);font-weight:600}
+
+  .plans{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
+  @media (max-width:680px){.plans{grid-template-columns:1fr}}
+  .plan{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:15px 16px;position:relative;
+    display:flex;flex-direction:column}
+  .plan.best{border-color:var(--good);box-shadow:0 0 0 1px var(--good) inset}
+  .plan.mine{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset}
+  .plan h4{margin:0 0 2px;font-size:14px;font-weight:600;letter-spacing:-.01em}
+  .plan .tag{font-size:11.5px;color:var(--ink-3);margin-bottom:11px;min-height:32px}
+  .plan .row{display:flex;justify-content:space-between;gap:10px;font-size:12.5px;color:var(--ink-2);padding:4px 0}
+  .plan .row b{font-family:var(--mono);color:var(--ink);font-weight:600;font-variant-numeric:tabular-nums;text-align:right}
+  .plan .net{margin-top:auto;padding-top:11px;border-top:1px solid var(--border)}
+  .plan .net .lab{font-size:11.5px;color:var(--ink-2)}
+  .plan .net .val{font-family:var(--mono);font-size:22px;font-weight:700;color:var(--accent);
+    font-variant-numeric:tabular-nums;letter-spacing:-.01em;margin-top:2px}
+  .badge{position:absolute;top:-9px;right:12px;font-size:10.5px;font-weight:700;padding:2px 9px;border-radius:20px;color:#fff}
+  .badge.b-best{background:var(--good)}
+  .badge.b-mine{background:var(--accent);color:#1C1305}
+
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(158px,1fr));gap:12px;margin-bottom:16px}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:13px 14px}
+  .card .k{font-size:12px;color:var(--ink-2);margin-bottom:6px;min-height:30px}
+  .card .v{font-family:var(--mono);font-size:18px;font-weight:600;letter-spacing:-.01em;font-variant-numeric:tabular-nums;
+    color:var(--ink);word-break:break-word}
+  .card .s{font-size:11.5px;color:var(--ink-3);margin-top:3px}
+  .card.accent .v{color:var(--accent)}
+
+  .chartcard{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px 18px 12px;margin-bottom:16px}
+  .chartcard .ch-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px;flex-wrap:wrap}
+  .chartcard h3{margin:0;font-size:14px;font-weight:600}
+  .legend{display:flex;gap:14px;font-size:12px;color:var(--ink-2);flex-wrap:wrap}
+  .legend span{display:flex;align-items:center;gap:6px}
+  .swatch{width:14px;height:3px;border-radius:2px;display:inline-block}
+  .swatch.a{background:var(--bad)} .swatch.b{background:var(--good)} .swatch.c{background:var(--accent);height:4px}
+  .canvas-box{position:relative;width:100%;height:300px}
+  canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none}
+
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  .tablecard{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:6px 4px}
+  .tbl-scroll{max-height:360px;overflow:auto}
+  th,td{text-align:right;padding:9px 14px;font-variant-numeric:tabular-nums;white-space:nowrap}
+  th:first-child,td:first-child{text-align:left}
+  thead th{font-size:11.5px;font-weight:600;color:var(--ink-3);border-bottom:1px solid var(--border);
+    background:var(--surface);position:sticky;top:0;z-index:1}
+  tbody td{font-family:var(--mono);color:var(--ink)}
+  tbody td:first-child{font-family:var(--sans);color:var(--ink-2)}
+  tbody tr:not(:last-child) td{border-bottom:1px solid var(--grid)}
+  tbody tr.hit td{color:var(--accent);font-weight:600}
+  .pill{display:inline-block;font-family:var(--sans);font-size:9.5px;font-weight:700;color:#1C1305;background:var(--accent);
+    border-radius:20px;padding:1px 7px;margin-left:6px;vertical-align:middle}
+  .pill.win{background:var(--good);color:#fff;margin-left:0}
+  .pill.lose{background:var(--bad);color:#fff;margin-left:0}
+  .tbl-head{padding:14px 16px 8px}
+  .tbl-head h3{margin:0;font-size:14px;font-weight:600}
+  .tbl-head p{margin:4px 0 0;font-size:12px;color:var(--ink-3)}
+  .rawdata{margin:6px 14px 2px}
+  .rawdata summary{cursor:pointer;font-size:12.5px;color:var(--accent);font-weight:600;padding:4px 0;user-select:none}
+  .rawdata summary:hover{text-decoration:underline}
+  .rawgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:6px;margin:8px 0 4px}
+  .rawchip{display:flex;justify-content:space-between;gap:6px;font-family:var(--mono);font-size:11.5px;
+    border:1px solid var(--border);border-radius:7px;padding:5px 8px;background:var(--surface-2);font-variant-numeric:tabular-nums}
+  .rawchip .y{color:var(--ink-3)}
+  .rawchip .up{color:var(--good);font-weight:600}
+  .rawchip .dn{color:var(--bad);font-weight:600}
+  .rawchart-box{position:relative;width:100%;height:190px;margin:8px 2px 4px}
+  .rawchart-box canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none}
+  .rawnote{font-size:10.5px;color:var(--ink-3);margin:0 2px 8px;line-height:1.5}
+  #btRows tr{cursor:pointer}
+  #btRows tr.selrow td{background:var(--accent-soft)}
+
+  footer{margin-top:24px}
+  .notes{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  @media (max-width:640px){.notes{grid-template-columns:1fr}}
+  .note{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:13px 15px}
+  .note.wide{grid-column:1/-1;border-left:3px solid var(--accent)}
+  .note h4{margin:0 0 6px;font-size:12.5px;font-weight:600;color:var(--ink)}
+  .note p{margin:0;font-size:12.5px;color:var(--ink-2);line-height:1.62}
+  .note p b{color:var(--ink);font-weight:600}
+  .finenote{margin:12px 2px 0;font-size:11.5px;color:var(--ink-3);line-height:1.6}
+  .finenote b{color:var(--ink-2);font-weight:600}
+
+  /* ── site navbar (shared across all pages) ── */
+  html{overflow-y:scroll}
+  body{padding-top:72px}
+  .cashual-nav{position:fixed;top:0;left:0;width:100%;background:rgba(15,15,15,0.95);backdrop-filter:blur(10px);border-bottom:1px solid #222;z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:0 2rem;height:72px}
+  .cashual-nav-logo{font-size:22px;font-weight:700;color:#f7931a;letter-spacing:0.05em}
+  .cashual-nav-links{display:flex;gap:2.5rem;list-style:none;margin:0;padding:0;align-items:center}
+  .cashual-nav-links a{color:#aaa;text-decoration:none;font-size:17px;transition:color 0.2s}
+  .cashual-nav-links a:hover{color:#f7931a}
+  .cashual-nav-toggle{display:none;background:transparent;border:0;color:#f7931a;font-size:26px;line-height:1;cursor:pointer;padding:4px 8px}
+  .cashual-nav-links{gap:2rem;align-items:stretch;height:72px}
+  .cashual-nav-links>li{position:relative;display:flex;align-items:center}
+  .cnav-dd-btn{font-family:inherit;background:transparent;border:0;color:#aaa;font-size:17px;cursor:pointer;display:inline-flex;align-items:center;gap:5px;padding:0;transition:color .2s}
+  .cnav-dd-btn:hover{color:#f7931a}
+  .cnav-caret{font-size:11px;transition:transform .2s}
+  .cnav-dd{display:none;position:absolute;top:100%;left:50%;transform:translateX(-50%);min-width:190px;background:rgba(20,20,20,0.98);backdrop-filter:blur(10px);border:1px solid #2a2a2a;border-radius:10px;padding:6px;list-style:none;margin:0;box-shadow:0 12px 32px rgba(0,0,0,.45);z-index:1001}
+  .cashual-nav-links>li:hover>.cnav-dd,.cashual-nav-links>li:focus-within>.cnav-dd{display:block}
+  .cashual-nav-links>li:hover .cnav-caret,.cashual-nav-links>li:focus-within .cnav-caret{transform:rotate(180deg)}
+  .cnav-dd>li{display:block;width:100%}
+  .cnav-dd a{display:block;padding:9px 14px;font-size:15px;border-radius:6px;white-space:nowrap}
+  .cnav-dd a:hover{background:rgba(247,147,26,.12);color:#f7931a}
+  @media(max-width:640px){.cashual-nav{padding:0 1rem}.cashual-nav-toggle{display:block}.cashual-nav-links{display:none;position:absolute;top:72px;left:0;width:100%;height:auto;flex-direction:column;align-items:stretch;gap:0;background:rgba(15,15,15,0.98);backdrop-filter:blur(10px);border-bottom:1px solid #222;padding:6px 0;max-height:calc(100vh - 72px);overflow-y:auto}.cashual-nav.open .cashual-nav-links{display:flex}.cashual-nav-links>li{display:block;height:auto}.cnav-dd-btn{display:block;width:100%;text-align:left;padding:14px 1.5rem 6px;font-size:12px;color:#777;text-transform:uppercase;letter-spacing:.06em;cursor:default;pointer-events:none}.cnav-caret{display:none}.cnav-dd{display:block;position:static;transform:none;min-width:0;background:transparent;backdrop-filter:none;border:0;border-radius:0;padding:0;box-shadow:none}.cnav-dd a{padding:11px 1.5rem 11px 2.5rem;font-size:16px;border-radius:0}.cashual-nav-links>li>a{display:block;padding:14px 1.5rem;font-size:16px}}
+  /* กันหน้าเลื่อนซ้าย-ขวาบนจอเล็ก */
+  .board>*{min-width:0}
+  @media(max-width:860px){.wrap{overflow-x:hidden}}
+</style>
+</head>
+<body>
+<nav class="cashual-nav">
+  <div class="cashual-nav-logo"><a href="index.html" style="text-decoration:none;color:inherit;">FreeyourtimeBitcoin</a></div>
+  <button class="cashual-nav-toggle" aria-label="เมนู" onclick="this.closest('.cashual-nav').classList.toggle('open')">&#9776;</button>
+  <ul class="cashual-nav-links">
+    <li>
+      <button class="cnav-dd-btn" type="button">Calculators <span class="cnav-caret">▾</span></button>
+      <ul class="cnav-dd">
+        <li><a href="1-btc-dashboard.html">1 BTC</a></li>
+        <li><a href="Bitcoin-DCA-Master.html">DCA Master</a></li>
+        <li><a href="Purchasing-Power.html">Purchasing Power</a></li>
+        <li><a href="BTC-BTC+insurance.html">BTC + ประกัน</a></li>
+        <li><a href="LTV Bitcoin.html">LTV Bitcoin</a></li>
+        <li><a href="mortgage.html">Mortgage</a></li>
+      </ul>
+    </li>
+    <li>
+      <button class="cnav-dd-btn" type="button">Planning <span class="cnav-caret">▾</span></button>
+      <ul class="cnav-dd">
+        <li><a href="dca-tracker.html">DCA Tracker</a></li>
+        <li><a href="wealth-planner.html">Wealth Planner</a></li>
+        <li><a href="retirement plan.html">Retirement Plan</a></li>
+      </ul>
+    </li>
+    <li><a href="https://cashualme.com/" target="_blank">Cashualme</a></li>
+  </ul>
+</nav>
+<div class="wrap">
+  <div class="top">
+    <div class="brand">
+      <div class="coin">&#3647;</div>
+      <div>
+        <h1>โปะบ้าน หรือ ซื้อ Store of Value</h1>
+        <p>ถ้ามีเงินเหลือจากรายจ่ายและเงินสำรองแล้ว จะโปะบ้าน หรือซื้อสินทรัพย์ที่เป็น store of value แบบไหนดีกว่า</p>
+        <p class="disc">* เพื่อการศึกษา ไม่ใช่คำแนะนำการลงทุน</p>
+      </div>
+    </div>
+    <div class="actions">
+      <button class="btn" id="theme">&#9680; ธีม</button>
+      <button class="btn" id="reset">&#8635; รีเซ็ต</button>
+    </div>
+  </div>
+
+  <div class="board">
+    <aside class="panel controls">
+      <h2>ใส่ตัวเลขของคุณ</h2>
+      <p class="hint">เลื่อนแถบหรือพิมพ์ได้เลย ผลลัพธ์เปลี่ยนทันที</p>
+
+      <div class="ctrl">
+        <div class="ctrl-head"><label for="principal">หนี้บ้านคงเหลือ</label><span class="unit">บาท</span></div>
+        <div class="numwrap"><span class="pre">&#3647;</span><input class="num" type="text" inputmode="numeric" autocomplete="off" id="principal"></div>
+        <input type="range" id="principalR" min="0" max="20000000" step="50000">
+      </div>
+
+      <div class="ctrl">
+        <div class="ctrl-head"><label for="interestRate">ดอกเบี้ยบ้าน</label><span class="unit">% ต่อปี</span></div>
+        <div class="numwrap"><input class="num" type="number" id="interestRate" min="0" max="20" step="0.1"><span class="pre">%</span></div>
+        <input type="range" id="interestRateR" min="0" max="12" step="0.1">
+      </div>
+
+      <div class="ctrl">
+        <div class="ctrl-head"><label for="termYears">ระยะเวลาที่เหลือ</label><span class="unit">ปี</span></div>
+        <div class="numwrap"><input class="num" type="number" id="termYears" min="1" max="40" step="1"></div>
+        <input type="range" id="termYearsR" min="1" max="40" step="1">
+      </div>
+
+      <div class="ctrl">
+        <div class="ctrl-head"><label for="extra">เงินเหลือต่อเดือน</label><span class="unit">บาท / เดือน</span></div>
+        <div class="numwrap"><span class="pre">&#3647;</span><input class="num" type="text" inputmode="numeric" autocomplete="off" id="extra"></div>
+        <input type="range" id="extraR" min="0" max="200000" step="1000">
+        <p class="subhint">เงินที่เหลือ <b>หลังหักรายจ่ายประจำและกันเงินสำรองฉุกเฉินแล้ว</b> &mdash; ค่าผ่อนบ้านจ่ายจากรายได้ตามปกติ ไม่ใช่เงินก้อนนี้</p>
+      </div>
+
+      <div class="ctrl">
+        <div class="ctrl-head"><label id="assetLab" for="assetReturn">ผลตอบแทนคาดหวัง</label><span class="unit">% ต่อปี</span></div>
+        <div class="seg" id="seg">
+          <button type="button" data-k="btc">บิตคอยน์</button>
+          <button type="button" data-k="gold">ทองคำ</button>
+          <button type="button" data-k="stock">หุ้นสหรัฐ</button>
+          <button type="button" data-k="custom">กำหนดเอง</button>
+        </div>
+        <div class="numwrap"><input class="num" type="number" id="assetReturn" min="-20" max="60" step="0.5"><span class="pre">%</span></div>
+        <input type="range" id="assetReturnR" min="-20" max="40" step="0.5">
+      </div>
+
+      <div class="ctrl">
+        <div class="ctrl-head"><label for="alloc">สัดส่วนเงินเหลือ</label><span class="unit" id="allocUnit">โปะ 50 · ซื้อ 50</span></div>
+        <input type="range" id="alloc" min="0" max="100" step="5" value="50">
+        <div class="alloc-read">
+          <span class="m" id="allocM">โปะบ้าน &#3647;0/ด.</span>
+          <span class="i" id="allocI">ซื้อ &#3647;0/ด.</span>
+        </div>
+      </div>
+    </aside>
+
+    <main>
+      <div class="hero">
+        <div class="lab" id="hLab">ความมั่งคั่งสุทธิเมื่อครบ 25 ปี · แผนที่คุณเลือก</div>
+        <div class="big" id="hBig">&#3647;0</div>
+        <div class="prog"><div class="fill" id="fill"></div></div>
+        <div class="prlabels"><span id="prLeft">&mdash;</span><span id="prRight">&mdash;</span></div>
+        <div class="sub" id="hSub"></div>
+      </div>
+
+      <div class="plans" id="plans"></div>
+
+      <div class="cards" id="cards"></div>
+
+      <div class="chartcard">
+        <div class="ch-top">
+          <h3 id="chTitle">ความมั่งคั่งสุทธิ (พอร์ต &minus; หนี้ที่เหลือ) ตลอดเวลา</h3>
+          <div class="legend">
+            <span><i class="swatch a"></i>โปะบ้านล้วน</span>
+            <span><i class="swatch b"></i><span id="legInvest">ลงทุนล้วน</span></span>
+            <span><i class="swatch c"></i>แผนคุณ</span>
+          </div>
+        </div>
+        <div class="canvas-box"><canvas id="chart"></canvas></div>
+      </div>
+
+      <div class="tablecard">
+        <div class="tbl-head">
+          <h3>ตารางรายปี &mdash; แผนที่คุณเลือก</h3>
+          <p id="tblSub">ไล่ดูปีต่อปีว่าหนี้ลดลงเท่าไร พอร์ตโตแค่ไหน และความมั่งคั่งสุทธิเปลี่ยนอย่างไร</p>
+        </div>
+        <div class="tbl-scroll">
+          <table>
+            <thead><tr>
+              <th>สิ้นปีที่</th><th>หนี้คงเหลือ</th><th id="thPort">พอร์ตลงทุน</th>
+              <th>ความมั่งคั่งสุทธิ</th>
+            </tr></thead>
+            <tbody id="rows"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="tablecard" style="margin-top:16px" id="btSection">
+        <div class="tbl-head">
+          <h3>ทดสอบกับอดีตจริง (Backtest) &mdash; <span id="btAsset">บิตคอยน์</span></h3>
+          <p id="btIntro"></p>
+        </div>
+        <div class="cards" id="btCards" style="padding:0 12px"></div>
+        <div class="pathchart" id="btPathWrap" style="padding:0 12px 4px">
+          <div class="legend" style="margin:2px 2px 6px">
+            <span><i class="swatch a"></i>โปะบ้าน</span>
+            <span><i class="swatch b"></i><span id="btPathLeg">ซื้อสินทรัพย์</span></span>
+          </div>
+          <div class="canvas-box" style="height:240px"><canvas id="btPathChart"></canvas></div>
+          <div class="rawnote" id="btPathCap" style="margin-top:4px"></div>
+        </div>
+        <div class="tbl-scroll" id="btTableWrap">
+          <table>
+            <thead><tr>
+              <th>เริ่มปี</th><th>ถึงปี</th><th>ถ้าโปะบ้าน</th><th id="btThB">ถ้าลงทุน</th><th>ทางที่ได้มากกว่า</th>
+            </tr></thead>
+            <tbody id="btRows"></tbody>
+          </table>
+        </div>
+        <details class="rawdata" id="btRawWrap">
+          <summary>ดูข้อมูลจริงรายปีที่ใช้คำนวณ (ตรวจสอบเองได้)</summary>
+          <div class="rawchart-box"><canvas id="btRawChart"></canvas></div>
+          <div class="rawnote">แท่งเขียว = ปีที่ได้กำไร (ขึ้น) · แท่งแดง = ปีที่ขาดทุน (ลง) · ความสูงถูกบีบอัดแบบ log ให้เห็นทุกปี — ตัวเลขจริงอยู่ด้านล่าง</div>
+          <div class="rawgrid" id="btRaw"></div>
+        </details>
+        <p class="subhint" style="padding:8px 14px 4px">ตัวเลขผลตอบแทนรายปีเป็นค่าในอดีตโดยประมาณ (อ้างอิงราคาสกุล USD ไม่รวมค่าเงิน/ภาษี/ค่าธรรมเนียม) เพื่อการศึกษา ไม่การันตีอนาคต</p>
+      </div>
+    </main>
+  </div>
+
+  <footer>
+    <div class="notes">
+      <div class="note">
+        <h4>&ldquo;เงินเหลือ&rdquo; คืออะไร</h4>
+        <p>เงินที่เหลือ <b>หลังหักรายจ่ายประจำและกันเงินสำรองฉุกเฉินแล้ว</b> ค่าผ่อนบ้านจ่ายจากรายได้ตามปกติทุกแผน เงินก้อนนี้ต่างหากที่เอาไปโปะบ้านหรือซื้อ store of value</p>
+      </div>
+      <div class="note">
+        <h4>วิธีคิด</h4>
+        <p>ทุกแผนใช้เงินเท่ากันต่อเดือน (ค่าผ่อนขั้นต่ำ + เงินเหลือ) ต่างกันแค่เอาเงินเหลือไปทางไหน พอผ่อนบ้านหมดก่อนกำหนด เงินทั้งก้อนจะโยกไปซื้อสินทรัพย์ต่อทันที แล้ววัดผลที่ปีสุดท้ายเท่ากัน</p>
+      </div>
+      <div class="note">
+        <h4>ความมั่งคั่งสุทธิ (ไม่รวมบ้าน)</h4>
+        <p>= มูลค่าพอร์ต <b>&minus;</b> หนี้บ้านที่เหลือ ไม่รวมราคาบ้าน เพราะเลือกแผนไหนก็เป็นเจ้าของบ้านหลังเดิม ราคาขึ้น/ลงเท่ากัน จึงตัดออกเพื่อเทียบเฉพาะ <b>ผลของการตัดสินใจ</b></p>
+      </div>
+      <div class="note wide">
+        <h4>เรื่องความเสี่ยง</h4>
+        <p>โปะบ้าน = ผลตอบแทนชัวร์เท่าดอกเบี้ยบ้าน ปลอดความเสี่ยง &middot; store of value ให้ผลตอบแทนคาดหวังสูงกว่าได้แต่ผันผวน บางปีติดลบ &mdash; แต่เพราะเป็น &ldquo;เงินเหลือ&rdquo; ราคาสินทรัพย์ตก<b>ก็ไม่กระทบค่าผ่อนบ้าน ไม่ถูกบังคับขาย ไม่เสียบ้าน</b> ความเสี่ยงจริงจึงไม่ใช่ &ldquo;หมดตัว&rdquo; แต่คือ <b>&ldquo;อาจได้น้อยกว่าการโปะบ้านที่ชัวร์&rdquo; (เสียโอกาส)</b> โดยมีเงื่อนไข: <b>มีเงินสำรองฉุกเฉินแยกไว้</b> และ <b>ทนถือผ่านช่วงราคาตกได้โดยไม่ตกใจขาย</b></p>
+      </div>
+    </div>
+    <p class="finenote"><b>หมายเหตุ:</b> เป็นแบบจำลองเพื่อการศึกษา ไม่ใช่คำแนะนำการลงทุนหรือการเงินส่วนบุคคล โมเดลสมมติผลตอบแทนโตทบต้นสม่ำเสมอเพื่อให้เห็นภาพ ของจริงผันผวนกว่านี้มาก ไม่รวมค่าธรรมเนียม/ภาษี/ค่าปรับไถ่ถอนก่อนกำหนด</p>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var ASSETS={
+    btc:{name:"บิตคอยน์", short:"BTC", ret:15},
+    gold:{name:"ทองคำ", short:"ทองคำ", ret:7},
+    stock:{name:"หุ้นสหรัฐ (S&P 500)", short:"หุ้นสหรัฐ", ret:8},
+    custom:{name:"สินทรัพย์", short:"สินทรัพย์", ret:10}
+  };
+  var assetKey="btc";
+
+  var DEF={principal:3000000, interestRate:4.5, termYears:25, extra:10000, assetReturn:15};
+  var CFG={
+    principal:{min:0,max:100000000,comma:true},
+    interestRate:{min:0,max:20,comma:false},
+    termYears:{min:1,max:40,comma:false},
+    extra:{min:0,max:1000000,comma:true},
+    assetReturn:{min:-20,max:60,comma:false}
+  };
+
+  // ผลตอบแทนจริงรายปี (%) โดยประมาณ อ้างอิงราคาสกุล USD — เพื่อการศึกษา
+  var HIST={
+    btc:{start:2014, r:[-58,35,125,1318,-73,92,305,60,-64,155,120]},
+    gold:{start:1971, r:[17,49,66,72,-25,-4,22,37,127,15,-32,14,-16,-19,6,19,22,-15,-2,-2,-10,-6,17,-2,1,-5,-21,-1,1,-6,2,25,20,5,18,23,31,5,24,30,10,7,-28,-2,-10,8,13,-2,18,25,-4,0,13,27]},
+    stock:{start:1971, r:[14,19,-15,-26,37,24,-7,7,18,32,-5,21,23,6,32,19,5,17,32,-3,31,8,10,1,38,23,33,29,21,-9,-12,-22,29,11,5,16,5,-37,26,15,2,16,32,14,1,12,22,-4,31,18,29,-18,26,25]}
+  };
+
+  var $=function(id){return document.getElementById(id)};
+
+  // ---- theme toggle: auto -> light -> dark ----
+  var themes=["auto","light","dark"], tlabel={auto:"อัตโนมัติ",light:"สว่าง",dark:"มืด"}, ti=0;
+  function applyTheme(){var t=themes[ti],r=document.documentElement;
+    if(t==="auto")r.removeAttribute("data-theme"); else r.setAttribute("data-theme",t);
+    $("theme").innerHTML="&#9680; "+tlabel[t];}
+  $("theme").addEventListener("click",function(){ti=(ti+1)%3;applyTheme();draw(null);drawRaw();drawPath();});
+
+  // ---- input helpers ----
+  function num(id){var cfg=CFG[id],raw=(''+$(id).value).replace(/,/g,''),v=parseFloat(raw);
+    if(isNaN(v))v=cfg.min; if(v<cfg.min)v=cfg.min; if(v>cfg.max)v=cfg.max; return v;}
+  function grp(v){return Number(Math.round(v)).toLocaleString('en-US');}
+  function commafy(el){
+    var val=el.value, sel=el.selectionStart||0;
+    var before=val.slice(0,sel).replace(/\D/g,'').length;
+    var digits=val.replace(/\D/g,'');
+    if(digits===''){el.value='';return;}
+    var f=Number(digits).toLocaleString('en-US'); el.value=f;
+    var pos=0,seen=0; while(pos<f.length&&seen<before){var c=f.charCodeAt(pos); if(c>=48&&c<=57)seen++; pos++;}
+    try{el.setSelectionRange(pos,pos);}catch(e){}
+  }
+
+  Object.keys(CFG).forEach(function(id){
+    var el=$(id),rng=$(id+"R"),cfg=CFG[id];
+    el.addEventListener("input",function(){
+      if(cfg.comma)commafy(el);
+      if(id==="assetReturn"){assetKey="custom";setSeg();}
+      rng.value=num(id); render();
+    });
+    el.addEventListener("blur",function(){ var v=num(id); el.value=cfg.comma?grp(v):v; rng.value=v; render(); });
+    rng.addEventListener("input",function(){
+      el.value=cfg.comma?grp(rng.value):rng.value;
+      if(id==="assetReturn"){assetKey="custom";setSeg();}
+      render();
+    });
+  });
+
+  // allocation slider (asset share 0..100)
+  $("alloc").addEventListener("input",render);
+
+  // ---- asset preset buttons ----
+  function setSeg(){
+    var bs=$("seg").getElementsByTagName("button");
+    for(var i=0;i<bs.length;i++){ bs[i].className = bs[i].getAttribute("data-k")===assetKey?"on":""; }
+  }
+  var segBtns=$("seg").getElementsByTagName("button");
+  for(var i=0;i<segBtns.length;i++){
+    segBtns[i].addEventListener("click",function(){
+      var k=this.getAttribute("data-k");
+      assetKey=k;
+      if(k!=="custom"){ $("assetReturn").value=ASSETS[k].ret; $("assetReturnR").value=ASSETS[k].ret; }
+      setSeg(); render();
+    });
+  }
+
+  $("reset").addEventListener("click",function(){
+    assetKey="btc"; setVals(DEF); $("alloc").value=50; setSeg(); render();
+  });
+
+  function setVals(v){for(var k in v){var cfg=CFG[k]; $(k).value=cfg.comma?grp(v[k]):v[k]; $(k+"R").value=v[k];}}
+  function getVals(){return{
+    principal:num("principal"),
+    interestRate:num("interestRate"),
+    termYears:Math.round(num("termYears")),
+    extra:num("extra"),
+    assetReturn:num("assetReturn")
+  };}
+
+  // ---- formatters ----
+  var nf0=new Intl.NumberFormat("en-US",{maximumFractionDigits:0});
+  function fBaht(v){return "฿"+nf0.format(Math.round(v));}
+  function fShort(v){
+    var a=Math.abs(v), s=v<0?"-":"";
+    if(a>=1e6) return s+"฿"+(a/1e6).toLocaleString("en-US",{maximumFractionDigits:2})+" ล้าน";
+    return s+"฿"+nf0.format(Math.round(a));
+  }
+  function fYears(y){ return (Math.round(y*10)/10).toString(); }
+
+  // ---- core simulation ----
+  var last=null;
+  function render(){
+    var s=getVals();
+    var P=s.principal, ri=s.interestRate/100, T=s.termYears, extra=s.extra, ra=s.assetReturn/100;
+    var alloc=Math.round(+$("alloc").value);           // % of extra going to the asset
+    var A=ASSETS[assetKey];
+    var mr=ri/12, N=T*12;
+    var minPay = mr>0 ? P*mr/(1-Math.pow(1+mr,-N)) : (N>0 ? P/N : 0);
+    var mg = Math.pow(1+ra,1/12);                       // monthly asset growth factor
+    var constG = function(){return mg;};
+
+    // เดินแผน 1 แบบ: growthOf(m) = ตัวคูณโตของพอร์ตในเดือนที่ m (คงที่ หรือใช้ผลตอบแทนจริงรายปี)
+    function runPlan(assetPct, growthOf, months){
+      var a=assetPct/100;
+      var bal=P, port=0, cumInt=0, invested=0, payoff=null;
+      var yearly=[];
+      for(var m=1;m<=months;m++){
+        var toMort=extra*(1-a), toAsset=extra*a, contrib;
+        if(bal>1e-6){
+          var interest=bal*mr; cumInt+=interest;
+          var pay=minPay+toMort;
+          var prin=pay-interest;
+          if(bal<=prin){
+            var excess=pay-(bal+interest);
+            bal=0; if(payoff===null)payoff=m;
+            contrib=toAsset+excess;
+          } else { bal-=prin; contrib=toAsset; }
+        } else {
+          contrib=minPay+extra;                         // house done: whole outlay invested
+        }
+        port=(port+contrib)*growthOf(m); invested+=contrib;
+        if(m%12===0){
+          yearly.push({year:m/12, debt:bal, port:port, net:port-bal});
+        }
+      }
+      return {port:port, bal:bal, net:port-bal, cumInt:cumInt, invested:invested,
+        payoffYears: payoff? payoff/12 : months/12, yearly:yearly};
+    }
+    function sim(assetPct){ return runPlan(assetPct, constG, N); }
+
+    var PA=sim(0), PB=sim(100), PC=sim(alloc);
+    var investWins = PB.net > PA.net;
+    var gap = Math.abs(PA.net - PB.net);
+    var intSaved = PB.cumInt - PA.cumInt;
+
+    // ---- left panel readouts ----
+    $("allocUnit").textContent = "โปะ "+(100-alloc)+" · "+A.short+" "+alloc;
+    $("allocM").innerHTML = "โปะบ้าน "+fBaht(extra*(100-alloc)/100)+"/ด.";
+    $("allocI").innerHTML = "ซื้อ"+A.short+" "+fBaht(extra*alloc/100)+"/ด.";
+    $("assetLab").textContent = "ผลตอบแทน"+A.name+"คาดหวัง";
+    $("thPort").textContent = "พอร์ต"+A.short;
+    $("chTitle").textContent = "ความมั่งคั่งสุทธิ (พอร์ต"+A.short+" − หนี้บ้านที่เหลือ) ตลอดเวลา";
+    $("legInvest").textContent = A.name+"ล้วน";
+    $("btThB").textContent = "ถ้าซื้อ"+A.name;
+
+    // ---- hero (chosen mix) ----
+    $("hLab").textContent = "ความมั่งคั่งสุทธิเมื่อครบ "+T+" ปี · แผนที่คุณเลือก (โปะ "+(100-alloc)+"% · ซื้อ"+A.short+" "+alloc+"%)";
+    $("hBig").textContent = fShort(PC.net);
+    var lo=Math.min(PA.net,PB.net), hi=Math.max(PA.net,PB.net);
+    var pct = hi>lo ? (PC.net-lo)/(hi-lo)*100 : 100;
+    $("fill").style.width = Math.max(0,Math.min(100,pct))+"%";
+    var loName = PA.net<=PB.net ? "โปะบ้านล้วน" : A.name+"ล้วน";
+    var hiName = PA.net<=PB.net ? A.name+"ล้วน" : "โปะบ้านล้วน";
+    $("prLeft").textContent = loName+" "+fShort(lo);
+    $("prRight").textContent = hiName+" "+fShort(hi);
+    var winName = investWins ? "ซื้อ"+A.name+" (ผ่อนขั้นต่ำ)" : "โปะบ้านให้จบก่อน";
+    $("hSub").innerHTML = "ทางที่คุ้มสุดตามตัวเลขคือ <b>"+winName+"</b> ห่างจากอีกทางราว <b>"+fShort(gap)+"</b>";
+
+    // ---- plan cards ----
+    var bestKey = PA.net>=PB.net ? "A" : "B";
+    function planCard(key, ttl, tag, d){
+      var cls="plan"+(key===bestKey?" best":"")+(key==="C"?" mine":"");
+      var badge = key===bestKey ? '<div class="badge b-best">คุ้มสุด</div>'
+                : key==="C" ? '<div class="badge b-mine">แผนคุณ</div>' : '';
+      return '<div class="'+cls+'">'+badge
+        +'<h4>'+ttl+'</h4><div class="tag">'+tag+'</div>'
+        +'<div class="row"><span>ผ่อนบ้านหมดใน</span><b>'+fYears(d.payoffYears)+' ปี</b></div>'
+        +'<div class="row"><span>ดอกเบี้ยจ่ายธนาคาร</span><b>'+fShort(d.cumInt)+'</b></div>'
+        +'<div class="row"><span>พอร์ต'+A.short+'ปลายทาง</span><b>'+fShort(d.port)+'</b></div>'
+        +'<div class="net"><div class="lab">ความมั่งคั่งสุทธิ ('+T+' ปี)</div><div class="val">'+fShort(d.net)+'</div></div>'
+        +'</div>';
+    }
+    $("plans").innerHTML =
+        planCard("A","โปะบ้านให้จบก่อน","ทุ่มเงินเหลือทั้งหมดโปะบ้าน พอปลดหนี้แล้วค่อยเอาเงินก้อนไปซื้อ"+A.name,PA)
+      + planCard("B","ผ่อนขั้นต่ำ · ซื้อ"+A.name,"จ่ายบ้านขั้นต่ำ เอาเงินเหลือไปซื้อ"+A.name+"ตั้งแต่เดือนแรก",PB)
+      + planCard("C","แผนผสม "+(100-alloc)+"/"+alloc,"โปะบ้าน "+(100-alloc)+"% · ซื้อ"+A.name+" "+alloc+"% ของเงินเหลือ (ปรับได้ด้วยแถบสัดส่วน)",PC);
+
+    // ---- summary stat cards ----
+    var cards=[
+      {k:"ค่าผ่อนขั้นต่ำต่อเดือน",v:fShort(minPay),accent:false,s:"ที่ดอกเบี้ย "+s.interestRate+"% · "+T+" ปี"},
+      {k:"ดอกเบี้ยที่ประหยัดได้ ถ้าโปะบ้าน",v:fShort(intSaved),accent:true,s:"เทียบโปะบ้านล้วน vs ผ่อนขั้นต่ำ"},
+      {k:"ส่วนต่าง",v:fShort(gap),accent:false,s:(investWins?A.name:"โปะบ้าน")+"มากกว่าเมื่อครบ "+T+" ปี"}
+    ];
+    $("cards").innerHTML=cards.map(function(c){
+      return '<div class="card'+(c.accent?' accent':'')+'"><div class="k">'+c.k+'</div><div class="v">'+c.v+'</div>'+(c.s?'<div class="s">'+c.s+'</div>':'')+'</div>';
+    }).join("");
+
+    // ---- yearly table (chosen mix) ----
+    var payYr=Math.ceil(PC.payoffYears);
+    $("tblSub").textContent = "แผนที่คุณเลือก: โปะบ้าน "+(100-alloc)+"% · ซื้อ"+A.name+" "+alloc+"% ของเงินเหลือ — ปีที่หนี้กลายเป็น 0 คือปลดหนี้สำเร็จ";
+    $("rows").innerHTML = PC.yearly.map(function(r){
+      var done = (r.debt<1e-6);
+      var mark = (r.year===payYr && done) ? '<span class="pill">บ้านหมด</span>' : '';
+      return '<tr'+(r.year===payYr&&done?' class="hit"':'')+'><td>ปี '+r.year+mark+'</td>'
+        +'<td>'+(done?"—":fBaht(r.debt))+'</td>'
+        +'<td>'+fBaht(r.port)+'</td>'
+        +'<td>'+fBaht(r.net)+'</td></tr>';
+    }).join("");
+
+    // ---- backtest กับข้อมูลจริง (A ย้อนตามปีเริ่ม + B อัตราชนะ + D จุดคุ้มทุน) ----
+    $("btAsset").textContent = A.name;
+    var H = HIST[assetKey];
+    if(!H){
+      $("btIntro").textContent = "ยังไม่มีข้อมูลราคาจริงสำหรับ “กำหนดเอง” — เลือกบิตคอยน์ ทองคำ หรือหุ้นสหรัฐ เพื่อดูผลย้อนอดีต";
+      $("btCards").innerHTML = ""; $("btRows").innerHTML = ""; $("btRaw").innerHTML = "";
+      $("btTableWrap").style.display = "none";
+      $("btRawWrap").style.display = "none";
+      $("btPathWrap").style.display = "none";
+      rawLast=null; drawRaw(); btPath=null; drawPath(null);
+    } else {
+      $("btTableWrap").style.display = "";
+      var hr=H.r, hn=hr.length, hStart=H.start;
+      var Hy=Math.min(T,hn), wins=0, btRows=[];
+      for(var sIdx=0; sIdx<=hn-Hy; sIdx++){
+        var gof=(function(off){ return function(m){ return Math.pow(1+hr[off+Math.floor((m-1)/12)]/100, 1/12); }; })(sIdx);
+        var rA=runPlan(0,gof,Hy*12), rB=runPlan(100,gof,Hy*12);
+        var win=rB.net>rA.net; if(win)wins++;
+        btRows.push({s:hStart+sIdx, e:hStart+sIdx+Hy-1, netA:rA.net, netB:rB.net, win:win});
+      }
+      var nWin=btRows.length, winRate=nWin?wins/nWin:0;
+      if(btSelKey!==assetKey || btSelIdx==null || btSelIdx>hn-Hy || btSelIdx<0){ btSelIdx=hn-Hy; btSelKey=assetKey; }
+      var worstR=btRows.reduce(function(p,c){return c.netB<p.netB?c:p;},btRows[0]);
+      var bestR=btRows.reduce(function(p,c){return c.netB>p.netB?c:p;},btRows[0]);
+      var prod=1; for(var hi=0;hi<hn;hi++)prod*=(1+hr[hi]/100);
+      var cagr=(Math.pow(prod,1/hn)-1)*100;
+      var cagrTxt=(cagr>=0?"+":"")+cagr.toFixed(0)+"%";
+
+      $("btIntro").innerHTML = "ย้อนเอาผลตอบแทน<b>จริงรายปี</b>ของ"+A.name+" ("+hStart+"–"+(hStart+hn-1)+" &middot; "+hn+" ปี) มาเดินแผนเดียวกัน เทียบ “โปะบ้าน” กับ “ซื้อ"+A.name+"” ทุกช่วงเริ่มต้น "+Hy+" ปี"+(Hy<T?" <b>(ข้อมูลไม่พอสำหรับ "+T+" ปี จึงทดสอบเท่าที่มี "+Hy+" ปี)</b>":"");
+
+      var bc=[];
+      if(nWin>1){
+        bc.push({k:"โอกาสที่"+A.name+"ได้มากกว่าโปะบ้าน",v:Math.round(winRate*100)+"%",accent:true,s:wins+" จาก "+nWin+" ช่วง ("+Hy+" ปี)"});
+        bc.push({k:"ช่วงแย่สุด (เริ่มปี "+worstR.s+")",v:fShort(worstR.netB),accent:false,s:worstR.win?"ยังได้มากกว่าโปะบ้าน":"ได้น้อยกว่าโปะบ้าน "+fShort(worstR.netA)});
+        bc.push({k:"ช่วงดีสุด (เริ่มปี "+bestR.s+")",v:fShort(bestR.netB),accent:false,s:"โปะบ้านได้ "+fShort(bestR.netA)});
+      } else {
+        var w0=btRows[0];
+        bc.push({k:"ผลช่วงเดียวเท่าที่มี ("+w0.s+"–"+w0.e+")",v:(w0.win?A.name+"ได้มากกว่า":"โปะบ้านได้มากกว่า"),accent:true,s:"ข้อมูลพอแค่ 1 ช่วง "+Hy+" ปี"});
+        bc.push({k:"ความมั่งคั่ง ถ้าซื้อ"+A.name,v:fShort(w0.netB),accent:false,s:"ปลายช่วง (ปี "+w0.e+")"});
+        bc.push({k:"ความมั่งคั่ง ถ้าโปะบ้าน",v:fShort(w0.netA),accent:false,s:"ปลายช่วง (ปี "+w0.e+")"});
+      }
+      bc.push({k:A.name+"โตเฉลี่ยทบต้น (อดีต)",v:cagrTxt,accent:false,s:"ต่อปี ตลอด "+hn+" ปี"});
+      $("btCards").innerHTML = bc.map(function(c){
+        return '<div class="card'+(c.accent?' accent':'')+'"><div class="k">'+c.k+'</div><div class="v">'+c.v+'</div><div class="s">'+c.s+'</div></div>';
+      }).join("");
+
+      $("btRows").innerHTML = btRows.map(function(w,idx){
+        return '<tr data-idx="'+idx+'"'+(idx===btSelIdx?' class="selrow"':'')+'><td>'+w.s+'</td><td>'+w.e+'</td><td>'+fBaht(w.netA)+'</td><td>'+fBaht(w.netB)+'</td><td><span class="pill '+(w.win?'win':'lose')+'">'+(w.win?A.short:'โปะบ้าน')+'</span></td></tr>';
+      }).join("");
+
+      // เส้นทางความมั่งคั่งจริง ช่วงที่เลือก (โปะบ้าน vs ซื้อสินทรัพย์)
+      $("btPathWrap").style.display = "";
+      $("btPathLeg").textContent = A.name;
+      var gofSel=(function(off){return function(m){return Math.pow(1+hr[off+Math.floor((m-1)/12)]/100,1/12);};})(btSelIdx);
+      var pplA=runPlan(0,gofSel,Hy*12), pplB=runPlan(100,gofSel,Hy*12);
+      var pys=[hStart+btSelIdx], ppre=[-P], pass=[-P];
+      for(var pi=0;pi<pplA.yearly.length;pi++){ pys.push(hStart+btSelIdx+pi+1); ppre.push(pplA.yearly[pi].net); pass.push(pplB.yearly[pi].net); }
+      btPath={years:pys, prepay:ppre, asset:pass, assetName:A.name};
+      $("btPathCap").textContent = "เส้นทางถ้าเริ่มปี "+(hStart+btSelIdx)+" (ยาว "+Hy+" ปี) — คลิกแถวในตารางด้านล่างเพื่อเปลี่ยนช่วง";
+      drawPath(null);
+
+      $("btRawWrap").style.display = "";
+      $("btRaw").innerHTML = hr.map(function(v,i){
+        return '<div class="rawchip"><span class="y">'+(hStart+i)+'</span><span class="'+(v>=0?"up":"dn")+'">'+(v>=0?"+":"")+v+'%</span></div>';
+      }).join("");
+      rawLast={r:hr, start:hStart}; drawRaw();
+    }
+
+    // ---- chart data ----
+    var years=[0], aArr=[-P], bArr=[-P], cArr=[-P];
+    for(var j=0;j<PC.yearly.length;j++){
+      years.push(PC.yearly[j].year);
+      aArr.push(PA.yearly[j].net);
+      bArr.push(PB.yearly[j].net);
+      cArr.push(PC.yearly[j].net);
+    }
+    last={years:years, a:aArr, b:bArr, c:cArr,
+      names:["โปะบ้าน",A.short,"แผนคุณ"], colors:["--bad","--good","--accent"]};
+    draw(null);
+  }
+
+  // ---- canvas multi-line chart ----
+  var cv=$("chart"), ctx=cv.getContext("2d");
+  function css(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim();}
+  function niceMil(v){
+    var a=Math.abs(v);
+    if(a>=1e6) return (v/1e6).toFixed(a>=1e7?0:1)+"ล";
+    if(a>=1e3) return Math.round(v/1e3)+"k";
+    return Math.round(v).toString();
+  }
+  function draw(hx){
+    if(!last)return;
+    var d=last, xs=d.years, T=xs[xs.length-1];
+    var box=cv.parentNode.getBoundingClientRect();
+    var dpr=window.devicePixelRatio||1, W=box.width, H=box.height;
+    cv.width=W*dpr; cv.height=H*dpr; ctx.setTransform(dpr,0,0,dpr,0,0);
+    ctx.clearRect(0,0,W,H);
+    var padL=52,padR=16,padT=14,padB=26, pw=W-padL-padR, ph=H-padT-padB;
+
+    var all=d.a.concat(d.b,d.c);
+    var ymax=Math.max.apply(null,all), ymin=Math.min.apply(null,all);
+    if(ymin>0)ymin=0; if(ymax<0)ymax=0;
+    var span=(ymax-ymin)||1, padY=span*0.09; ymax+=padY; ymin-=padY;
+    var xOf=function(t){return padL+(T?t/T:0)*pw;};
+    var yOf=function(v){return padT+ph-((v-ymin)/(ymax-ymin))*ph;};
+
+    var cInk3=css("--ink-3"),cGrid=css("--grid"),cSurf=css("--surface"),cSurf2=css("--surface-2"),cBord=css("--border-2"),cInk=css("--ink");
+
+    // y gridlines
+    ctx.font="11px "+css("--sans"); ctx.textBaseline="middle";
+    var ticks=5;
+    for(var i=0;i<=ticks;i++){
+      var gv=ymin+(ymax-ymin)*i/ticks, y=yOf(gv);
+      var zero=Math.abs(gv)<(ymax-ymin)*0.02;
+      ctx.strokeStyle=zero?cBord:cGrid; ctx.lineWidth=zero?1.4:1;
+      ctx.beginPath(); ctx.moveTo(padL,y); ctx.lineTo(W-padR,y); ctx.stroke();
+      ctx.fillStyle=cInk3; ctx.textAlign="right"; ctx.fillText(niceMil(gv),padL-8,y);
+    }
+    // x labels
+    ctx.textAlign="center"; ctx.textBaseline="top";
+    var xt=[0,Math.round(T/2),T]; if(T>=8)xt=[0,Math.round(T/4),Math.round(T/2),Math.round(3*T/4),T];
+    xt=xt.filter(function(v,k,a){return a.indexOf(v)===k});
+    xt.forEach(function(t){ctx.fillStyle=cInk3; ctx.fillText(t+(t===T?" ปี":""),xOf(t),H-padB+7);});
+
+    // series
+    function line(arr,colVar,width){
+      ctx.beginPath();
+      for(var k=0;k<arr.length;k++){var x=xOf(xs[k]),y=yOf(arr[k]); k?ctx.lineTo(x,y):ctx.moveTo(x,y);}
+      ctx.strokeStyle=css(colVar); ctx.lineWidth=width; ctx.lineJoin="round"; ctx.stroke();
+    }
+    line(d.a,d.colors[0],2);
+    line(d.b,d.colors[1],2);
+    line(d.c,d.colors[2],2.8);
+
+    // hover
+    if(hx!=null && T>0){
+      var idx=Math.round((hx-padL)/pw*T);
+      if(idx<0)idx=0; if(idx>T)idx=T;
+      var x=xOf(idx);
+      ctx.strokeStyle=cInk3; ctx.lineWidth=1; ctx.setLineDash([3,3]);
+      ctx.beginPath(); ctx.moveTo(x,padT); ctx.lineTo(x,padT+ph); ctx.stroke(); ctx.setLineDash([]);
+      var series=[d.a,d.b,d.c];
+      for(var q=0;q<3;q++){
+        var yy=yOf(series[q][idx]);
+        ctx.beginPath(); ctx.arc(x,yy,4,0,7); ctx.fillStyle=css(d.colors[q]); ctx.fill();
+        ctx.strokeStyle=cSurf; ctx.lineWidth=2; ctx.stroke();
+      }
+      var lines=[{t:"ปี "+xs[idx],c:null},
+        {t:d.names[0]+" "+fShort(d.a[idx]),c:css(d.colors[0])},
+        {t:d.names[1]+" "+fShort(d.b[idx]),c:css(d.colors[1])},
+        {t:d.names[2]+" "+fShort(d.c[idx]),c:css(d.colors[2])}];
+      ctx.font="12px "+css("--sans");
+      var tw=0; lines.forEach(function(l){tw=Math.max(tw,ctx.measureText(l.t).width);});
+      var bw=tw+ (24), lh=18, bh=lines.length*lh+10;
+      var bx=Math.min(W-padR-bw, Math.max(padL, x+10)), by=padT+2;
+      if(x> padL+pw*0.6) bx=Math.max(padL, x-bw-10);
+      ctx.fillStyle=cSurf2; ctx.strokeStyle=cBord; ctx.lineWidth=1;
+      if(ctx.roundRect){ctx.beginPath();ctx.roundRect(bx,by,bw,bh,7);ctx.fill();ctx.stroke();}
+      else{ctx.fillRect(bx,by,bw,bh);ctx.strokeRect(bx,by,bw,bh);}
+      ctx.textAlign="left"; ctx.textBaseline="middle";
+      lines.forEach(function(l,li){
+        var ly=by+8+lh*li+lh/2;
+        if(l.c){ctx.fillStyle=l.c; ctx.beginPath(); ctx.arc(bx+11,ly,3.5,0,7); ctx.fill();
+          ctx.fillStyle=cInk; ctx.fillText(l.t,bx+20,ly);}
+        else{ctx.fillStyle=cInk3; ctx.font="11px "+css("--sans"); ctx.fillText(l.t,bx+10,ly); ctx.font="12px "+css("--sans");}
+      });
+    }
+  }
+  cv.addEventListener("pointermove",function(e){var r=cv.getBoundingClientRect(); draw(e.clientX-r.left);});
+  cv.addEventListener("pointerleave",function(){draw(null);});
+
+  // ---- bar chart: ผลตอบแทนจริงรายปี (เขียวขึ้น / แดงลง) ----
+  var rawLast=null;
+  function drawRaw(){
+    var rc=$("btRawChart"); if(!rc)return;
+    var box=rc.parentNode.getBoundingClientRect();
+    var dpr=window.devicePixelRatio||1, W=box.width, Hc=box.height;
+    if(W<2||Hc<2)return;
+    rc.width=W*dpr; rc.height=Hc*dpr; var g=rc.getContext("2d"); g.setTransform(dpr,0,0,dpr,0,0);
+    g.clearRect(0,0,W,Hc);
+    if(!rawLast)return;
+    var r=rawLast.r, start=rawLast.start, n=r.length;
+    var padT=14, padB=20, padL=6, padR=6, plotH=Hc-padT-padB;
+    function tf(v){return (v<0?-1:1)*Math.log10(1+Math.abs(v));}   // symlog: บีบค่าที่ใหญ่มาก
+    var ts=r.map(tf);
+    var tPos=Math.max(1e-4, Math.max.apply(null,ts.concat([0])));
+    var tNeg=Math.max(1e-4, -Math.min.apply(null,ts.concat([0])));
+    var zeroY=padT+plotH*(tPos/(tPos+tNeg));
+    var slotW=(W-padL-padR)/n, bw=Math.min(28, slotW*0.62);
+    var cGood=css("--good"), cBad=css("--bad"), cInk3=css("--ink-3"), cLine=css("--border-2");
+    g.strokeStyle=cLine; g.lineWidth=1; g.beginPath(); g.moveTo(padL,zeroY); g.lineTo(W-padR,zeroY); g.stroke();
+    var step=Math.ceil(n/8);
+    g.font="10px "+css("--sans");
+    for(var i=0;i<n;i++){
+      var cx=padL+slotW*(i+0.5), v=r[i], pos=v>=0;
+      var bh= pos ? (ts[i]/tPos)*(zeroY-padT) : (-ts[i]/tNeg)*(Hc-padB-zeroY);
+      g.fillStyle= pos?cGood:cBad;
+      g.fillRect(cx-bw/2, pos?zeroY-bh:zeroY, bw, Math.max(1,bh));
+      if(n<=16 || i%step===0 || i===n-1){
+        g.fillStyle=cInk3; g.textAlign="center"; g.textBaseline="top";
+        g.fillText(n<=16?(""+(start+i)):("'"+(""+(start+i)).slice(2)), cx, Hc-padB+5);
+      }
+    }
+  }
+  $("btRawWrap").addEventListener("toggle",function(){ if(this.open) drawRaw(); });
+
+  // ---- line chart: เส้นทางความมั่งคั่ง โปะบ้าน vs ซื้อสินทรัพย์ (ข้อมูลจริง ช่วงที่เลือก) ----
+  var btPath=null, btSelIdx=null, btSelKey=null;
+  function drawPath(hx){
+    var cv2=$("btPathChart"); if(!cv2)return;
+    var box=cv2.parentNode.getBoundingClientRect();
+    var dpr=window.devicePixelRatio||1, W=box.width, Hc=box.height;
+    if(W<2||Hc<2)return;
+    cv2.width=W*dpr; cv2.height=Hc*dpr; var g=cv2.getContext("2d"); g.setTransform(dpr,0,0,dpr,0,0);
+    g.clearRect(0,0,W,Hc);
+    if(!btPath)return;
+    var xs=btPath.years, PA2=btPath.prepay, PB2=btPath.asset, n=xs.length;
+    var padL=52,padR=14,padT=14,padB=24, pw=W-padL-padR, ph=Hc-padT-padB;
+    var all=PA2.concat(PB2);
+    var ymax=Math.max.apply(null,all), ymin=Math.min.apply(null,all);
+    if(ymin>0)ymin=0; if(ymax<0)ymax=0;
+    var sp=(ymax-ymin)||1, pd=sp*0.08; ymax+=pd; ymin-=pd;
+    var x0=xs[0], xr=(xs[n-1]-x0)||1;
+    var xOf=function(yr){return padL+(yr-x0)/xr*pw;};
+    var yOf=function(v){return padT+ph-((v-ymin)/(ymax-ymin))*ph;};
+    var cInk3=css("--ink-3"),cGrid=css("--grid"),cBord=css("--border-2"),cSurf=css("--surface"),cSurf2=css("--surface-2"),cInk=css("--ink");
+    var cPre=css("--bad"), cAss=css("--good");
+    g.font="11px "+css("--sans"); g.textBaseline="middle";
+    for(var i=0;i<=4;i++){var gv=ymin+(ymax-ymin)*i/4, y=yOf(gv), zero=Math.abs(gv)<(ymax-ymin)*0.02;
+      g.strokeStyle=zero?cBord:cGrid; g.lineWidth=zero?1.4:1; g.beginPath(); g.moveTo(padL,y); g.lineTo(W-padR,y); g.stroke();
+      g.fillStyle=cInk3; g.textAlign="right"; g.fillText((gv/1e6).toFixed(1)+"ล",padL-8,y);}
+    g.textAlign="center"; g.textBaseline="top";
+    var kk=Math.max(1,Math.ceil((n-1)/5));
+    for(var xi=0;xi<n;xi+=kk){g.fillStyle=cInk3; g.fillText(""+xs[xi],xOf(xs[xi]),Hc-padB+6);}
+    g.fillStyle=cInk3; g.fillText(""+xs[n-1],xOf(xs[n-1]),Hc-padB+6);
+    function line(arr,col){g.beginPath();for(var k=0;k<n;k++){var x=xOf(xs[k]),y=yOf(arr[k]);k?g.lineTo(x,y):g.moveTo(x,y);}g.strokeStyle=col;g.lineWidth=2.4;g.lineJoin="round";g.stroke();}
+    line(PA2,cPre); line(PB2,cAss);
+    if(hx!=null){
+      var idx=Math.round((hx-padL)/pw*(n-1)); if(idx<0)idx=0; if(idx>n-1)idx=n-1;
+      var x=xOf(xs[idx]);
+      g.strokeStyle=cInk3;g.lineWidth=1;g.setLineDash([3,3]);g.beginPath();g.moveTo(x,padT);g.lineTo(x,padT+ph);g.stroke();g.setLineDash([]);
+      [[PA2,cPre],[PB2,cAss]].forEach(function(s){var yy=yOf(s[0][idx]);g.beginPath();g.arc(x,yy,4,0,7);g.fillStyle=s[1];g.fill();g.strokeStyle=cSurf;g.lineWidth=2;g.stroke();});
+      var lines=[{t:"ปี "+xs[idx],c:null},{t:"โปะบ้าน "+fShort(PA2[idx]),c:cPre},{t:btPath.assetName+" "+fShort(PB2[idx]),c:cAss}];
+      g.font="12px "+css("--sans"); var tw=0; lines.forEach(function(l){tw=Math.max(tw,g.measureText(l.t).width);});
+      var bw=tw+24, lh=18, bh=lines.length*lh+10, bx=Math.min(W-padR-bw,Math.max(padL,x+10)); if(x>padL+pw*0.6)bx=Math.max(padL,x-bw-10);
+      var by=padT+2;
+      g.fillStyle=cSurf2;g.strokeStyle=cBord;g.lineWidth=1;
+      if(g.roundRect){g.beginPath();g.roundRect(bx,by,bw,bh,7);g.fill();g.stroke();}else{g.fillRect(bx,by,bw,bh);g.strokeRect(bx,by,bw,bh);}
+      g.textAlign="left";g.textBaseline="middle";
+      lines.forEach(function(l,li){var ly=by+8+lh*li+lh/2;if(l.c){g.fillStyle=l.c;g.beginPath();g.arc(bx+11,ly,3.5,0,7);g.fill();g.fillStyle=cInk;g.fillText(l.t,bx+20,ly);}else{g.fillStyle=cInk3;g.font="11px "+css("--sans");g.fillText(l.t,bx+10,ly);g.font="12px "+css("--sans");}});
+    }
+  }
+  (function(){var pcv=$("btPathChart");
+    pcv.addEventListener("pointermove",function(e){var r=pcv.getBoundingClientRect();drawPath(e.clientX-r.left);});
+    pcv.addEventListener("pointerleave",function(){drawPath(null);});})();
+  $("btRows").addEventListener("click",function(e){
+    var tr=e.target.closest?e.target.closest("tr"):null; if(!tr||!tr.hasAttribute("data-idx"))return;
+    btSelIdx=+tr.getAttribute("data-idx"); btSelKey=assetKey; render();});
+
+  var rt;
+  window.addEventListener("resize",function(){clearTimeout(rt);rt=setTimeout(function(){draw(null);drawRaw();drawPath();},80);});
+  if(window.matchMedia){var mq=window.matchMedia("(prefers-color-scheme:dark)");
+    if(mq.addEventListener)mq.addEventListener("change",function(){draw(null);drawRaw();drawPath();});
+    else if(mq.addListener)mq.addListener(function(){draw(null);drawRaw();drawPath();});}
+
+  applyTheme();
+  setVals(DEF);
+  setSeg();
+  render();
+})();
+</script>
+</body>
+</html>

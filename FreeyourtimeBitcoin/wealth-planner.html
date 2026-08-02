@@ -33,7 +33,18 @@
     .cashual-nav-links a { color: #aaa; text-decoration: none; font-size: 17px; transition: color 0.2s; }
     .cashual-nav-links a:hover { color: #f7931a; }
     .cashual-nav-toggle{display:none;background:transparent;border:0;color:#f7931a;font-size:26px;line-height:1;cursor:pointer;padding:4px 8px}
-    @media(max-width:640px){.cashual-nav{padding:0 1rem}.cashual-nav-toggle{display:block}.cashual-nav-links{display:none;position:absolute;top:72px;left:0;width:100%;flex-direction:column;gap:0;background:rgba(15,15,15,0.98);backdrop-filter:blur(10px);border-bottom:1px solid #222;padding:6px 0;max-height:calc(100vh - 72px);overflow-y:auto}.cashual-nav.open .cashual-nav-links{display:flex}.cashual-nav-links li{width:100%}.cashual-nav-links a{display:block;padding:14px 1.5rem;font-size:16px}}
+    .cashual-nav-links{gap:2rem;align-items:stretch;height:72px}
+    .cashual-nav-links>li{position:relative;display:flex;align-items:center}
+    .cnav-dd-btn{font-family:inherit;background:transparent;border:0;color:#aaa;font-size:17px;cursor:pointer;display:inline-flex;align-items:center;gap:5px;padding:0;transition:color .2s}
+    .cnav-dd-btn:hover{color:#f7931a}
+    .cnav-caret{font-size:11px;transition:transform .2s}
+    .cnav-dd{display:none;position:absolute;top:100%;left:50%;transform:translateX(-50%);min-width:190px;background:rgba(20,20,20,0.98);backdrop-filter:blur(10px);border:1px solid #2a2a2a;border-radius:10px;padding:6px;list-style:none;margin:0;box-shadow:0 12px 32px rgba(0,0,0,.45);z-index:1001}
+    .cashual-nav-links>li:hover>.cnav-dd,.cashual-nav-links>li:focus-within>.cnav-dd{display:block}
+    .cashual-nav-links>li:hover .cnav-caret,.cashual-nav-links>li:focus-within .cnav-caret{transform:rotate(180deg)}
+    .cnav-dd>li{display:block;width:100%}
+    .cnav-dd a{display:block;padding:9px 14px;font-size:15px;border-radius:6px;white-space:nowrap}
+    .cnav-dd a:hover{background:rgba(247,147,26,.12);color:#f7931a}
+    @media(max-width:640px){.cashual-nav{padding:0 1rem}.cashual-nav-toggle{display:block}.cashual-nav-links{display:none;position:absolute;top:72px;left:0;width:100%;height:auto;flex-direction:column;align-items:stretch;gap:0;background:rgba(15,15,15,0.98);backdrop-filter:blur(10px);border-bottom:1px solid #222;padding:6px 0;max-height:calc(100vh - 72px);overflow-y:auto}.cashual-nav.open .cashual-nav-links{display:flex}.cashual-nav-links>li{display:block;height:auto}.cnav-dd-btn{display:block;width:100%;text-align:left;padding:14px 1.5rem 6px;font-size:12px;color:#777;text-transform:uppercase;letter-spacing:.06em;cursor:default;pointer-events:none}.cnav-caret{display:none}.cnav-dd{display:block;position:static;transform:none;min-width:0;background:transparent;backdrop-filter:none;border:0;border-radius:0;padding:0;box-shadow:none}.cnav-dd a{padding:11px 1.5rem 11px 2.5rem;font-size:16px;border-radius:0}.cashual-nav-links>li>a{display:block;padding:14px 1.5rem;font-size:16px}}
     </style>
 </head>
 <body class="p-4 md:p-8 max-w-7xl mx-auto min-h-screen flex flex-col" style="padding-top:88px">
@@ -42,14 +53,25 @@
         <div class="cashual-nav-logo"><a href="index.html" style="text-decoration:none;color:inherit;">FreeyourtimeBitcoin</a></div>
         <button class="cashual-nav-toggle" aria-label="เมนู" onclick="this.closest('.cashual-nav').classList.toggle('open')">&#9776;</button>
         <ul class="cashual-nav-links">
-            <li><a href="1-btc-dashboard.html">1 BTC</a></li>
-            <li><a href="Bitcoin-DCA-Master.html">DCA Master</a></li>
-            <li><a href="dca-tracker.html">DCA Tracker</a></li>
-            <li><a href="Purchasing-Power.html">Purchasing Power</a></li>
-            <li><a href="wealth-planner.html">Wealth Planner</a></li>
-            <li><a href="retirement plan.html">Retirement Plan</a></li>
-            <li><a href="BTC-BTC+insurance.html">BTC + ประกัน</a></li>
-            <li><a href="LTV Bitcoin.html">LTV Bitcoin</a></li>
+            <li>
+              <button class="cnav-dd-btn" type="button">Calculators <span class="cnav-caret">▾</span></button>
+              <ul class="cnav-dd">
+                <li><a href="1-btc-dashboard.html">1 BTC</a></li>
+                <li><a href="Bitcoin-DCA-Master.html">DCA Master</a></li>
+                <li><a href="Purchasing-Power.html">Purchasing Power</a></li>
+                <li><a href="BTC-BTC+insurance.html">BTC + ประกัน</a></li>
+                <li><a href="LTV Bitcoin.html">LTV Bitcoin</a></li>
+                <li><a href="mortgage.html">Mortgage</a></li>
+              </ul>
+            </li>
+            <li>
+              <button class="cnav-dd-btn" type="button">Planning <span class="cnav-caret">▾</span></button>
+              <ul class="cnav-dd">
+                <li><a href="dca-tracker.html">DCA Tracker</a></li>
+                <li><a href="wealth-planner.html">Wealth Planner</a></li>
+                <li><a href="retirement plan.html">Retirement Plan</a></li>
+              </ul>
+            </li>
             <li><a href="https://cashualme.com/" target="_blank">Cashualme</a></li>
         </ul>
     </nav>
