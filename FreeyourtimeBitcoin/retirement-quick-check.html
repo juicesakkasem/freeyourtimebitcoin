@@ -7,7 +7,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f7f7f5;color:#111;min-height:100vh;padding-top:72px}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f7f7f5;color:#111;min-height:100vh}
     .wrap{max-width:680px;margin:0 auto;padding:1.5rem 12px 4rem}
     h1{font-size:18px;font-weight:700;margin-bottom:4px}
     .sub{font-size:12px;color:#888;margin-bottom:20px}
@@ -21,19 +21,38 @@
     label{display:block;font-size:11px;color:#666;margin-bottom:3px}
     input{width:100%;padding:7px 10px;font-size:14px;border:0.5px solid #ddd;border-radius:6px;background:#fff;color:#111;outline:none;font-family:inherit}
     input:focus{border-color:#185FA5}
+    input[type=checkbox]{width:14px;height:14px;padding:0;accent-color:#185FA5;flex-shrink:0;vertical-align:middle}
+    /* ช่องที่คำนวณให้ ไม่ใช่ช่องกรอก — หน้าตาใกล้ input แต่เส้นประ + พื้นเทา */
+    .derived{padding:7px 10px;font-size:14px;font-weight:700;border:0.5px dashed #ccc;border-radius:6px;background:#fafafa;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .cbx{display:flex;align-items:center;gap:5px;margin:5px 0 0;font-size:11px;color:#666;cursor:pointer}
 
-    .result-banner{border-radius:10px;padding:20px;margin-bottom:12px;text-align:center}
-    .result-banner .big{font-size:48px;font-weight:800;line-height:1}
-    .result-banner .label{font-size:13px;margin-top:6px;opacity:.85}
-    .result-banner .sub2{font-size:11px;margin-top:4px;opacity:.7}
+    .target{background:#f4f9ff;border:1.5px solid #185FA5;border-radius:10px;padding:14px 16px;margin-bottom:12px}
+    .target>label{font-size:13px;font-weight:600;color:#185FA5;margin-bottom:6px}
+    .target>label.cbx{font-size:11px;font-weight:400;color:#666;margin:5px 0 0}
+    .target>input{font-size:22px;font-weight:700;padding:9px 12px;text-align:right;border-color:#b9d6f0}
+    .infrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px;padding-top:10px;border-top:0.5px solid #d6e6f5;font-size:13px;color:#185FA5;font-weight:600}
+    .infrow input{width:76px;text-align:right;font-size:14px;padding:5px 8px}
+
+    .result-banner{border-radius:10px;padding:18px 20px;margin-bottom:12px;text-align:center}
+    .result-banner .big{font-size:40px;font-weight:800;line-height:1.1;word-break:break-word}
+    .result-banner .label{font-size:13px;margin-bottom:6px;opacity:.85}
+    .result-banner .sub2{font-size:11px;margin-top:6px;opacity:.75;line-height:1.6}
     .ok{background:#eaf5e6;color:#2d5a0e}
     .warn{background:#fff8e0;color:#7a5000}
     .bad{background:#fcebeb;color:#8b1a1a}
+
+    .alt{display:flex;align-items:center;gap:11px;padding:9px 11px;border-radius:8px;margin-bottom:7px;border:0.5px solid #eee;background:#fafafa}
+    .alt .ico{font-size:17px;flex-shrink:0}
+    .alt .a-l{font-size:11px;color:#999}
+    .alt .a-v{font-size:14px;font-weight:600}
+    .alt .a-d{font-size:11px;color:#999;margin-top:1px}
 
     .srow{display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap}
     .sc{background:#fff;border:0.5px solid #e0e0e0;border-radius:8px;padding:10px 14px;flex:1;min-width:130px;text-align:center}
     .sc .lbl{font-size:10px;color:#999;margin-bottom:3px}
     .sc .val{font-size:15px;font-weight:700}
+    .sc .scwarn{font-size:10px;color:#A32D2D;line-height:1.5;margin-top:4px}
+    .sc .scwarn:empty{display:none}
 
     .hint{font-size:11px;color:#bbb;margin-top:6px;line-height:1.5}
     .divider{border:none;border-top:0.5px solid #f0f0f0;margin:10px 0}
@@ -53,7 +72,9 @@
     .irow-inv input{font-size:13px}
 
     canvas{max-height:240px}
+    .tbl-scroll{overflow:auto;max-height:420px}
     #ret-table{width:100%;border-collapse:collapse;font-size:12px}
+    #ret-table thead th{position:sticky;top:0;background:#fff;z-index:1}
     #ret-table th{text-align:right;font-size:10px;color:#999;font-weight:600;padding:4px 8px;border-bottom:1px solid #f0f0f0;white-space:nowrap}
     #ret-table th:first-child{text-align:center}
     #ret-table td{text-align:right;padding:5px 8px;border-bottom:0.5px solid #f5f5f5;white-space:nowrap}
@@ -67,45 +88,105 @@
     .badge-ok{background:#eaf5e6;color:#2d5a0e}
     .badge-bad{background:#fcebeb;color:#8b1a1a}
 
-    @media(max-width:480px){.g3{grid-template-columns:1fr 1fr}.srow{gap:8px}}
+    @media(max-width:480px){
+      .g3{grid-template-columns:1fr 1fr}
+      .srow{gap:8px}
+      .result-banner .big{font-size:32px}
+      /* คอลัมน์คงที่กินที่จนช่อง "ชื่อ" เหลือ 42px บนมือถือ — บีบลงให้พิมพ์ได้ */
+      .inv-header,.irow-inv{grid-template-columns:1fr 92px 60px 26px}
+      .inv-header span{font-size:10px;line-height:1.3}
+    }
+
+    /* ── site navbar (shared across all pages) ── */
+    html{overflow-y:scroll}
+    body{padding-top:72px}
+    .cashual-nav{position:fixed;top:0;left:0;width:100%;background:rgba(15,15,15,0.95);backdrop-filter:blur(10px);border-bottom:1px solid #222;z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:0 2rem;height:72px}
+    .cashual-nav-logo{font-size:22px;font-weight:700;color:#f7931a;letter-spacing:0.05em}
+    .cashual-nav-links{display:flex;gap:2rem;list-style:none;margin:0;padding:0;align-items:stretch;height:72px}
+    .cashual-nav-links a{color:#aaa;text-decoration:none;font-size:17px;transition:color 0.2s}
+    .cashual-nav-links a:hover{color:#f7931a}
+    .cashual-nav-toggle{display:none;background:transparent;border:0;color:#f7931a;font-size:26px;line-height:1;cursor:pointer;padding:4px 8px}
+    .cashual-nav-links>li{position:relative;display:flex;align-items:center}
+    .cnav-dd-btn{font-family:inherit;background:transparent;border:0;color:#aaa;font-size:17px;cursor:pointer;display:inline-flex;align-items:center;gap:5px;padding:0;transition:color .2s}
+    .cnav-dd-btn:hover{color:#f7931a}
+    .cnav-caret{font-size:11px;transition:transform .2s}
+    .cnav-dd{display:none;position:absolute;top:100%;left:50%;transform:translateX(-50%);min-width:190px;background:rgba(20,20,20,0.98);backdrop-filter:blur(10px);border:1px solid #2a2a2a;border-radius:10px;padding:6px;list-style:none;margin:0;box-shadow:0 12px 32px rgba(0,0,0,.45);z-index:1001}
+    .cashual-nav-links>li:hover>.cnav-dd,.cashual-nav-links>li:focus-within>.cnav-dd{display:block}
+    .cashual-nav-links>li:hover .cnav-caret,.cashual-nav-links>li:focus-within .cnav-caret{transform:rotate(180deg)}
+    .cnav-dd>li{display:block;width:100%}
+    .cnav-dd a{display:block;padding:9px 14px;font-size:15px;border-radius:6px;white-space:nowrap}
+    .cnav-dd a:hover{background:rgba(247,147,26,.12);color:#f7931a}
+    @media(max-width:640px){.cashual-nav{padding:0 1rem}.cashual-nav-toggle{display:block}.cashual-nav-links{display:none;position:absolute;top:72px;left:0;width:100%;height:auto;flex-direction:column;align-items:stretch;gap:0;background:rgba(15,15,15,0.98);backdrop-filter:blur(10px);border-bottom:1px solid #222;padding:6px 0;max-height:calc(100vh - 72px);overflow-y:auto}.cashual-nav.open .cashual-nav-links{display:flex}.cashual-nav-links>li{display:block;height:auto}.cnav-dd-btn{display:block;width:100%;text-align:left;padding:14px 1.5rem 6px;font-size:12px;color:#777;text-transform:uppercase;letter-spacing:.06em;cursor:default;pointer-events:none}.cnav-caret{display:none}.cnav-dd{display:block;position:static;transform:none;min-width:0;background:transparent;backdrop-filter:none;border:0;border-radius:0;padding:0;box-shadow:none}.cnav-dd a{padding:11px 1.5rem 11px 2.5rem;font-size:16px;border-radius:0}.cashual-nav-links>li>a{display:block;padding:14px 1.5rem;font-size:16px}}
   </style>
 </head>
-<style>
-    .cashual-nav { position: fixed; top: 0; width: 100%; background: rgba(15,15,15,0.95); backdrop-filter: blur(10px); border-bottom: 1px solid #222; z-index: 1000; display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; height: 72px; }
-    .cashual-nav-logo { font-size: 22px; font-weight: 700; color: #f7931a; letter-spacing: 0.05em; }
-    .cashual-nav-links { display: flex; gap: 2.5rem; list-style: none; margin: 0; padding: 0; }
-    .cashual-nav-links a { color: #aaa; text-decoration: none; font-size: 17px; transition: color 0.2s; }
-    .cashual-nav-links a:hover { color: #f7931a; }
-</style>
 <body>
-
 <nav class="cashual-nav">
-    <div class="cashual-nav-logo"><a href="index.html" style="text-decoration:none;color:inherit;">FreeyourtimeBitcoin</a></div>
-    <ul class="cashual-nav-links">
+  <div class="cashual-nav-logo"><a href="index.html" style="text-decoration:none;color:inherit;">FreeyourtimeBitcoin</a></div>
+  <button class="cashual-nav-toggle" aria-label="เมนู" onclick="this.closest('.cashual-nav').classList.toggle('open')">&#9776;</button>
+  <ul class="cashual-nav-links">
+    <li>
+      <button class="cnav-dd-btn" type="button">Calculators <span class="cnav-caret">▾</span></button>
+      <ul class="cnav-dd">
+        <li><a href="1-btc-dashboard.html">1 BTC</a></li>
         <li><a href="Bitcoin-DCA-Master.html">DCA Master</a></li>
         <li><a href="Purchasing-Power.html">Purchasing Power</a></li>
+        <li><a href="BTC-BTC+insurance.html">BTC + ประกัน</a></li>
+        <li><a href="LTV Bitcoin.html">LTV Bitcoin</a></li>
+        <li><a href="mortgage.html">Mortgage</a></li>
+      </ul>
+    </li>
+    <li>
+      <button class="cnav-dd-btn" type="button">Planning <span class="cnav-caret">▾</span></button>
+      <ul class="cnav-dd">
+        <li><a href="dca-tracker.html">DCA Tracker</a></li>
         <li><a href="wealth-planner.html">Wealth Planner</a></li>
+        <li><a href="retirement plan.html">Retirement Plan</a></li>
         <li><a href="retirement-quick-check.html">Retirement Quick Check</a></li>
-        <li><a href="https://cashualme.com/" target="_blank">Cashualme</a></li>
-    </ul>
+      </ul>
+    </li>
+    <li><a href="https://cashualme.com/" target="_blank">Cashualme</a></li>
+  </ul>
 </nav>
-
 <div class="wrap">
-  <h1>Retirement Quick Check 🎯</h1>
-  <p class="sub">ตอนนี้เราสามารถเกษียณได้ถึงอายุเท่าไหร่?</p>
-
-  <!-- Result banner -->
-  <div class="result-banner" id="banner">
-    <div class="big" id="r-years">—</div>
-    <div class="label" id="r-label">กรอกข้อมูลด้านล่างเพื่อคำนวณ</div>
-    <div class="sub2" id="r-sub"></div>
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">
+    <div>
+      <h1>Retirement Quick Check 📊</h1>
+      <p class="sub">อยากใช้เดือนละเท่านี้ตอนเกษียณ — ต้องออมเดือนละเท่าไหร่?</p>
+    </div>
+    <button onclick="resetAll()" style="flex-shrink:0;font-size:11px;padding:4px 10px;border-radius:6px;border:0.5px solid #ddd;background:transparent;color:#999;cursor:pointer;font-family:inherit">รีเซ็ต</button>
   </div>
 
-  <!-- Key numbers -->
+  <!-- เป้าหมาย -->
+  <div class="target">
+    <label for="ret-exp">🎯 อยากมีเงินใช้หลังเกษียณ เดือนละ (฿)</label>
+    <input type="text" inputmode="numeric" id="ret-exp" placeholder="30,000">
+    <label class="cbx"><input type="checkbox" id="exp-today" checked onchange="calc()">ใส่เป็นค่าเงินวันนี้ — ปรับเงินเฟ้อให้อัตโนมัติ</label>
+    <div class="hint" id="exp-fv"></div>
+    <div class="infrow">
+      <span>เงินเฟ้อ</span>
+      <input type="number" id="inflation" value="3" step="0.5" min="0" max="20" oninput="calc()">
+      <span style="color:#666">%/ปี</span>
+    </div>
+  </div>
+
+  <!-- คำตอบ -->
+  <div class="result-banner" id="banner">
+    <div class="label" id="r-title">ต้องออมเดือนละ</div>
+    <div class="big" id="r-answer">—</div>
+    <div class="sub2" id="r-sub">กรอกเป้าหมายด้านบนเพื่อดูผล</div>
+  </div>
+
+  <!-- ตัวเลขประกอบ -->
   <div class="srow">
-    <div class="sc"><div class="lbl">เงินที่จะมีตอนเกษียณ</div><div class="val blue" id="r-pot">-</div></div>
-    <div class="sc"><div class="lbl">ค่าใช้จ่ายสุทธิ/ปีหลังเกษียณ</div><div class="val red" id="r-annual">-</div></div>
-    <div class="sc"><div class="lbl">surplus/เดือน ตอนนี้</div><div class="val green" id="r-surplus">-</div></div>
+    <div class="sc"><div class="lbl">เงินก้อนที่ต้องมีตอนเกษียณ</div><div class="val red" id="r-need">-</div></div>
+    <div class="sc"><div class="lbl">ของที่มีอยู่จะโตเป็น</div><div class="val blue" id="r-pot">-</div><div class="scwarn" id="r-pot-warn"></div></div>
+    <div class="sc"><div class="lbl">ตอนนี้ออมได้/เดือน</div><div class="val green" id="r-surplus">-</div></div>
+  </div>
+
+  <!-- ทางเลือกอื่น -->
+  <div class="card" id="alt-card" style="display:none">
+    <div class="ct">หรือทำอย่างอื่นแทน (เลือกทางใดทางหนึ่ง)</div>
+    <div id="alt-list"></div>
   </div>
 
   <!-- Profile -->
@@ -121,46 +202,50 @@
         <input type="number" id="age-ret" value="55" min="30" max="90" oninput="calc()">
       </div>
       <div>
-        <label>อายุขัยที่วางแผน</label>
+        <label>อายุขัยที่คาดหวัง</label>
         <input type="number" id="age-end" value="85" min="50" max="120" oninput="calc()">
-        <div class="hint">ตั้งให้เกินเพื่อให้เงินครอบคลุมถึงอายุนี้</div>
+        <div class="hint">ใช้วางแผนให้เงินครอบคลุมถึงอายุนี้</div>
       </div>
     </div>
-    <div style="margin-top:10px" class="g2">
+    <div style="margin-top:10px" class="g3">
       <div>
         <label>เงินออมตั้งต้น (฿)</label>
         <input type="text" inputmode="numeric" id="init-sav" placeholder="0">
+        <div class="hint">เงินก้อนที่มีอยู่แล้ววันนี้</div>
+      </div>
+      <div>
+        <label>เงินเหลือ/เดือน (฿)</label>
+        <div class="derived" id="surplus-box">-</div>
+        <div class="hint">รายรับ − รายจ่าย ด้านล่าง</div>
       </div>
       <div>
         <label>ผลตอบแทนช่วงสะสม (%/ปี)</label>
         <input type="number" id="pre-return" value="5" step="0.5" min="0" max="30" oninput="calc()">
-        <div class="hint">เงินที่ออมเพิ่มทุกเดือนได้ผลตอบแทนที่%</div>
+        <div class="hint">เงินที่ออมเพิ่มทุกเดือนได้ผลตอบแทนกี่%</div>
       </div>
     </div>
   </div>
 
-  <!-- Retirement settings -->
+  <!-- Income -->
   <div class="card">
-    <div class="ct">หลังเกษียณ</div>
-    <div class="g3">
-      <div>
-        <label>ค่าใช้จ่าย/เดือน (฿)</label>
-        <input type="text" inputmode="numeric" id="ret-exp" placeholder="30,000">
-      </div>
-      <div>
-        <label>รายได้ passive/เดือน (฿)</label>
-        <input type="text" inputmode="numeric" id="ret-inc" placeholder="0">
-        <div class="hint">ค่าเช่า ปันผล เงินบำนาญ</div>
-      </div>
-      <div>
-        <label>ผลตอบแทนเงินออม (%/ปี)</label>
-        <input type="number" id="ret-return" value="0" step="0.5" min="0" max="30" oninput="calc()">
-        <div class="hint">0% = เงินสด</div>
-      </div>
+    <div class="ct">รายรับ/เดือน <span class="tag-inc">Income</span></div>
+    <div id="inc-list"></div>
+    <button class="addbtn" onclick="addRow('inc')">+ เพิ่มรายรับ</button>
+    <div style="margin-top:10px;display:flex;align-items:center;gap:8px">
+      <label style="margin:0;white-space:nowrap">รายรับเพิ่มขึ้นปีละ</label>
+      <input type="number" id="inc-growth" value="3" step="0.5" min="0" max="50" oninput="calc()" style="width:80px;text-align:right">
+      <span style="font-size:13px;color:#666">%/ปี</span>
+      <div class="hint" style="margin:0">เงินเดือนขึ้น / เลื่อนตำแหน่ง</div>
     </div>
-    <div style="margin-top:10px">
-      <label>เงินเฟ้อ (%/ปี)</label>
-      <input type="number" id="inflation" value="3" step="0.5" min="0" max="20" oninput="calc()" style="max-width:200px">
+  </div>
+
+  <!-- Expense -->
+  <div class="card">
+    <div class="ct">รายจ่าย/เดือน <span class="tag-exp">Expense</span></div>
+    <div id="exp-list"></div>
+    <button class="addbtn" onclick="addRow('exp')">+ เพิ่มรายจ่าย</button>
+    <div style="margin-top:8px">
+      <div class="hint">📌 ค่าใช้จ่ายนี้จะเพิ่มตามเงินเฟ้อ <span id="inf-label">3</span>%/ปี ทุกปีจนถึงเกษียณ</div>
     </div>
   </div>
 
@@ -177,32 +262,10 @@
     <button class="addbtn" onclick="addInv()">+ เพิ่มการลงทุน</button>
   </div>
 
-  <!-- Income -->
-  <div class="card">
-    <div class="ct">รายรับ/เดือน <span class="tag-inc">Income</span></div>
-    <div id="inc-list"></div>
-    <button class="addbtn" onclick="addRow('inc')">+ เพิ่มรายรับ</button>
-    <div style="margin-top:10px;display:flex;align-items:center;gap:8px">
-      <label style="margin:0;white-space:nowrap">รายรับเพิ่มขึ้นปีละ</label>
-      <input type="number" id="inc-growth" value="3" step="0.5" min="0" max="50" oninput="calc()" style="width:80px;text-align:right">
-      <span style="font-size:13px;color:#666">%/ปี</span>
-      <div class="hint" style="margin:0">เงินเดือนขึ้น / เลือกตั้งแหน่ง</div>
-    </div>
-  </div>
-
-  <!-- Expense -->
-  <div class="card">
-    <div class="ct">รายจ่าย/เดือน <span class="tag-exp">Expense</span></div>
-    <div id="exp-list"></div>
-    <button class="addbtn" onclick="addRow('exp')">+ เพิ่มรายจ่าย</button>
-    <div style="margin-top:8px">
-      <div class="hint">💡 ค่าใช้จ่ายที่จะเพิ่มตามเงินเฟ้อ <span id="inf-label">3</span>%/ปี ทุกปีจนถึงเกษียณ</div>
-    </div>
-  </div>
 
   <!-- Chart -->
   <div class="card" id="chart-card" style="display:none">
-    <div class="ct">เงินจะหมดที่ไหน?</div>
+    <div class="ct">เงินจะหมดปีไหน?</div>
     <canvas id="chart"></canvas>
     <div class="hint" id="chart-hint" style="margin-top:8px;text-align:center"></div>
   </div>
@@ -210,15 +273,13 @@
   <!-- Yearly table -->
   <div class="card" id="table-card" style="display:none">
     <div class="ct">ตารางรายปีหลังเกษียณ</div>
-    <div style="overflow-x:auto">
+    <div class="tbl-scroll">
       <table id="ret-table">
         <thead>
           <tr>
             <th>อายุ</th>
             <th>เงินต้นปี</th>
             <th>ค่าใช้จ่าย/ปี</th>
-            <th>รายได้ passive/ปี</th>
-            <th>ผลตอบแทน</th>
             <th>เงินปลายปี</th>
           </tr>
         </thead>
@@ -237,6 +298,7 @@ let chart = null;
 
 const strip = s => parseFloat(String(s).replace(/,/g,'').replace(/[^\d.]/g,'')) || 0;
 const commas = v => { const n = strip(v); return n ? n.toLocaleString('th-TH') : ''; };
+const esc = s => String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
 
 function fmtMoney(v) {
   if (Math.abs(v) >= 1e6) return '฿' + (v/1e6).toFixed(1).replace(/\.0$/,'') + 'M';
@@ -247,14 +309,15 @@ function fmtFull(v) { return '฿' + Math.round(v).toLocaleString('th-TH'); }
 
 function numInp(el) {
   el.addEventListener('keydown', e => {
-    if (['Backspace','Delete','ArrowLeft','ArrowRight','Tab','Enter'].includes(e.key)) return;
+    if (e.ctrlKey || e.metaKey || e.altKey) return;  // copy / paste / undo / select-all
+    if (e.key.length > 1) return;                    // Backspace, Delete, ลูกศร, Home, End, Tab, Enter, F1-F12
     if (!/\d/.test(e.key)) e.preventDefault();
   });
   el.addEventListener('blur', () => { const v = strip(el.value); el.value = v ? commas(v) : ''; });
   el.addEventListener('input', calc);
 }
 
-['init-sav','ret-exp','ret-inc'].forEach(id => numInp(document.getElementById(id)));
+['init-sav','ret-exp'].forEach(id => numInp(document.getElementById(id)));
 
 function addInv() {
   INV.push({id:_nv++,label:'',amount:0,ret:7});
@@ -264,14 +327,14 @@ function delInv(id) {
   INV = INV.filter(x => x.id !== id);
   renderInv(); calc();
 }
-function upInvLabel(id, v) { INV.find(x=>x.id===id).label = v; }
+function upInvLabel(id, v) { INV.find(x=>x.id===id).label = v; lsSave(); }
 function upInvAmt(id, el) { INV.find(x=>x.id===id).amount = strip(el.value); calc(); }
 function upInvRet(id, v) { INV.find(x=>x.id===id).ret = parseFloat(v)||0; calc(); }
 
 function renderInv() {
   document.getElementById('inv-list').innerHTML = INV.map(r => `
     <div class="irow-inv">
-      <input type="text" placeholder="ชื่อ" value="${r.label.replace(/"/g,'&quot;')}" oninput="upInvLabel(${r.id},this.value)">
+      <input type="text" placeholder="ชื่อ" value="${esc(r.label)}" oninput="upInvLabel(${r.id},this.value)">
       <input type="text" inputmode="numeric" style="text-align:right" placeholder="0"
         value="${r.amount ? commas(r.amount) : ''}"
         oninput="upInvAmt(${r.id},this)" onblur="blurAmt(this)">
@@ -291,7 +354,7 @@ function delRow(t, id) {
   else EXP = EXP.filter(x => x.id !== id);
   renderLists(); calc();
 }
-function upLabel(t, id, v) { (t==='inc'?INC:EXP).find(x=>x.id===id).label = v; }
+function upLabel(t, id, v) { (t==='inc'?INC:EXP).find(x=>x.id===id).label = v; lsSave(); }
 function upAmt(t, id, el) {
   (t==='inc'?INC:EXP).find(x=>x.id===id).amount = strip(el.value);
   calc();
@@ -303,7 +366,7 @@ function renderLists() {
     const arr = t==='inc' ? INC : EXP;
     document.getElementById(t+'-list').innerHTML = arr.map(r => `
       <div class="irow">
-        <input type="text" placeholder="ชื่อ" value="${r.label.replace(/"/g,'&quot;')}" oninput="upLabel('${t}',${r.id},this.value)">
+        <input type="text" placeholder="ชื่อ" value="${esc(r.label)}" oninput="upLabel('${t}',${r.id},this.value)">
         <input type="text" inputmode="numeric" style="width:130px;text-align:right" placeholder="0"
           value="${r.amount ? commas(r.amount) : ''}"
           oninput="upAmt('${t}',${r.id},this)" onblur="blurAmt(this)">
@@ -312,126 +375,246 @@ function renderLists() {
   });
 }
 
-function calc() {
-  const ageNow    = +document.getElementById('age-now').value || 35;
-  const ageRet    = +document.getElementById('age-ret').value || 55;
-  const ageEnd    = +document.getElementById('age-end').value || 85;
-  const initSav   = strip(document.getElementById('init-sav').value);
-  const retExp    = strip(document.getElementById('ret-exp').value);
-  const retInc    = strip(document.getElementById('ret-inc').value);
-  const inf       = (+document.getElementById('inflation').value || 3) / 100;
-  const preRet    = (+document.getElementById('pre-return').value || 0) / 100;
-  const retRet    = (+document.getElementById('ret-return').value || 0) / 100;
-  const incGrowth = (+document.getElementById('inc-growth').value || 0) / 100;
+// ---------- อ่านค่าจากฟอร์ม ----------
+function readInputs() {
+  const g = id => document.getElementById(id);
+  return {
+    ageNow:    +g('age-now').value || 35,
+    ageRet:    +g('age-ret').value || 55,
+    ageEnd:    +g('age-end').value || 85,
+    initSav:   strip(g('init-sav').value),
+    retExp:    strip(g('ret-exp').value),
+    inf:       (+g('inflation').value  || 3) / 100,
+    preRet:    (+g('pre-return').value || 0) / 100,
+    incGrowth: (+g('inc-growth').value || 0) / 100,
+    expToday:  g('exp-today').checked,
+    // ตรึงไว้ตั้งแต่ตัดการ์ด "หลังเกษียณ" ออก — สมมติแบบอนุรักษ์นิยม:
+    retInc: 0,       // ไม่นับรายได้ passive (บำนาญ/ค่าเช่า/ปันผล) เลย
+    retRet: 0,       // พอเกษียณถือเป็นเงินสด ไม่ลงทุนต่อ
+    incInf: true,    // ไม่มีผลแล้วเพราะ retInc = 0
+  };
+}
 
-  document.getElementById('inf-label').textContent = document.getElementById('inflation').value || 3;
+// ---------- จำลองแผน 1 รอบ ----------
+// opts.extraSave = ออมเพิ่ม/เดือน · opts.preRet / opts.ageRet = ค่าที่อยากลองแทนของจริง
+function runSim(I, opts = {}) {
+  const extraSave = opts.extraSave || 0;
+  const preRet    = opts.preRet != null ? opts.preRet : I.preRet;
+  const ageRet    = opts.ageRet != null ? opts.ageRet : I.ageRet;
+  const yrsToRet  = Math.max(0, ageRet - I.ageNow);
+  const yrsNeeded = Math.max(0, I.ageEnd - ageRet);
 
-  const totalInc  = INC.reduce((s,r) => s+r.amount, 0);
-  const totalExp  = EXP.reduce((s,r) => s+r.amount, 0);
-  const surplus   = totalInc - totalExp;
-  const yrsToRet  = Math.max(0, ageRet - ageNow);
-  const yrsNeeded = Math.max(0, ageEnd - ageRet);
-
-  let pot = initSav;
-  let annualInc = totalInc * 12;
-  let annualExp = totalExp * 12;
+  // ช่วงสะสม: รายรับโตตาม incGrowth, รายจ่ายโตตามเงินเฟ้อ
+  // ถ้าเงินเฟ้อ > อัตราขึ้นเงินเดือน รายจ่ายจะแซงรายรับสักปี แล้วเงินออมจะไหลลงจนติดลบได้
+  let potSav = I.initSav;
+  let aInc = INC.reduce((s, r) => s + r.amount, 0) * 12;
+  let aExp = EXP.reduce((s, r) => s + r.amount, 0) * 12;
+  let crossAge = null, bustAge = null;
   for (let y = 0; y < yrsToRet; y++) {
-    pot = pot * (1 + preRet) + (annualInc - annualExp);
-    annualInc *= (1 + incGrowth);
-    annualExp *= (1 + inf);
+    if (crossAge === null && aInc - aExp + extraSave * 12 < 0) crossAge = I.ageNow + y;
+    potSav = potSav * (1 + preRet) + (aInc - aExp) + extraSave * 12;
+    if (bustAge === null && potSav <= 0) bustAge = I.ageNow + y + 1;
+    aInc *= (1 + I.incGrowth);
+    aExp *= (1 + I.inf);
   }
+  // การลงทุนแต่ละก้อนทบต้นด้วยอัตราของตัวเอง
+  let potInv = 0;
   for (const iv of INV) {
-    let v = iv.amount;
-    const r = iv.ret / 100;
-    for (let y = 0; y < yrsToRet; y++) v = v * (1 + r);
-    pot += v;
+    potInv += iv.amount * Math.pow(1 + iv.ret / 100, yrsToRet);
   }
+  const pot = potSav + potInv;
 
-  const annualRetExp0 = retExp * 12;
-  const annualRetInc0 = retInc * 12;
-  const annualNet0    = annualRetExp0 - annualRetInc0;
+  // ยอดที่กรอกเป็น "ค่าเงินวันนี้" ต้องเลื่อนมาเป็นค่า ณ วันเกษียณก่อน
+  const toRet   = I.expToday ? Math.pow(1 + I.inf, yrsToRet) : 1;
+  const aRetExp = I.retExp * 12 * toRet;
+  const aRetInc = I.retInc * 12 * toRet;
 
-  let remaining = pot;
-  const dataYears = [], dataPot = [];
-  const tableRows = [];
-  let surviveYears = 0;
+  // ช่วงถอน
+  let rem = pot;
+  const years = [], pots = [], rows = [];
+  let survive = 0;
   const maxSim = Math.max(yrsNeeded + 5, 60);
-
   for (let y = 0; y <= maxSim; y++) {
+    if (rem <= 0) break;   // เงินหมดแล้ว — ไม่ต้องต่อแถวเปล่าที่ยอด 0
     const age       = ageRet + y;
-    const annualExpY = annualRetExp0 * Math.pow(1 + inf, y);
-    const annualIncY = annualRetInc0 * Math.pow(1 + inf, y);
-    const net       = annualExpY - annualIncY;
-    const startBal  = Math.max(0, remaining);
-    const returnAmt = startBal * retRet;
-    const endBal    = startBal > 0 ? startBal * (1 + retRet) - net : 0;
-
-    dataYears.push(age);
-    dataPot.push(Math.max(0, Math.round(remaining)));
-    tableRows.push({ age, startBal, annualExp: annualExpY, annualInc: annualIncY, returnAmt, endBal: Math.max(0, endBal), isEnd: endBal <= 0, isLife: age === ageEnd });
-
-    if (remaining <= 0) break;
-    remaining = remaining * (1 + retRet) - net;
-    if (remaining > 0) surviveYears = y + 1;
+    const annualExp = aRetExp * Math.pow(1 + I.inf, y);
+    const annualInc = aRetInc * (I.incInf ? Math.pow(1 + I.inf, y) : 1);
+    const startBal  = rem;
+    const returnAmt = startBal * I.retRet;
+    const endBal    = startBal * (1 + I.retRet) - (annualExp - annualInc);
+    years.push(age);
+    pots.push(Math.round(startBal));
+    rows.push({ age, startBal, annualExp, annualInc, returnAmt, endBal: Math.max(0, endBal), isEnd: endBal <= 0, isLife: age === I.ageEnd });
+    rem = endBal;
+    if (rem > 0) survive = y + 1;
   }
+  // ปิดท้ายกราฟด้วยจุด 0 ให้เห็นชัดว่าเงินหมดปีไหน (ไม่ใส่ในตาราง)
+  if (rem <= 0 && years.length) { years.push(years[years.length - 1] + 1); pots.push(0); }
 
-  const coversLifespan = surviveYears >= yrsNeeded;
+  return { pot, potSav, potInv, crossAge, bustAge, yrsToRet, yrsNeeded, maxSim,
+           aRetExp, aRetInc, toRet, survive, years, pots, rows, ok: survive >= yrsNeeded };
+}
 
-  document.getElementById('r-pot').textContent     = fmtFull(pot);
-  document.getElementById('r-annual').textContent  = retExp > 0 ? fmtFull(Math.max(0, annualNet0)) : '-';
-  document.getElementById('r-surplus').textContent = surplus >= 0 ? fmtFull(surplus) : `-${fmtFull(Math.abs(surplus))}`;
-  document.getElementById('r-surplus').className   = 'val ' + (surplus >= 0 ? 'green' : 'red');
+// ---------- คำนวณย้อนกลับ ----------
+// Σ ของ ((1+g)/(1+r))^y ตั้งแต่ y=0 ถึง n-1
+function geomSum(g, r, n) {
+  const k = (1 + g) / (1 + r);
+  return Math.abs(k - 1) < 1e-9 ? n : (1 - Math.pow(k, n)) / (1 - k);
+}
+// เงินก้อนที่ต้องมี ณ วันเกษียณ — สูตรตรงกับ loop ถอนด้านบน (โตก่อน ถอนท้ายปี)
+function neededPot(I, s) {
+  const n = s.yrsNeeded, r = I.retRet;
+  return Math.max(0, (s.aRetExp * geomSum(I.inf, r, n)
+                    - s.aRetInc * geomSum(I.incInf ? I.inf : 0, r, n)) / (1 + r));
+}
+// ต้องออมเพิ่มเดือนละเท่าไหร่ — binary search บนการจำลองจริง เลขจึงตรงกับกราฟเสมอ
+function solveSave(I) {
+  if (runSim(I).ok) return 0;
+  let lo = 0, hi = 1000;
+  while (hi <= 5e6 && !runSim(I, { extraSave: hi }).ok) { lo = hi; hi *= 2; }
+  if (hi > 5e6) return null;                       // ออมเท่าไหร่ก็ไม่ทัน
+  for (let i = 0; i < 40; i++) {
+    const mid = (lo + hi) / 2;
+    if (runSim(I, { extraSave: mid }).ok) hi = mid; else lo = mid;
+  }
+  return Math.ceil(hi / 100) * 100;
+}
+// ต้องได้ผลตอบแทนช่วงสะสมกี่ %/ปี
+function solveReturn(I) {
+  const CAP = 0.30;
+  if (I.preRet >= CAP || !runSim(I, { preRet: CAP }).ok) return null;
+  let lo = I.preRet, hi = CAP;
+  for (let i = 0; i < 40; i++) {
+    const mid = (lo + hi) / 2;
+    if (runSim(I, { preRet: mid }).ok) hi = mid; else lo = mid;
+  }
+  return hi * 100;
+}
+// ต้องเลื่อนเกษียณกี่ปี
+function solveDelay(I) {
+  for (let d = 1; d <= 20 && I.ageRet + d < I.ageEnd; d++) {
+    if (runSim(I, { ageRet: I.ageRet + d }).ok) return d;
+  }
+  return null;
+}
+// ถ้าไม่ทำอะไรเลย จะใช้ได้เดือนละเท่าไหร่
+function solveTarget(I) {
+  let lo = 0, hi = I.retExp;
+  for (let i = 0; i < 40; i++) {
+    const mid = (lo + hi) / 2;
+    if (runSim({ ...I, retExp: mid }).ok) lo = mid; else hi = mid;
+  }
+  return Math.floor(lo / 100) * 100;
+}
 
-  const banner = document.getElementById('banner');
-  const bigEl  = document.getElementById('r-years');
-  const lblEl  = document.getElementById('r-label');
-  const subEl  = document.getElementById('r-sub');
+function calc() {
+  const g = id => document.getElementById(id);
+  const I = readInputs();
+  const s = runSim(I);
+  const surplus = INC.reduce((a, r) => a + r.amount, 0) - EXP.reduce((a, r) => a + r.amount, 0);
 
-  if (retExp <= 0 || ageRet <= ageNow) {
+  g('inf-label').textContent = g('inflation').value || 3;
+
+  // เป้าหมายเป็นค่าเงินวันนี้ → บอกว่าตอนเกษียณเท่ากับเท่าไหร่
+  g('exp-fv').textContent = (I.expToday && I.retExp > 0 && s.yrsToRet > 0)
+    ? `≈ ${fmtFull(I.retExp * s.toRet)}/เดือน ตอนอายุ ${I.ageRet} (เงินเฟ้อ ${(I.inf*100).toFixed(1)}% × ${s.yrsToRet} ปี)`
+    : '';
+
+  const need = neededPot(I, s);
+  g('r-need').textContent = I.retExp > 0 ? fmtFull(need) : '-';
+
+  // เงินออมติดลบเป็นไปไม่ได้จริง — โชว์ ฿0 แล้วบอกว่าพังปีไหน (เลขจริงอยู่ในป้ายเตือน)
+  const busted = s.pot <= 0;
+  g('r-pot').textContent = busted ? '฿0' : fmtFull(s.pot);
+  g('r-pot').className   = 'val ' + (busted ? 'red' : 'blue');
+  g('r-pot-warn').innerHTML = !busted && s.crossAge === null ? ''
+    : busted
+      ? `⚠️ เงินหมดตอนอายุ ${s.bustAge} ปี${s.pot < 0 ? ` (ขาด ${fmtMoney(-s.pot)})` : ''}`
+        + (s.crossAge !== null ? `<br>รายจ่ายแซงรายรับตอนอายุ ${s.crossAge} ปี` : '')
+      : `⚠️ รายจ่ายจะแซงรายรับตอนอายุ ${s.crossAge} ปี`;
+  const surplusTxt = (surplus < 0 ? '-' : '+') + fmtFull(Math.abs(surplus));
+  g('r-surplus').textContent = (surplus < 0 ? '-' : '') + fmtFull(Math.abs(surplus));
+  g('r-surplus').className   = 'val ' + (surplus >= 0 ? 'green' : 'red');
+  g('surplus-box').textContent = surplusTxt;
+  g('surplus-box').className   = 'derived ' + (surplus >= 0 ? 'green' : 'red');
+
+  // ---- คำตอบหลัก: ต้องออมเดือนละเท่าไหร่ ----
+  const banner = g('banner'), titleEl = g('r-title'), ansEl = g('r-answer'), subEl = g('r-sub');
+  g('alt-card').style.display = 'none';
+
+  if (I.retExp <= 0 || I.ageRet <= I.ageNow) {
     banner.className = 'result-banner';
-    bigEl.textContent = '—';
-    lblEl.textContent = 'กรอกข้อมูลด้านล่างเพื่อคำนวณ';
-    subEl.textContent = '';
-  } else if (surplus < 0) {
-    banner.className = 'result-banner bad';
-    bigEl.textContent = '⚠️';
-    lblEl.textContent = 'รายจ่ายมากกว่ารายรับ → ยังไม่มี surplus สะสม';
-    subEl.textContent = 'ลองลดรายจ่าย หรือเพิ่มรายรับก่อนครับ';
-  } else if (surviveYears >= maxSim) {
-    banner.className = 'result-banner ok';
-    bigEl.textContent = '60+ ปี';
-    lblEl.textContent = `หลังเกษียณอายุ ${ageRet} ปี → เงินอยู่ได้มากกว่า 60 ปี ✓`;
-    subEl.textContent = `เงินก้อนต้นเกษียณ ${fmtFull(pot)} · ค่าใช้จ่ายสุทธิ/ปี ${fmtFull(annualNet0)}`;
+    titleEl.textContent = 'ต้องออมเดือนละ';
+    ansEl.textContent = '—';
+    subEl.textContent = (I.retExp > 0 && I.ageRet <= I.ageNow)
+      ? 'อายุเกษียณต้องมากกว่าอายุตอนนี้'
+      : 'กรอกเป้าหมายด้านบนเพื่อดูผล';
   } else {
-    const deadAge = ageRet + surviveYears;
-    const ok = coversLifespan;
-    banner.className = 'result-banner ' + (ok ? 'warn' : 'bad');
-    bigEl.textContent = surviveYears + ' ปี';
-    if (ok) {
-      lblEl.textContent = `ครอบคลุมถึงอายุ ${deadAge} ปี ✓ เงินอายุขัยที่ตั้งไว้ (${ageEnd} ปี) ✓`;
+    // กระแสเงินสดติดลบเป็น "หมายเหตุ" ไม่ใช่ตัวบล็อกผล
+    const cfNote  = surplus < 0 ? ` · ⚠️ ตอนนี้ใช้เกินรายรับเดือนละ ${fmtFull(-surplus)}` : '';
+    const nowSave = Math.max(0, surplus);
+    const extra   = solveSave(I);
+
+    if (extra === 0) {
+      banner.className = 'result-banner ok';
+      titleEl.textContent = 'ต้องออมเพิ่มเดือนละ';
+      ansEl.textContent = '฿0 — พอแล้ว ✅';
+      subEl.textContent = `ที่ออมอยู่ ${fmtFull(nowSave)}/เดือน พอถึงอายุ ${I.ageEnd} ปีแล้ว — จะมี ${fmtFull(s.pot)} ตอนเกษียณ จากที่ต้องมี ${fmtFull(need)}${cfNote}`;
+    } else if (extra === null) {
+      banner.className = 'result-banner bad';
+      titleEl.textContent = 'ออมเพิ่มอย่างเดียวไม่พอ';
+      ansEl.textContent = 'ต้องปรับแผน';
+      subEl.textContent = `ต้องมี ${fmtFull(need)} ตอนเกษียณ แต่เหลือเวลาสะสมแค่ ${s.yrsToRet} ปี — ดูทางเลือกด้านล่าง${cfNote}`;
     } else {
-      lblEl.textContent = `หลังเกษียณอายุ ${ageRet} → เงินจะหมดอายุ ${deadAge} ปี`;
+      banner.className = 'result-banner ' + (nowSave > 0 && extra <= nowSave ? 'warn' : 'bad');
+      titleEl.textContent = 'ต้องออมเพิ่มเดือนละ';
+      ansEl.textContent = fmtFull(extra);
+      subEl.textContent = `เพิ่มจากที่ออมได้อยู่ ${fmtFull(nowSave)} → รวมเป็น ${fmtFull(nowSave + extra)}/เดือน · ต้องมี ${fmtFull(need)} ตอนเกษียณ${cfNote}`;
     }
-    subEl.textContent = `เงินก้อนต้นเกษียณ ${fmtFull(pot)} · ค่าใช้จ่ายสุทธิ/ปี ${fmtFull(annualNet0)}`;
+
+    // ---- ทางเลือกอื่นแทนการออมเพิ่ม ----
+    if (extra !== 0) {
+      const rr = solveReturn(I), dl = solveDelay(I), tg = solveTarget(I);
+      const alts = [];
+      if (rr != null) alts.push(['📈', 'เพิ่มผลตอบแทนช่วงสะสมเป็น', `${rr.toFixed(1)}%/ปี`, `จากตอนนี้ ${(I.preRet*100).toFixed(1)}%/ปี`]);
+      if (dl != null) alts.push(['📅', 'เลื่อนเกษียณออกไป', `${dl} ปี`, `อายุ ${I.ageRet} → ${I.ageRet + dl} ปี`]);
+      alts.push(['✂️', 'หรือลดเป้าหมายลงเหลือ', `${fmtFull(tg)}/เดือน`,
+                 `${I.expToday ? 'ค่าเงินวันนี้' : 'ค่าเงินตอนเกษียณ'} — ถ้าไม่ออมเพิ่มเลย`]);
+      g('alt-card').style.display = 'block';
+      g('alt-list').innerHTML = alts.map(([ic, l, v, d]) =>
+        `<div class="alt"><span class="ico">${ic}</span><div style="flex:1"><div class="a-l">${l}</div><div class="a-v">${v}</div><div class="a-d">${d}</div></div></div>`).join('');
+    }
   }
 
-  const cc = document.getElementById('chart-card');
-  if (dataYears.length > 1 && retExp > 0) {
+  // กราฟ + ตารางหนักกว่าส่วนอื่นราว 30 เท่า — หน่วงไว้ให้คำตอบด้านบนขึ้นทันทีระหว่างพิมพ์
+  clearTimeout(_heavyT);
+  _heavyT = setTimeout(() => renderChartTable(I, s), 120);
+
+  lsSave();
+}
+
+let _heavyT = null;
+function renderChartTable(I, s) {
+  const g = id => document.getElementById(id);
+
+  // --- Chart ---
+  const cc = g('chart-card');
+  if (s.years.length > 1 && I.retExp > 0 && typeof Chart !== 'undefined') {
     cc.style.display = 'block';
-    const ctx = document.getElementById('chart').getContext('2d');
+    const ctx = g('chart').getContext('2d');
     if (chart) chart.destroy();
 
-    const maxVal = Math.max(...dataPot);
+    const maxVal = Math.max(...s.pots);
     const useMil = maxVal >= 1e6;
 
     chart = new Chart(ctx, {
       type: 'line',
       data: {
-        labels: dataYears,
+        labels: s.years,
         datasets: [
           {
             label: 'เงินที่เหลือ',
-            data: dataPot,
+            data: s.pots,
             borderColor: '#185FA5',
             backgroundColor: (ctx2) => {
               const g = ctx2.chart.ctx.createLinearGradient(0, 0, 0, 220);
@@ -474,7 +657,7 @@ function calc() {
       plugins: [{
         id: 'lifespan-line',
         afterDraw(ch) {
-          const idx = dataYears.indexOf(ageEnd);
+          const idx = s.years.indexOf(I.ageEnd);
           if (idx < 0) return;
           const meta = ch.getDatasetMeta(0);
           if (!meta.data[idx]) return;
@@ -492,41 +675,79 @@ function calc() {
           ctx3.setLineDash([]);
           ctx3.fillStyle = '#e07b00';
           ctx3.font = '10px sans-serif';
-          ctx3.fillText(`อายุ ${ageEnd}`, x + 3, top + 12);
+          ctx3.fillText(`อายุ ${I.ageEnd}`, x + 3, top + 12);
           ctx3.restore();
         }
       }]
     });
 
-    const hintEl = document.getElementById('chart-hint');
-    if (surviveYears >= maxSim) {
-      hintEl.textContent = '🟢 เงินยังเหลืออยู่ตลอดช่วงที่จำลอง';
-    } else if (coversLifespan) {
-      hintEl.textContent = `🟡 เงินหมดอายุ ${ageRet+surviveYears} ปี → ครอบคลุมอายุขัยที่ตั้งไว้แล้ว`;
-    } else {
-      hintEl.textContent = `🔴 เงินหมดอายุ ${ageRet+surviveYears} ปี → ขาดอีก ${ageEnd-(ageRet+surviveYears)} ปีจากอายุขัยที่ตั้งไว้`;
-    }
+    const deadAge = I.ageRet + s.survive;
+    const margin  = s.survive - s.yrsNeeded;
+    g('chart-hint').textContent =
+      s.survive >= s.maxSim ? '🟢 เงินยังเหลืออยู่ตลอดช่วงที่จำลอง'
+    : margin >= 5           ? `🟢 เงินหมดตอนอายุ ${deadAge} ปี — เกินเป้า ${I.ageEnd} ปี อีก ${margin} ปี`
+    : margin >= 0           ? `🟡 เงินหมดตอนอายุ ${deadAge} ปี — เฉียดเป้า ${I.ageEnd} ปี`
+    :                         `🔴 เงินหมดตอนอายุ ${deadAge} ปี — ขาดอีก ${-margin} ปีจากเป้า ${I.ageEnd} ปี`;
   } else {
     cc.style.display = 'none';
   }
 
-  const tc = document.getElementById('table-card');
-  if (tableRows.length > 0 && retExp > 0) {
+  // --- Yearly table ---
+  const tc = g('table-card');
+  if (s.rows.length > 0 && I.retExp > 0) {
     tc.style.display = 'block';
-    document.getElementById('ret-tbody').innerHTML = tableRows.map(r => `
+    g('ret-tbody').innerHTML = s.rows.map(r => `
       <tr class="${r.isEnd ? 'empty-row' : r.isLife ? 'life-row' : ''}">
         <td>${r.age}${r.isLife ? ' 🎯' : ''}</td>
         <td>${fmtFull(r.startBal)}</td>
         <td class="red">-${fmtFull(r.annualExp)}</td>
-        <td class="green">${r.annualInc > 0 ? '+'+fmtFull(r.annualInc) : '-'}</td>
-        <td class="blue">${r.returnAmt > 0 ? '+'+fmtFull(r.returnAmt) : '-'}</td>
-        <td style="font-weight:600;color:${r.isEnd?'#A32D2D':r.endBal<annualRetExp0*2?'#7a5000':'#2d5a0e'}">${fmtFull(r.endBal)}</td>
+        <td style="font-weight:600;color:${r.isEnd?'#A32D2D':r.endBal<s.aRetExp*2?'#7a5000':'#2d5a0e'}">${fmtFull(r.endBal)}</td>
       </tr>`).join('');
   } else {
     tc.style.display = 'none';
   }
 }
 
+// ---- เก็บค่าที่กรอกไว้ใน localStorage ----
+const LS_KEY = 'retirement_quick_v1';
+const LS_FIELDS = ['age-now','age-ret','age-end','init-sav','pre-return','ret-exp','inflation','inc-growth'];
+const LS_CHECKS = ['exp-today'];
+let _saveT = null;
+function lsSave() {
+  clearTimeout(_saveT);
+  _saveT = setTimeout(() => {
+    try {
+      const f = {};
+      LS_FIELDS.forEach(id => f[id] = document.getElementById(id).value);
+      LS_CHECKS.forEach(id => f[id] = document.getElementById(id).checked);
+      localStorage.setItem(LS_KEY, JSON.stringify({ f, INC, EXP, INV }));
+    } catch (e) {}
+  }, 250);
+}
+function lsLoad() {
+  try {
+    const s = JSON.parse(localStorage.getItem(LS_KEY) || 'null');
+    if (!s) return;
+    if (s.f) {
+      LS_FIELDS.forEach(id => { if (s.f[id] != null) document.getElementById(id).value = s.f[id]; });
+      LS_CHECKS.forEach(id => { if (typeof s.f[id] === 'boolean') document.getElementById(id).checked = s.f[id]; });
+    }
+    if (Array.isArray(s.INC) && s.INC.length) INC = s.INC;
+    if (Array.isArray(s.EXP) && s.EXP.length) EXP = s.EXP;
+    if (Array.isArray(s.INV)) INV = s.INV;
+    // เดิน id ต่อจากของเดิม กัน id ชนกันตอนกด "เพิ่ม"
+    _ni = Math.max(10, ...INC.map(x => x.id)) + 1;
+    _ne = Math.max(20, ...EXP.map(x => x.id)) + 1;
+    _nv = Math.max(10, ...INV.map(x => x.id)) + 1;
+  } catch (e) {}
+}
+function resetAll() {
+  if (!confirm('ล้างข้อมูลที่กรอกไว้ทั้งหมด?')) return;
+  try { localStorage.removeItem(LS_KEY); } catch (e) {}
+  location.reload();
+}
+
+lsLoad();
 renderLists();
 renderInv();
 calc();
