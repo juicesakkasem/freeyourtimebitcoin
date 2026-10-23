@@ -1,503 +1,699 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Free your time with system (Bitcoin)</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    html { overflow-y: scroll; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FreeyourtimeBitcoin — วางแผนการเงินด้วย Bitcoin</title>
+<meta name="description" content="เครื่องมือวางแผนการเงินด้วย Bitcoin ใช้ฟรี ใส่ตัวเลขของคุณเอง แล้วดูว่าแผนพาไปถึงวันที่เวลาเป็นของคุณได้จริงไหม ไม่ทำนายราคา ไม่ขายฝัน">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://freeyourtimebitcoin.cashualme.com/">
+<meta property="og:title" content="FreeyourtimeBitcoin — เงินคือเครื่องมือสะสมเวลา">
+<meta property="og:description" content="เครื่องมือวางแผนการเงินด้วย Bitcoin ใช้ฟรี ใส่ตัวเลขของคุณเอง ไม่ทำนายราคา ไม่ขายฝัน">
+<!-- og:image — ทำรูปขนาด 1200×630 แล้วใส่ URL เต็มตรงนี้ (Facebook ใช้เป็นรูปตอนแชร์ลิงก์) -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23f7931a'/%3E%3Ctext x='32' y='44' font-size='34' text-anchor='middle' font-family='Arial' font-weight='700' fill='%231a1206'%3E%E2%82%BF%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script>document.documentElement.classList.add('js')</script>
+<style>
+  :root{
+    --bg:#0b0a09;
+    --bg-2:#121110;
+    --bg-3:#191715;
+    --line:#24211e;
+    --line-2:#34302b;
+    --text:#d9d3cb;
+    --text-bright:#f4f0ea;
+    --text-dim:#a0978f;
+    --text-muted:#766e66;
+    --orange:#f7931a;
+    --orange-hover:#ffa739;
+    --orange-soft:rgba(247,147,26,.11);
+    --on-orange:#1a1206;
+    --font-display:'Noto Sans Thai', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --font-body:'Noto Sans Thai', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --max:1080px;
+    --gut:16px;
+  }
+  @media (min-width:640px){ :root{ --gut:24px; } }
 
-    body {
-      font-family: 'Sarabun', sans-serif;
-      background: #0f0f0f;
-      color: #e8e8e8;
-      line-height: 1.8;
-    }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+  body{
+    background:var(--bg);color:var(--text);
+    font-family:var(--font-body);font-size:17px;line-height:1.75;
+    overflow-x:clip;overflow-wrap:break-word;
+  }
+  a{color:inherit}
+  img{max-width:100%}
+  :focus-visible{outline:2px solid var(--orange);outline-offset:3px;border-radius:6px}
+  section[id]{scroll-margin-top:80px}
 
-    /* NAVBAR (shared across all pages) */
-    .cashual-nav {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      background: rgba(15,15,15,0.95);
-      backdrop-filter: blur(10px);
-      border-bottom: 1px solid #222;
-      z-index: 1000;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 2rem;
-      height: 72px;
-    }
+  .skip{position:absolute;left:-9999px;top:8px;z-index:100;background:var(--orange);color:var(--on-orange);padding:8px 14px;border-radius:8px;font-weight:600;text-decoration:none}
+  .skip:focus{left:8px}
 
-    .cashual-nav-logo {
-      font-size: 22px;
-      font-weight: 700;
-      color: #f7931a;
-      letter-spacing: 0.05em;
-    }
+  /* ---------- NAV ---------- */
+  .nav{position:sticky;top:0;z-index:50;background:rgba(11,10,9,.84);backdrop-filter:saturate(140%) blur(12px);-webkit-backdrop-filter:saturate(140%) blur(12px);border-bottom:1px solid var(--line)}
+  .nav-in{max-width:var(--max);margin:0 auto;padding:0 var(--gut);height:64px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+  .brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text-bright);font-weight:700;font-size:17px;white-space:nowrap}
+  .brand .mk{width:30px;height:30px;border-radius:50%;background:var(--orange);color:var(--on-orange);display:grid;place-items:center;font-size:17px;line-height:1;flex:none}
+  .brand b{color:var(--orange);font-weight:700}
+  .links{display:flex;align-items:center;gap:28px;list-style:none}
+  .links a{text-decoration:none;color:var(--text-dim);font-size:15.5px;font-weight:500;transition:color .2s}
+  .links a:hover{color:var(--text-bright)}
+  .links .start{color:var(--orange)}
+  .links .start:hover{color:var(--orange-hover)}
+  .menu-btn{display:none;width:42px;height:42px;border:1px solid var(--line-2);border-radius:10px;background:transparent;cursor:pointer;place-content:center;gap:5px}
+  .menu-btn span{display:block;width:18px;height:2px;background:var(--text-bright);border-radius:2px;transition:transform .2s,opacity .2s}
+  .nav.open .menu-btn span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+  .nav.open .menu-btn span:nth-child(2){opacity:0}
+  .nav.open .menu-btn span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+  @media (max-width:980px){
+    .menu-btn{display:grid}
+    .links{display:none;position:absolute;top:64px;left:0;right:0;flex-direction:column;align-items:stretch;gap:0;background:var(--bg);border-bottom:1px solid var(--line);box-shadow:0 18px 40px rgba(0,0,0,.55);padding:6px 0 10px}
+    .nav.open .links{display:flex}
+    .links a{display:block;padding:12px var(--gut);font-size:17px}
+  }
 
-    .cashual-nav-links {
-      display: flex;
-      gap: 2.5rem;
-      list-style: none;
-      margin: 0;
-      padding: 0;
-      align-items: center;
-    }
+  /* ---------- HERO ---------- */
+  .hero{position:relative;isolation:isolate;border-bottom:1px solid var(--line)}
+  .hero::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+    background:
+      radial-gradient(55% 65% at 80% 42%, rgba(247,147,26,.17), transparent 62%),
+      radial-gradient(45% 50% at 0% 0%, rgba(224,148,34,.06), transparent 70%)}
+  .hero-in{max-width:var(--max);margin:0 auto;padding:80px var(--gut) 76px;display:grid;grid-template-columns:1.2fr .8fr;gap:40px;align-items:center}
+  .eyebrow{font-size:13px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--orange);margin-bottom:18px}
+  h1{font-family:var(--font-display);font-weight:600;color:var(--text-bright);font-size:clamp(36px,6.4vw,70px);line-height:1.3}
+  h1 .hl{color:var(--orange)}
+  .tagline{margin-top:22px;font-size:clamp(17px,1.9vw,19.5px);max-width:32em}
+  .tagline .hl-nowrap{color:var(--orange);white-space:nowrap}
+  .tagline .quiet{display:block;margin-top:8px;color:var(--text-dim);font-size:.93em}
+  .actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:32px}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:13px 24px;border-radius:999px;font-weight:600;font-size:16.5px;line-height:1.4;text-decoration:none;transition:background .2s,border-color .2s,color .2s,transform .2s}
+  .btn-primary{background:var(--orange);color:var(--on-orange)}
+  .btn-primary:hover{background:var(--orange-hover);transform:translateY(-1px)}
+  .btn-ghost{border:1px solid var(--line-2);color:var(--text-bright)}
+  .btn-ghost:hover{border-color:var(--orange);color:var(--orange)}
+  .risk{margin-top:20px;font-size:14.5px;color:var(--text-dim)}
+  .risk a{color:var(--text);text-decoration:underline;text-decoration-color:rgba(247,147,26,.55);text-underline-offset:4px}
+  .risk a:hover{color:var(--orange)}
 
-    .cashual-nav-links a {
-      color: #aaa;
-      text-decoration: none;
-      font-size: 17px;
-      transition: color 0.2s;
-    }
+  .coin{position:relative;justify-self:center;width:min(100%,400px);aspect-ratio:700/565}
+  .coin img{display:block;width:100%;height:auto;filter:drop-shadow(0 30px 60px rgba(247,147,26,.28));animation:float 7s ease-in-out infinite}
+  @keyframes float{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-12px) rotate(1deg)}}
+  .coin.noimg img{display:none}
+  .coin.noimg::after{content:"₿";position:absolute;inset:6% 12%;border-radius:50%;display:grid;place-items:center;
+    font-size:clamp(60px,12vw,150px);font-weight:700;color:#3a2303;
+    background:radial-gradient(circle at 35% 30%, #ffd08a, #f7931a 55%, #a85c05);
+    box-shadow:0 30px 70px rgba(247,147,26,.3), inset 0 0 0 10px rgba(255,255,255,.12)}
+  @media (max-width:760px){
+    .hero-in{grid-template-columns:1fr;gap:6px;padding:36px var(--gut) 52px}
+    .coin{order:-1;justify-self:start;width:132px}
+    .actions .btn{flex:1 1 100%}
+  }
+  @media (min-width:480px) and (max-width:760px){ .actions .btn{flex:1 1 auto} }
 
-    .cashual-nav-links a:hover { color: #f7931a; }
+  /* ---------- SECTIONS ---------- */
+  .section{max-width:var(--max);margin:0 auto;padding:76px var(--gut) 0}
+  .sec-tag{font-size:17px;font-weight:600;color:var(--orange)}
+  .sec-title{font-family:var(--font-display);font-weight:600;color:var(--text-bright);font-size:clamp(24px,3vw,30px);line-height:1.4;margin-top:8px}
+  .sec-lede{color:var(--text-dim);margin-top:10px;max-width:40em}
 
-    .cashual-nav-toggle {
-      display: none;
-      background: transparent;
-      border: 0;
-      color: #f7931a;
-      font-size: 26px;
-      line-height: 1;
-      cursor: pointer;
-      padding: 4px 8px;
-    }
+  /* ---------- RETIREMENT PATH ---------- */
+  .steps{list-style:none;display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:30px}
+  .steps li{display:flex}
+  .step{flex:1;display:flex;flex-direction:column;gap:12px;padding:32px 28px;border:1px solid var(--line);border-radius:12px;background:var(--bg-2);text-decoration:none;color:inherit;transition:border-color .2s,background .2s}
+  a.step:hover{border-color:rgba(247,147,26,.55);background:var(--bg-3)}
+  .step .ic,.item .ic{width:48px;height:48px;color:var(--text-dim);flex:none}
+  .step .top{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:4px}
+  .step .n{font-family:var(--font-display);font-weight:700;font-size:13px;color:var(--orange)}
+  .step .lbl{font-size:13px;font-weight:600;color:var(--text-dim)}
+  .step .q{font-family:var(--font-display);font-weight:600;font-size:19px;line-height:1.5;color:var(--text-bright)}
+  .step .s{font-size:14.7px;line-height:1.7;color:var(--text-dim)}
+  .step .go{margin-top:auto;padding-top:8px;font-size:12.5px;font-weight:600;letter-spacing:.02em;color:var(--orange)}
+  .step.soon{border-style:dashed;background:transparent}
+  .step.soon .ic{opacity:.55}
+  .step.soon .n{color:var(--text-muted)}
+  .step.soon .q{color:var(--text)}
+  .badge{margin-left:auto;font-size:12px;font-weight:600;line-height:1.6;padding:1px 10px;border-radius:999px;border:1px dashed var(--line-2);color:var(--text-dim)}
+  @media (max-width:560px){
+    .steps{grid-template-columns:1fr;gap:10px}
+    .step{padding:18px 18px 16px;gap:6px}
+    .step .q{font-size:18px}
+  }
 
-    .cashual-nav-links { gap: 2rem; align-items: stretch; height: 72px; }
-    .cashual-nav-links > li { position: relative; display: flex; align-items: center; }
-    .cnav-dd-btn {
-      font-family: inherit; background: transparent; border: 0; color: #aaa;
-      font-size: 17px; cursor: pointer; display: inline-flex; align-items: center;
-      gap: 5px; padding: 0; transition: color 0.2s;
-    }
-    .cnav-dd-btn:hover { color: #f7931a; }
-    .cnav-caret { font-size: 11px; transition: transform 0.2s; }
-    .cnav-dd {
-      display: none; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
-      min-width: 190px; background: rgba(20,20,20,0.98); backdrop-filter: blur(10px);
-      border: 1px solid #2a2a2a; border-radius: 10px; padding: 6px; list-style: none; margin: 0;
-      box-shadow: 0 12px 32px rgba(0,0,0,0.45); z-index: 1001;
-    }
-    .cashual-nav-links > li:hover > .cnav-dd,
-    .cashual-nav-links > li:focus-within > .cnav-dd { display: block; }
-    .cashual-nav-links > li:hover .cnav-caret,
-    .cashual-nav-links > li:focus-within .cnav-caret { transform: rotate(180deg); }
-    .cnav-dd > li { display: block; width: 100%; }
-    .cnav-dd a { display: block; padding: 9px 14px; font-size: 15px; border-radius: 6px; white-space: nowrap; }
-    .cnav-dd a:hover { background: rgba(247,147,26,0.12); color: #f7931a; }
+  /* ---------- LIBRARY (tabs by Part) ---------- */
+  .tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:30px;padding:6px;border:1px solid var(--line);border-radius:14px;background:var(--bg-2)}
+  html:not(.js) .tabs{display:none}
+  .tab{appearance:none;border:0;background:transparent;border-radius:10px;padding:10px 14px;cursor:pointer;text-align:left;font:inherit;font-size:16px;font-weight:600;line-height:1.4;color:var(--text-dim);display:flex;flex-direction:column;transition:background .2s,color .2s}
+  .tab .pn{font-size:11.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--text-muted)}
+  .tab:hover{color:var(--text-bright)}
+  .tab[aria-selected="true"]{background:var(--bg-3);color:var(--text-bright);box-shadow:inset 0 0 0 1px var(--line-2)}
+  .tab[aria-selected="true"] .pn{color:var(--orange)}
+  .tab .pn.th{font-size:12.5px;letter-spacing:0;text-transform:none}
+  @media (max-width:820px){ .tabs{grid-template-columns:repeat(2,1fr)} }
 
-    @media(max-width:640px) {
-      .cashual-nav { padding: 0 1rem; }
-      .cashual-nav-toggle { display: block; }
-      .cashual-nav-links {
-        display: none; position: absolute; top: 72px; left: 0; width: 100%; height: auto;
-        flex-direction: column; align-items: stretch; gap: 0;
-        background: rgba(15,15,15,0.98); backdrop-filter: blur(10px);
-        border-bottom: 1px solid #222; padding: 6px 0;
-        max-height: calc(100vh - 72px); overflow-y: auto;
-      }
-      .cashual-nav.open .cashual-nav-links { display: flex; }
-      .cashual-nav-links > li { display: block; height: auto; }
-      .cnav-dd-btn {
-        display: block; width: 100%; text-align: left; padding: 14px 1.5rem 6px;
-        font-size: 12px; color: #777; text-transform: uppercase; letter-spacing: 0.06em;
-        cursor: default; pointer-events: none;
-      }
-      .cnav-caret { display: none; }
-      .cnav-dd {
-        display: block; position: static; transform: none; min-width: 0;
-        background: transparent; backdrop-filter: none; border: 0; border-radius: 0;
-        padding: 0; box-shadow: none;
-      }
-      .cnav-dd a { padding: 11px 1.5rem 11px 2.5rem; font-size: 16px; border-radius: 0; }
-      .cashual-nav-links > li > a { display: block; padding: 14px 1.5rem; font-size: 16px; }
-    }
+  .panel{margin-top:28px}
+  .panel .steps{margin-top:0}
+  html:not(.js) .panel + .panel{margin-top:56px}
+  .panel-head{margin-bottom:18px}
+  .panel-part{font-size:13px;font-weight:600;color:var(--orange)}
+  .panel-part .pn{font-size:12px;letter-spacing:.14em;text-transform:uppercase}
+  .panel-head h3{font-family:var(--font-display);font-weight:600;color:var(--text-bright);font-size:clamp(22px,2.6vw,28px);line-height:1.45;margin-top:4px}
+  .panel-head p:last-child{color:var(--text-dim);font-size:15.5px;margin-top:2px}
 
-    /* LAYOUT */
-    main {
-      max-width: 780px;
-      margin: 0 auto;
-      padding: 80px 2rem 4rem;
-    }
+  .items{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+  @media (max-width:720px){ .items{grid-template-columns:1fr;gap:12px} .item,.step{padding:24px 20px} .item .t,.step .q{font-size:17px} .item .d,.step .s{font-size:13.6px} }
+  .item{display:flex;flex-direction:column;gap:12px;padding:32px 28px;border:1px solid var(--line);border-radius:12px;background:var(--bg-2);text-decoration:none;color:inherit;transition:border-color .2s,background .2s}
+  a.item:hover{border-color:rgba(247,147,26,.55);background:var(--bg-3)}
+  .item-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:4px}
+  .item .kind{font-size:12px;font-weight:600;padding:2px 10px;border-radius:999px;border:1px solid var(--line-2);color:var(--text-dim)}
+  .item .kind.tool{color:var(--orange);border-color:rgba(247,147,26,.4)}
+  .item .kind.soon{border-style:dashed}
+  .item .t{font-family:var(--font-display);font-size:19px;font-weight:600;line-height:1.5;color:var(--text-bright)}
+  .item .d{font-size:14.7px;line-height:1.7;color:var(--text-dim)}
+  .item .go{margin-top:auto;padding-top:8px;font-size:12.5px;font-weight:600;letter-spacing:.02em;color:var(--orange)}
+  .item.soon{border-style:dashed;background:transparent}
+  .item.soon .ic{opacity:.55}
+  .item.soon .t{color:var(--text)}
+  .item.soon .d{color:var(--text-dim)}
 
-    /* HERO */
-    .hero {
-      text-align: center;
-      padding: 3rem 0 2rem;
-      border-bottom: 1px solid #222;
-      margin-bottom: 3rem;
-    }
+  /* ---------- ARTICLES (from cashualme.com) ---------- */
+  .posts{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:28px}
+  @media (max-width:900px){ .posts{grid-template-columns:repeat(2,1fr)} }
+  @media (max-width:560px){ .posts{grid-template-columns:1fr;gap:10px} }
+  .post{display:flex;flex-direction:column;gap:8px;padding:20px;border:1px solid var(--line);border-radius:14px;background:var(--bg-2);text-decoration:none;color:inherit;transition:border-color .2s,background .2s}
+  .post:hover{border-color:rgba(247,147,26,.5);background:var(--bg-3)}
+  .post-date{font-size:13px;color:var(--text-dim)}
+  .post-title{font-size:17px;font-weight:600;line-height:1.55;color:var(--text-bright);display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;line-clamp:3;overflow:hidden}
+  .post-go{margin-top:auto;padding-top:6px;font-size:14.5px;font-weight:600;color:var(--orange)}
+  #articles .actions{margin-top:24px}
+  /* การ์ดเนื้อหาเบื้องต้น (pillar page) */
+  .primer{display:grid;grid-template-columns:1.1fr .9fr;gap:28px;align-items:center;margin-top:28px;padding:clamp(22px,4vw,36px);border:1px solid rgba(247,147,26,.4);border-radius:20px;text-decoration:none;color:inherit;
+    background:radial-gradient(80% 120% at 100% 0%, rgba(247,147,26,.13), transparent 60%), var(--bg-2);transition:border-color .2s}
+  .primer:hover{border-color:var(--orange)}
+  .primer-tag{display:inline-block;font-size:13px;font-weight:600;color:var(--on-orange);background:var(--orange);border-radius:999px;padding:2px 12px}
+  .primer-title{display:block;margin-top:14px;font-family:var(--font-display);font-weight:600;font-size:clamp(24px,3.4vw,32px);line-height:1.35;color:var(--text-bright)}
+  .primer-text{display:block;margin-top:10px;color:var(--text)}
+  .primer-go{display:inline-block;margin-top:18px;font-weight:600;color:var(--orange)}
+  .primer-list{list-style:none;display:grid;gap:10px}
+  .primer-list li{position:relative;padding-left:22px;font-size:15.5px;line-height:1.6;color:var(--text)}
+  .primer-list li::before{content:"";position:absolute;left:2px;top:.62em;width:8px;height:8px;border-radius:50%;background:var(--orange)}
+  .primer-list b{color:var(--text-bright);font-weight:600}
+  @media (max-width:820px){ .primer{grid-template-columns:1fr;gap:20px} }
 
-    .hero h1 {
-      font-size: 2rem;
-      font-weight: 700;
-      color: #f7931a;
-      margin-bottom: 1rem;
-      line-height: 1.3;
-    }
+  /* ---------- COURSE ---------- */
+  .course-card{position:relative;overflow:hidden;border:1px solid rgba(247,147,26,.35);border-radius:22px;padding:clamp(26px,5vw,56px);
+    background:radial-gradient(90% 130% at 100% 0%, rgba(247,147,26,.15), transparent 58%), var(--bg-2)}
+  .soon-pill{display:inline-block;margin-left:8px;padding:1px 12px;border-radius:999px;border:1px dashed rgba(247,147,26,.6);font-size:13px;font-weight:600;color:var(--orange);vertical-align:2px}
+  .course-text{margin-top:12px;max-width:36em;font-size:clamp(16.5px,1.8vw,18px)}
+  .parts{list-style:none;display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+  .parts li{display:flex;align-items:center;gap:8px;padding:5px 14px 5px 6px;border:1px solid var(--line-2);border-radius:999px;font-size:14.5px;color:var(--text)}
+  .parts b{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:var(--orange-soft);color:var(--orange);font-size:13px}
+  .course-card .actions{margin-top:28px}
 
-    .hero .subtitle {
-      font-size: 1rem;
-      color: #aaa;
-      margin-bottom: 2rem;
-      line-height: 1.8;
-    }
+  /* ---------- ABOUT ---------- */
+  .about{display:grid;grid-template-columns:minmax(180px,240px) 1fr;grid-template-areas:"photo head" "photo body";column-gap:clamp(28px,5vw,56px);align-items:start;padding-top:56px;border-top:1px solid var(--line)}
+  .about-photo{grid-area:photo;position:relative;align-self:center}
+  .about-photo::after{content:"";position:absolute;inset:auto -10% -8% -10%;height:45%;z-index:-1;background:radial-gradient(50% 60% at 50% 50%, rgba(247,147,26,.18), transparent 70%);pointer-events:none}
+  .avatar{display:block;width:100%;max-width:240px;aspect-ratio:1;height:auto;border-radius:50%;object-fit:cover;object-position:55% 42%;border:2px solid var(--line-2);background:var(--bg-3)}
+  .about-head{grid-area:head;align-self:end}
+  .about-body{grid-area:body}
+  .about{position:relative;isolation:isolate}
+  .about .name{font-family:var(--font-display);font-weight:600;font-size:clamp(24px,3vw,30px);color:var(--text-bright);line-height:1.4;margin-top:4px}
+  .role{font-size:15px;font-weight:600;color:var(--orange)}
+  .bio{margin-top:10px;color:var(--text-dim);max-width:40em}
+  .bio p+p{margin-top:12px}
+  .bio .bio-h{margin-top:20px;font-size:17px;font-weight:600;color:var(--text-bright)}
+  .bio .bio-h+p{margin-top:6px}
+  .social{display:flex;flex-wrap:wrap;gap:18px;margin-top:14px}
+  .social a{text-decoration:none;font-weight:600;font-size:15.5px;color:var(--text);border-bottom:1px solid var(--line-2);padding-bottom:1px;transition:color .2s,border-color .2s}
+  .social a:hover{color:var(--orange);border-color:var(--orange)}
+  @media (max-width:720px){
+    .about{grid-template-columns:96px 1fr;grid-template-areas:"photo head" "body body";column-gap:18px;row-gap:6px;align-items:center}
+    .about-photo::after{display:none}
+    .avatar{aspect-ratio:1;border-radius:50%;object-position:55% 42%;border-width:2px}
+  }
 
-    .hero img {
-      width: 100%;
-      max-width: 600px;
-      border-radius: 12px;
-      margin-top: 1.5rem;
-    }
+  /* ---------- FOOTER ---------- */
+  footer{margin-top:80px;border-top:1px solid var(--line)}
+  .foot{max-width:var(--max);margin:0 auto;padding:32px var(--gut) 44px;font-size:14px;color:var(--text-muted)}
+  .disclaimer{max-width:52em;color:var(--text-dim)}
+  .copy{margin-top:10px}
 
-    /* SECTIONS */
-    section {
-      margin-bottom: 3rem;
-      scroll-margin-top: 70px;
-    }
-
-    h2 {
-      font-size: 1.3rem;
-      font-weight: 700;
-      color: #f0f0f0;
-      margin-bottom: 1rem;
-      padding-bottom: 0.5rem;
-      border-bottom: 1px solid #222;
-    }
-
-    h3 {
-      font-size: 1rem;
-      font-weight: 700;
-      color: #f7931a;
-      margin: 1.5rem 0 0.5rem;
-    }
-
-    p { margin-bottom: 0.8rem; color: #ccc; }
-
-    ul, ol {
-      padding-left: 1.5rem;
-      margin-bottom: 1rem;
-    }
-
-    li {
-      color: #ccc;
-      margin-bottom: 0.4rem;
-    }
-
-    /* BLOCKQUOTE */
-    blockquote {
-      border-left: 3px solid #f7931a;
-      padding: 0.8rem 1.2rem;
-      margin: 1.5rem 0;
-      background: #1a1a1a;
-      border-radius: 0 8px 8px 0;
-      color: #ddd;
-      font-style: italic;
-    }
-
-    /* HIGHLIGHT BOX */
-    .highlight-box {
-      background: #1a1200;
-      border: 1px solid #f7931a44;
-      border-radius: 10px;
-      padding: 1.2rem 1.5rem;
-      margin: 1.5rem 0;
-      color: #f0c060;
-      font-weight: 500;
-    }
-
-    /* WARNING */
-    .warning {
-      color: #ff5555;
-      font-weight: 700;
-    }
-
-    /* CURRICULUM */
-    .curriculum {
-      background: #141414;
-      border: 1px solid #222;
-      border-radius: 12px;
-      padding: 1.5rem;
-    }
-
-    .part-block {
-      margin-bottom: 1.5rem;
-    }
-
-    .part-label {
-      display: inline-block;
-      background: #f7931a;
-      color: #000;
-      font-size: 11px;
-      font-weight: 700;
-      padding: 3px 10px;
-      border-radius: 20px;
-      margin-bottom: 0.6rem;
-      letter-spacing: 0.05em;
-    }
-
-    /* ABOUT */
-    .about-card {
-      background: #141414;
-      border: 1px solid #222;
-      border-radius: 12px;
-      padding: 2rem;
-      display: flex;
-      gap: 1.5rem;
-      align-items: flex-start;
-    }
-
-    .about-card img {
-      width: 100px;
-      height: 100px;
-      border-radius: 50%;
-      object-fit: cover;
-      flex-shrink: 0;
-    }
-
-    .about-name {
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: #f0f0f0;
-      margin-bottom: 0.2rem;
-    }
-
-    .about-role {
-      font-size: 13px;
-      color: #f7931a;
-      margin-bottom: 1rem;
-    }
-
-    /* CONTACT */
-    .contact-links {
-      display: flex;
-      gap: 1rem;
-      margin-top: 1.5rem;
-      flex-wrap: wrap;
-    }
-
-    .contact-links a {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: #1a1a1a;
-      border: 1px solid #333;
-      border-radius: 8px;
-      padding: 8px 16px;
-      color: #ccc;
-      text-decoration: none;
-      font-size: 13px;
-      transition: all 0.2s;
-    }
-
-    .contact-links a:hover {
-      border-color: #f7931a;
-      color: #f7931a;
-    }
-
-    .contact-links img {
-      width: 20px;
-      height: 20px;
-      border-radius: 4px;
-    }
-
-    /* STRONG */
-    strong { color: #f0f0f0; }
-
-    /* DIVIDER */
-    hr { border: none; border-top: 1px solid #222; margin: 2rem 0; }
-  </style>
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    .coin img{animation:none}
+    *{transition:none !important}
+  }
+</style>
+<!-- seo:start -->
+<link rel="canonical" href="https://freeyourtimebitcoin.cashualme.com/">
+<meta name="author" content="Juice Sakkasem">
+<meta property="og:site_name" content="FreeyourtimeBitcoin">
+<meta property="og:locale" content="th_TH">
+<meta name="twitter:card" content="summary">
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@graph": [
+  {
+   "@type": "WebSite",
+   "@id": "https://freeyourtimebitcoin.cashualme.com/#website",
+   "name": "FreeyourtimeBitcoin",
+   "url": "https://freeyourtimebitcoin.cashualme.com/",
+   "inLanguage": "th",
+   "description": "เครื่องมือวางแผนการเงินด้วย Bitcoin ใช้ฟรี ใส่ตัวเลขของคุณเอง แล้วดูว่าแผนพาไปถึงวันที่เวลาเป็นของคุณได้จริงไหม ไม่ทำนายราคา ไม่ขายฝัน",
+   "publisher": {
+    "@id": "https://cashualme.com/about-me/#juice"
+   }
+  },
+  {
+   "@type": "Person",
+   "@id": "https://cashualme.com/about-me/#juice",
+   "name": "Juice Sakkasem",
+   "alternateName": "ศักดิ์เกษม สุวรรณดี",
+   "url": "https://cashualme.com/about-me/",
+   "sameAs": [
+    "https://cashualme.com/",
+    "https://www.facebook.com/Juicesakkasemcashualme",
+    "https://www.instagram.com/juice.sakkasem"
+   ]
+  }
+ ]
+}
+</script>
+<!-- seo:end -->
 </head>
 <body>
+<a class="skip" href="#main">ข้ามไปเนื้อหา</a>
 
-  <!-- NAVBAR -->
-  <nav class="cashual-nav">
-    <div class="cashual-nav-logo"><a href="index.html" style="text-decoration:none;color:inherit;">FreeyourtimeBitcoin</a></div>
-    <button class="cashual-nav-toggle" aria-label="เมนู" onclick="this.closest('.cashual-nav').classList.toggle('open')">&#9776;</button>
-    <ul class="cashual-nav-links">
-      <li>
-        <button class="cnav-dd-btn" type="button">Calculators <span class="cnav-caret">▾</span></button>
-        <ul class="cnav-dd">
-          <li><a href="1-btc-dashboard.html">1 BTC</a></li>
-          <li><a href="Bitcoin-DCA-Master.html">DCA Master</a></li>
-          <li><a href="Purchasing-Power.html">Purchasing Power</a></li>
-          <li><a href="BTC-BTC+insurance.html">BTC + ประกัน</a></li>
-          <li><a href="LTV Bitcoin.html">LTV Bitcoin</a></li>
-          <li><a href="mortgage.html">Mortgage</a></li>
-        </ul>
-      </li>
-      <li>
-        <button class="cnav-dd-btn" type="button">Planning <span class="cnav-caret">▾</span></button>
-        <ul class="cnav-dd">
-          <li><a href="dca-tracker.html">DCA Tracker</a></li>
-          <li><a href="wealth-planner.html">Wealth Planner</a></li>
-          <li><a href="retirement plan.html">Retirement Plan</a></li>
-          <li><a href="retirement-quick-check.html">Retirement Quick Check</a></li>
-        </ul>
-      </li>
-      <li><a href="https://cashualme.com/" target="_blank">Cashualme</a></li>
+<header class="nav" id="top">
+  <div class="nav-in">
+    <a class="brand" href="#top" aria-label="FreeyourtimeBitcoin หน้าแรก">
+      <span class="mk" aria-hidden="true">₿</span>
+      <span>Freeyourtime<b>Bitcoin</b></span>
+    </a>
+    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="เปิดเมนู">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="links" id="nav-links">
+      <li><a class="start" href="guide.html">คู่มือวางแผนการเงินด้วย Bitcoin</a></li>
+      <li><a href="#tools">เครื่องมือวางแผนการเงิน</a></li>
+      <li><a href="#articles">บทความ</a></li>
+      <li><a href="#course">คอร์ส</a></li>
+      <li><a href="#about">เกี่ยวกับ</a></li>
     </ul>
-  </nav>
+  </div>
+</header>
 
-  <main>
+<main id="main">
 
-    <!-- HERO -->
-    <div class="hero">
-      <h1>Free your time with system (Bitcoin)</h1>
-      <p class="subtitle">
-        เข้าใจ "ระบบ" และ Bitcoin วางแผนการเงินเพื่ออิสรภาพทางด้าน "เวลา"<br>
-        จากพื้นฐานการเงินเป็นศูนย์
-      </p>
-      <img src="Gemini_Generated_Image_xpkevuxpkevuxpke.jpg" alt="Hero Image">
+  <!-- 1) บอกว่าเว็บนี้คืออะไร + 2 ปุ่ม -->
+  <section class="hero">
+    <div class="hero-in">
+      <div class="hero-text">
+        <p class="eyebrow">Free your time with system (Bitcoin)</p>
+        <h1>เงินคือเครื่องมือ<br>สะสม<span class="hl">“เวลา”</span></h1>
+        <p class="tagline">
+          เครื่องมือวางแผนการเงินด้วย Bitcoin<br>
+          เมื่อในยุคสมัยที่เปลี่ยนไป การวางแผนการเงินแบบเดิมสามารถให้ <span class="hl-nowrap">“อิสรภาพทางเวลา”</span> ได้จริงมั้ย
+          <span class="quiet">Bitcoin อาจเป็นเครื่องมือช่วยแผนการเงินให้เป็นจริงได้</span>
+        </p>
+        <div class="actions">
+          <a class="btn btn-ghost" href="guide.html">Free! คู่มือวางแผนการเงินด้วย Bitcoin <span aria-hidden="true">→</span></a>
+          <a class="btn btn-primary" href="retirement-quick-check.html">ทดลองวางแผนเกษียณ <span aria-hidden="true">→</span></a>
+        </div>
+      </div>
+      <div class="coin" aria-hidden="true">
+        <img src="coin.webp" alt="" width="700" height="565" onerror="this.parentNode.classList.add('noimg')">
+      </div>
+    </div>
+  </section>
+
+  <!-- 2) บทความจาก cashualme.com — รายการข้างล่างคือค่าตั้งต้น สคริปต์ท้ายหน้าจะดึงเรื่องล่าสุดมาแทนให้เอง -->
+  <section class="section" id="articles">
+    <p class="sec-tag">บทความจาก Cashual Me</p>
+    <h2 class="sec-title">บทความที่จะมี Update เกี่ยวกับการเงิน Bitcoin หรืออื่นๆ</h2>
+    <p class="sec-lede">ติดตามได้ที่ Cashual Me</p>
+    <a class="primer" href="https://cashualme.com/why-bitcoin-financial-planning/" target="_blank" rel="noopener">
+      <span>
+        <span class="primer-tag">เนื้อหาเบื้องต้น · อ่านก่อน</span>
+        <span class="primer-title">ทำไมต้องวางแผนการเงินด้วย Bitcoin</span>
+        <span class="primer-text">รวมคำตอบของคำถามที่โดนถามบ่อยที่สุดไว้ที่เดียว ว่าทำไมวางแผนแล้วยังไปไม่ถึง และ Bitcoin เข้ามาอยู่ตรงไหนของแผน</span>
+        <span class="primer-go">อ่านบทความเต็มบน Cashual Me ↗</span>
+      </span>
+      <ul class="primer-list">
+        <li><b>เราเก็บเงินผิดที่</b> — เงินออมส่วนใหญ่อยู่ในที่ที่แพ้เงินเฟ้อ</li>
+        <li><b>เงินเฟ้อจริงไม่ใช่ 2–3%</b> — ใช้เลขต่ำ แผนเลยไม่พอตั้งแต่แรก</li>
+        <li><b>ต้องออมมากขึ้นเรื่อยๆ</b> — คนที่เก็บพอเกษียณ ออมกันราว 40% ของรายได้</li>
+        <li><b>60/40 กันได้แค่ครึ่งเดียว</b> — กันวิกฤตเศรษฐกิจได้ แต่กันเงินเฟ้อไม่ได้</li>
+        <li><b>Bitcoin เป็น “ที่เก็บเงินออม”</b> — ไม่ใช่เก็งกำไร และไม่ได้แทนการลงทุนทั้งหมด</li>
+      </ul>
+    </a>
+    <div class="posts" id="posts">
+      <a class="post" href="https://cashualme.com/2026/10/03/port-btc-allocation/" target="_blank" rel="noopener">
+        <span class="post-date">3 ต.ค. 2569</span>
+        <span class="post-title">ถ้ามี Port 60/40 อยู่เเล้ว สนใจ bitcoin อยาก allocation มาเท่าไหร่ดี</span>
+        <span class="post-go">อ่านบน Cashual Me ↗</span>
+      </a>
+      <a class="post" href="https://cashualme.com/2026/10/01/retirement-bitcoin-planing/" target="_blank" rel="noopener">
+        <span class="post-date">1 ต.ค. 2569</span>
+        <span class="post-title">อยากขาย Bitcoin มาใช้ตอนเกษียณ ถอนผิดจังหวะ เงินอาจหมดก่อน</span>
+        <span class="post-go">อ่านบน Cashual Me ↗</span>
+      </a>
+      <a class="post" href="https://cashualme.com/2026/09/30/bitcoin-asset-storefovalue/" target="_blank" rel="noopener">
+        <span class="post-date">30 ก.ย. 2569</span>
+        <span class="post-title">Bitcoin = 0.18% ของสินทรัพย์โลก ตอนนี้ ถ้าเงินย้ายมา Bitcoin “แค่ 5%” จะเป็นยังไง</span>
+        <span class="post-go">อ่านบน Cashual Me ↗</span>
+      </a>
+      <a class="post" href="https://cashualme.com/2026/09/29/402-digitalcash-bitcoin/" target="_blank" rel="noopener">
+        <span class="post-date">29 ก.ย. 2569</span>
+        <span class="post-title">AI เริ่มจ่ายเงินกันเองแล้ว คุณมี “ทุน Digital” หรือยัง</span>
+        <span class="post-go">อ่านบน Cashual Me ↗</span>
+      </a>
+      <a class="post" href="https://cashualme.com/2026/09/28/dca-bitcoin-mvrv/" target="_blank" rel="noopener">
+        <span class="post-date">28 ก.ย. 2569</span>
+        <span class="post-title">อยาก DCA Bitcoin ได้เพิ่มมากขึ้น มารู้จัก MVRV</span>
+        <span class="post-go">อ่านบน Cashual Me ↗</span>
+      </a>
+      <a class="post" href="https://cashualme.com/2026/05/13/strc-bitcoin-saving/" target="_blank" rel="noopener">
+        <span class="post-date">13 พ.ค. 2569</span>
+        <span class="post-title">STRC คืออะไร STRC ให้ 11% ต่อปี – Luna ให้ 20% ต่อปีแล้วพังสองอันนี้ต่างกันยังไง จะพังมั้ย?</span>
+        <span class="post-go">อ่านบน Cashual Me ↗</span>
+      </a>
+    </div>
+    <div class="actions">
+      <a class="btn btn-ghost" href="https://cashualme.com/category/%e0%b8%a7%e0%b8%b2%e0%b8%87%e0%b9%81%e0%b8%9c%e0%b8%99%e0%b8%81%e0%b8%b2%e0%b8%a3%e0%b9%80%e0%b8%87%e0%b8%b4%e0%b8%99%e0%b8%94%e0%b9%89%e0%b8%a7%e0%b8%a2-bitcoin/" target="_blank" rel="noopener">อ่านบทความทั้งหมดบน Cashual Me ↗</a>
+    </div>
+  </section>
+
+  <!-- 3) เครื่องมือทั้งหมดในที่เดียว: วางแผนเกษียณ 4 ขั้น + แยกตาม Part 1–4 -->
+  <section class="section" id="tools">
+    <p class="sec-tag">เครื่องมือ</p>
+    <h2 class="sec-title">เครื่องมือวางแผนการเงิน</h2>
+    <p class="sec-lede">4 คำถาม เรียงตามลำดับที่ควรคิด เริ่มจากข้อ 1 หรือกระโดดไปข้อที่ตรงกับคำถามของคุณได้เลย</p>
+
+    <div class="tabs" role="tablist" aria-label="เลือกคำถาม">
+      <button class="tab" type="button" role="tab" id="tab-1" aria-controls="part-1" aria-selected="true"><span class="pn">Part 1</span>ทำไมเงินเก็บไม่พอ</button>
+      <button class="tab" type="button" role="tab" id="tab-2" aria-controls="part-2" aria-selected="false" tabindex="-1"><span class="pn">Part 2</span>รู้หรือยังว่าต้องเก็บเงินเพื่อเกษียณเท่าไหร่</button>
+      <button class="tab" type="button" role="tab" id="tab-3" aria-controls="part-3" aria-selected="false" tabindex="-1"><span class="pn">Part 3</span>DCA Bitcoin</button>
+      <button class="tab" type="button" role="tab" id="tab-4" aria-controls="part-4" aria-selected="false" tabindex="-1"><span class="pn">Part 4</span>ขาย หรือ ค้ำด้วย Bitcoin</button>
     </div>
 
-    <!-- SECTION: ปัญหา -->
-    <section id="problem">
-      <h2>❓ คำถามคือ "วางแผนการเงินแบบเดิม ยังเกษียณได้จริงไหม?"</h2>
-      <p>มีคนไทย 61% วางแผนเกษียณแล้ว แต่มีแค่ 15.7% ที่ทำได้ตามแผน</p>
-      <p>ข้อมูลกลุ่มที่สำเร็จปัจจุบัน จากข้อมูล "ไขรหัสพฤติกรรมการออมของผู้บริโภคไทย" ของ ธนาคารกรุงศรี คือ</p>
-      <ul>
-        <li>ออม+ลงทุน ~40% ของรายได้</li>
-        <li>รายได้ส่วนใหญ่เกิน 100,000 บาท</li>
-        <li>ใช้ RMF และ Provident Fund</li>
-      </ul>
-      <p>กลุ่มส่วนใหญ่:</p>
-      <ul>
-        <li>70% ของเงินออมอยู่ในเงินฝาก</li>
-        <li>และสุดท้าย ทำได้ตามแผนเพียง 15.7%!</li>
-      </ul>
-      <p>และในอนาคตเรา ต้องออม 50–60% ไหม? ต้องมีรายได้ 200,000 ไหม? ต้องเพิ่มความเสี่ยงไหม?</p>
-
-      <h2 style="margin-top:2rem;">❎ ปัญหาการวางแผนการเงินปัจจุบันที่หลายคนเจอ</h2>
-      <ul>
-        <li>การวางแผนการเงินในปัจจุบัน แค่แนะนำให้ทุกคนเอาเงินไป "ลงทุน" เพราะ "เงินเฟ้อ"</li>
-        <li>คนส่วนมากไม่ทราบว่าเงินเฟ้อมากกว่า 3% โดยเฉลี่ยคือ 7% ต่อปี และถ้าผ่านไป 10 ปี เงินลดค่าไป 50%!</li>
-        <li>หลายคนไม่เข้าใจว่า "ระบบ" ปัจจุบันทำลายเงินออมของคุณในทุกวัน!</li>
-        <li>ระบบที่คุณ "ก่อหนี้" และเมื่อเวลาผ่านไป ก้อนหนี้ของคุณจะเล็กลง ซึ่งคนทั่วไปกลัวหนี้และไม่ทราบวิธีใช้หนี้เป็นเครื่องมือ!</li>
-        <li>แนะนำแค่ว่าควรลงทุนให้ได้กี่ % ต่อปี แค่นำเงินมาลงทุน ซึ่งการลงทุน เป็นแค่ส่วนนึงของ "ระบบ" เท่านั้น</li>
-        <li>เงินออมทั้งหมดไปลงทุน และถ้าผิดทางล่ะ? โดยไม่เข้าใจ เงินออม และ เงินลงทุน</li>
-        <li>แม้ได้กำไรปีละ 10% แต่ไม่สามารถเกษียณได้ และโดยทั่วไปคือ เสี่ยงเพิ่ม!</li>
-      </ul>
-      <p class="warning">🔴 คำถามคือ วิธีนี้ได้ผลจริงมั้ย? แค่มองไปรอบตัวคนที่บอกว่าตัวเอง "เกษียณ" ได้ น่าจะนับนิ้วได้เลย</p>
-    </section>
-
-    <!-- SECTION: ระบบ -->
-    <section id="system">
-      <h2>📍 วางแผนการเงินไม่ใช่แค่เรื่องตัวเลขเกษียณ</h2>
-      <p>มันคือ "ระบบ" ที่ต่อกันจนเห็นภาพทั้งหมด</p>
-
-      <blockquote>
-        คุณไม่ได้ต้องการเงินเยอะ แต่จริงๆ คุณแค่ต้องการ "เวลา" เป็นของตัวเอง และ "เงิน" คือ เครื่องมือซื้อเวลา
-      </blockquote>
-
-      <p>และสิ่งที่คุณต้องการจริงๆคือ "ระบบ" ของการวางแผนการเงิน มันไม่ใช่แค่อ่าน fact sheet แล้วลงทุน หรือแค่ทำประกัน</p>
-      <p>และนี่คือสิ่งที่ทำให้คุณเปลี่ยนแปลงใน <strong>Free your time with system (Bitcoin)</strong></p>
-
-      <ul>
-        <li>เข้าใจระบบการเงินปัจจุบันที่คุณอยู่ ว่าสามารถพิมพ์เงินได้ และลดมูลค่าเงินในกระเป๋าของคุณ</li>
-        <li>Hard Money ทำไมสำคัญ มนุษย์เคยรุ่งเรืองมากๆในยุค Hard Money</li>
-        <li>ทำไมชีวิตคุณลำบากมากกว่ายุคก่อน เพราะ เงินเฟ้อ</li>
-        <li>รู้จักเงินออม และ เงินลงทุน ที่ปัจจุบัน 2 สิ่งนี้ ปนกัน ทำให้คนหมดตัวได้</li>
-        <li>Asymmetric Risk เสี่ยงเท่าเดิม แต่โตไม่จำกัด</li>
-        <li>ระบบ ที่จะทำให้เห็นภาพรวม ของการวางแผนการเงินที่ไม่ใช่แค่ ลงทุนได้กำไรกี่ % ต่อปี</li>
-        <li>หนี้ คือสิ่งที่ทุกคนกลัว เพราะไม่เข้าใจ แต่ในระบบ Fiat การมีหนี้ อาจเป็นข้อได้เปรียบที่คนไม่เคยรู้</li>
-        <li>เข้าใจทำไมคน 90% ล้มเหลวในการลงทุนเพื่อแผนเกษียณ</li>
-        <li>วิธีคำนวนแผนเกษียณ และคำนวนว่าเมื่อไหร่ควรลงทุน ไม่ใช่ มีเงิน และลงทุนทันที</li>
-      </ul>
-
-      <p>มันคือแผนที่ แต่มันไม่ใช่วิธี ลงทุนได้ 100x รวยในข้ามคืน</p>
-
-      <blockquote>เมื่อคุณเห็นความจริงแล้ว คุณ ไม่สามารถที่จะลืมมันได้</blockquote>
-
-      <div class="highlight-box">
-        💡 Free your time with system (Bitcoin) ช่วยให้คุณ มี ระบบ ในการเก็บเงินเพื่อซื้อ เวลา ของคุณในอนาคต
+    <div class="panel" role="tabpanel" id="part-1" aria-labelledby="tab-1" tabindex="0">
+      <div class="panel-head">
+        <p class="panel-part"><span class="pn">Part 1</span></p>
+        <h3>ทำไมเก็บเงินแบบเดิม ถึงไปไม่ถึงเกษียณ</h3>
+        <p>เข้าใจระบบการเงินที่เราอยู่ก่อน แล้วค่อยวางแผน</p>
       </div>
-    </section>
-
-    <!-- SECTION: เนื้อหา -->
-    <section id="curriculum">
-      <h2>➡️ เนื้อหา Free your time with system (Bitcoin)</h2>
-      <div class="curriculum">
-
-        <div class="part-block">
-          <div class="part-label">Part 1 — Problem</div>
-          <ol>
-            <li>เข้าใจระบบการเงินเดิม ปัจจุบันเราอยู่ในระบบการเงินอะไร</li>
-            <li>เงินคืออะไร ทำไม Hard Money ถึงสำคัญ</li>
-            <li>ปัญหาของการออม และการวางแผนการเงินปัจจุบัน ที่ไม่สามารถให้เรา Free time ได้</li>
-          </ol>
-        </div>
-
-        <div class="part-block">
-          <div class="part-label">Part 2 — Planning</div>
-          <ol>
-            <li>คำนวนมูลค่าเงินที่สามารถ Free Time ได้</li>
-            <li>การออมคืออะไร คำนวนเปรียบเทียบ ที่เก็บมูลค่าในสินทรัพย์ต่างๆ</li>
-            <li>ปัญหาของการลงทุน - กับดักเงินจำนวนน้อย Survivalship Bias และสิ่งที่คนส่วนใหญ่พลาดคือลงทุนทันที</li>
-            <li>Symmetric Risk VS Asymmetric Risk</li>
-          </ol>
-        </div>
-
-        <div class="part-block">
-          <div class="part-label">Part 3 — System</div>
-          <ol>
-            <li>5 ขั้นตอน สร้าง "ระบบ" (การสะสมทุน) - Arbitrage</li>
-            <li>เมื่อไหร่ควรลงทุน?</li>
-            <li>หนี้รายได้ - หนี้สินทรัพย์ ต่างกันยังไง</li>
-            <li>Hurdle rate Fiat VS Hurdle rate Bitcoin ทำให้มุมมองการลงทุนเปลี่ยนแปลงยังไง</li>
-            <li>Discount Rate คืออะไร</li>
-            <li>Digital capital - Digital credit - Digital Money ทำไมต้องทราบ ยุค AI เงินจะเป็น Digital Money?</li>
-            <li>เครื่องมือ Future - Option 101 เข้าใจเพื่อป้องกันความเสี่ยง</li>
-          </ol>
-        </div>
-
-        <div class="part-block">
-          <div class="part-label">Part 4 — Borrow + Save your Money</div>
-          <ol>
-            <li>ABS (Asset backed securities) VS Sell การขาย Bitcoin มันง่าย?</li>
-            <li>Insurance กับ Port จุดไหนไม่คุ้มกับการทำประกัน</li>
-            <li>Hardware wallet และการเก็บรักษา</li>
-            <li>ส่งมอบ Legacy</li>
-            <li>ซื้อกองทุนลดหย่อน VS ยอมจ่ายภาษีและลงทุน</li>
-          </ol>
-        </div>
-
-      </div>
-    </section>
-
-    <!-- SECTION: About -->
-    <section id="about">
-      <h2>About Me</h2>
-      <div class="about-card">
-        <img src="F36E85A7-2FE1-4DE7-A2A2-051699A0DAF1.jpg" alt="Juice Sakkasem">
-        <div>
-          <div class="about-name">Juice Sakkasem</div>
-          <div class="about-role">Bitcoin Financial Planner</div>
-          <ul>
-            <li>เขียนบทความเกี่ยวกับ Bitcoin การวางแผนการเงินด้วย ระบบ และ Hard Money</li>
-            <li>Financial Consultant ในระบบเดิม รู้ Pain ที่เกิดขึ้นในระบบปัจจุบัน</li>
-            <li>เข้าใจกลุ่มคนที่ไม่เคยวางแผนการเงิน และไม่เคยทราบว่าระบบปัจจุบันทำร้าย เงินออม</li>
-            <li>สนใจเรื่อง Health ที่เกี่ยวข้องกับ แสงแดด</li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="contact-links">
-        <a href="https://www.facebook.com/juicesakkasem.supp" target="_blank">
-          <img src="download.png" alt="Facebook"> Facebook
+      <div class="items">
+        <a class="item" href="Purchasing-Power.html">
+          <span class="item-head"><svg class="ic" viewBox="0 0 48 48" width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 40H42" opacity=".45"/><path d="M6 12l10 6 8-2 10 12 8 6"/><circle cx="42" cy="34" r="2.6" fill="#f7931a" stroke="none"/><path d="M6 12h4" stroke="#f7931a"/></svg><span class="kind tool">เครื่องมือ</span></span>
+          <span class="t">เงินเฟ้อกินเงินเก็บเราไปเท่าไหร่</span>
+          <span class="d">ย้อนดู 5 ปี มองไป 20 ปี เงินก้อนเดิมซื้อของได้น้อยลงแค่ไหน</span>
+          <span class="go">เปิดเครื่องมือ →</span>
         </a>
-        <a href="https://cashualme.com/" target="_blank">
-          <img src="Fauget.jpg" alt="Cashual Me"> Cashual Me
+        <a class="item" href="guide.html#s1">
+          <span class="item-head"><svg class="ic" viewBox="0 0 48 48" width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M24 12c-5-3-12-3-17-2v28c5-1 12-1 17 2 5-3 12-3 17-2V10c-5-1-12-1-17 2z"/><path d="M24 12v28" opacity=".6"/><path d="M29 19h7M29 25h7" stroke="#f7931a"/></svg><span class="kind read">คู่มือ</span></span>
+          <span class="t">คนไทย 61% วางแผนเกษียณ แต่ทำได้ตามแผนแค่ 15.7%</span>
+          <span class="d">กลุ่มที่ทำได้ทำอะไรต่างออกไป และทำไมเงินเฟ้อ 2–3% ถึงต่ำไป</span>
+          <span class="go">อ่านในคู่มือ →</span>
+        </a>
+        <a class="item" href="guide.html#s3">
+          <span class="item-head"><svg class="ic" viewBox="0 0 48 48" width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M24 12c-5-3-12-3-17-2v28c5-1 12-1 17 2 5-3 12-3 17-2V10c-5-1-12-1-17 2z"/><path d="M24 12v28" opacity=".6"/><path d="M29 19h7M29 25h7" stroke="#f7931a"/></svg><span class="kind read">คู่มือ</span></span>
+          <span class="t">เงินเฟ้อจริง ไม่ได้มีแค่ตัวเลข CPI</span>
+          <span class="d">ทำไมเงินใหม่ไม่ได้มาถึงทุกคนพร้อมกัน</span>
+          <span class="go">อ่านในคู่มือ →</span>
+        </a>
+        <a class="item" href="guide.html#s4">
+          <span class="item-head"><svg class="ic" viewBox="0 0 48 48" width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M24 12c-5-3-12-3-17-2v28c5-1 12-1 17 2 5-3 12-3 17-2V10c-5-1-12-1-17 2z"/><path d="M24 12v28" opacity=".6"/><path d="M29 19h7M29 25h7" stroke="#f7931a"/></svg><span class="kind read">คู่มือ</span></span>
+          <span class="t">เงินออม ไม่เท่ากับ เงินลงทุน</span>
+          <span class="d">ถามคำถามให้ถูก ก่อนเอาเงินไปวาง</span>
+          <span class="go">อ่านในคู่มือ →</span>
+        </a>
+        <a class="item" href="guide.html#s5">
+          <span class="item-head"><svg class="ic" viewBox="0 0 48 48" width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M24 12c-5-3-12-3-17-2v28c5-1 12-1 17 2 5-3 12-3 17-2V10c-5-1-12-1-17 2z"/><path d="M24 12v28" opacity=".6"/><path d="M29 19h7M29 25h7" stroke="#f7931a"/></svg><span class="kind read">คู่มือ</span></span>
+          <span class="t">Bitcoin ถูกออกแบบมาให้เก็บมูลค่า</span>
+          <span class="d">มาแทนที่เก็บเงินออม ไม่ได้มาแทนการลงทุน</span>
+          <span class="go">อ่านในคู่มือ →</span>
         </a>
       </div>
-    </section>
+    </div>
 
-  </main>
+    <div class="panel" role="tabpanel" id="part-2" aria-labelledby="tab-2" tabindex="0">
+      <div class="panel-head">
+        <p class="panel-part"><span class="pn">Part 2</span></p>
+        <h3>รู้หรือยังว่าต้องเก็บเงินเพื่อเกษียณเท่าไหร่</h3>
+        <p>ใช้ตัวเลขของคุณเอง ไม่ใช่ตัวเลขเฉลี่ยของคนอื่น</p>
+      </div>
+      <div class="items">
+        <a class="item" href="retirement%20plan.html">
+          <span class="item-head"><svg class="ic" viewBox="0 0 48 48" width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8v32h36" opacity=".45"/><path d="M9 36c9-2 12-14 20-17s9-2 13-2" stroke="#f7931a"/><path d="M30 19V6l8 3.5-8 3.5"/></svg><span class="kind tool">เครื่องมือ</span></span>
+          <span class="t">เกษียณได้ไหม เงินหมดตอนอายุเท่าไหร่</span>
+          <span class="d">แผนเต็ม ตั้งแต่ช่วงเก็บจนถึงช่วงใช้เงิน</span>
+          <span class="go">เปิดเครื่องมือ →</span>
+        </a>
+        <div class="item soon">
+          <span class="item-head"><svg class="ic" viewBox="0 0 48 48" width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="24" cy="24" r="16" stroke-dasharray="3 4"/><path d="M24 15v9l6 4" stroke="#f7931a"/></svg><span class="kind soon">เร็วๆ นี้</span></span>
+          <span class="t">ต้องมี BTC เท่าไหร่ถึงพอ</span>
+          <span class="d">จุดที่ BTC โตเร็วกว่าเงินที่ถอนไปใช้</span>
+        </div>
+      </div>
+    </div>
 
+    <div class="panel" role="tabpanel" id="part-3" aria-labelledby="tab-3" tabindex="0">
+      <div class="panel-head">
+        <p class="panel-part"><span class="pn">Part 3</span></p>
+        <h3>DCA Bitcoin: สร้างระบบสะสม แทนการเดาจังหวะ</h3>
+        <p>ทำซ้ำได้ทุกเดือน ไม่ต้องนั่งเฝ้ากราฟ</p>
+      </div>
+      <div class="items">
+        <a class="item" href="1-btc-dashboard.html">
+          <span class="item-head"><svg class="ic" viewBox="0 0 48 48" width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="24" cy="24" r="16" opacity=".35"/><path d="M24 8a16 16 0 1 1-16 16" stroke="#f7931a" stroke-width="2"/><text x="24" y="29.5" text-anchor="middle" font-size="15" font-weight="700" fill="currentColor" stroke="none" font-family="Arial">₿</text></svg><span class="kind tool">เครื่องมือ</span></span>
+          <span class="t">เก็บเดือนละเท่านี้ จะมี BTC เท่าไหร่</span>
+          <span class="d">ตั้งงบรายเดือนกับจำนวนปี แล้วดูว่าสะสมได้แค่ไหน</span>
+          <span class="go">เปิดเครื่องมือ →</span>
+        </a>
+        <a class="item" href="Bitcoin-DCA-Master.html">
+          <span class="item-head"><svg class="ic" viewBox="0 0 48 48" width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 41h38" opacity=".45"/><rect x="7" y="33" width="5" height="8" rx="1"/><rect x="15" y="29" width="5" height="12" rx="1"/><rect x="23" y="25" width="5" height="16" rx="1"/><rect x="31" y="21" width="5" height="20" rx="1"/><rect x="39" y="15" width="5" height="26" rx="1" stroke="#f7931a"/><path d="M8 22l9-5 9 3 13-11" stroke-dasharray="2 3" opacity=".6"/></svg><span class="kind tool">เครื่องมือ</span></span>
+          <span class="t">DCA รายวัน รายสัปดาห์ หรือรายเดือน ต่างกันแค่ไหน</span>
+          <span class="d">ย้อนดูผลจากราคาจริง 5–10 ปี</span>
+          <span class="go">เปิดเครื่องมือ →</span>
+        </a>
+        <a class="item" href="dca-tracker.html">
+          <span class="item-head"><svg class="ic" viewBox="0 0 48 48" width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="10" y="6" width="28" height="36" rx="3"/><path d="M16 15h16M16 22h16M16 29h10" opacity=".7"/><path d="M28 33l3 3 6-7" stroke="#f7931a"/></svg><span class="kind tool">เครื่องมือ</span></span>
+          <span class="t">บันทึกการ DCA ของคุณ</span>
+          <span class="d">ต้นทุนเฉลี่ย กำไร/ขาดทุน และสุขภาพการเงินในหน้าเดียว</span>
+          <span class="go">เปิดเครื่องมือ →</span>
+        </a>
+        <a class="item" href="wealth-planner.html">
+          <span class="item-head"><svg class="ic" viewBox="0 0 48 48" width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 40h36" opacity=".45"/><rect x="9" y="27" width="8" height="13" rx="1.5"/><rect x="20" y="19" width="8" height="21" rx="1.5"/><rect x="31" y="10" width="8" height="30" rx="1.5" stroke="#f7931a"/></svg><span class="kind tool">เครื่องมือ</span></span>
+          <span class="t">DCA หุ้น ทอง หรือ Bitcoin พาไปถึงไหน</span>
+          <span class="d">จำลองแผนการออม 3 แบบ หักเงินเฟ้อให้เห็นมูลค่าจริง</span>
+          <span class="go">เปิดเครื่องมือ →</span>
+        </a>
+        <a class="item" href="mortgage.html">
+          <span class="item-head"><svg class="ic" viewBox="0 0 48 48" width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 24 18 13l12 11v16H6z"/><path d="M15 40v-8h6v8" opacity=".6"/><circle cx="36" cy="31" r="7.5" stroke="#f7931a"/><text x="36" y="35" text-anchor="middle" font-size="10" font-weight="700" fill="#f7931a" stroke="none" font-family="Arial">₿</text></svg><span class="kind tool">เครื่องมือ</span></span>
+          <span class="t">มีเงินเหลือ โปะบ้าน หรือเก็บ Store of Value</span>
+          <span class="d">เทียบให้เห็นภาพ หลังกันเงินสำรองฉุกเฉินแล้ว</span>
+          <span class="go">เปิดเครื่องมือ →</span>
+        </a>
+        <a class="item" href="guide.html#s6">
+          <span class="item-head"><svg class="ic" viewBox="0 0 48 48" width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M24 12c-5-3-12-3-17-2v28c5-1 12-1 17 2 5-3 12-3 17-2V10c-5-1-12-1-17 2z"/><path d="M24 12v28" opacity=".6"/><path d="M29 19h7M29 25h7" stroke="#f7931a"/></svg><span class="kind read">คู่มือ</span></span>
+          <span class="t">หนี้ในระบบ Fiat มูลค่าลดลงเรื่อยๆ</span>
+          <span class="d">หนี้แบบไหนควรจัดการยังไง และโปะบ้านจำเป็นไหม</span>
+          <span class="go">อ่านในคู่มือ →</span>
+        </a>
+        <div class="item soon">
+          <span class="item-head"><svg class="ic" viewBox="0 0 48 48" width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="24" cy="24" r="16" stroke-dasharray="3 4"/><path d="M24 15v9l6 4" stroke="#f7931a"/></svg><span class="kind soon">เร็วๆ นี้</span></span>
+          <span class="t">ลงเงินก้อนเดียว หรือ ทยอยซื้อ</span>
+          <span class="d">ตอบคำถาม "เมื่อไหร่ควรลงทุน"</span>
+        </div>
+        <div class="item soon">
+          <span class="item-head"><svg class="ic" viewBox="0 0 48 48" width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="24" cy="24" r="16" stroke-dasharray="3 4"/><path d="M24 15v9l6 4" stroke="#f7931a"/></svg><span class="kind soon">เร็วๆ นี้</span></span>
+          <span class="t">Hurdle rate: Fiat vs Bitcoin</span>
+          <span class="d">ผลตอบแทนขั้นต่ำที่ทางเลือกอื่นต้องทำให้ได้</span>
+        </div>
+        <div class="item soon">
+          <span class="item-head"><svg class="ic" viewBox="0 0 48 48" width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="24" cy="24" r="16" stroke-dasharray="3 4"/><path d="M24 15v9l6 4" stroke="#f7931a"/></svg><span class="kind soon">เร็วๆ นี้</span></span>
+          <span class="t">กองทุนลดหย่อน หรือ จ่ายภาษีแล้วเก็บ BTC</span>
+          <span class="d">RMF / ThaiESG เทียบกับเก็บ BTC เอง</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel" role="tabpanel" id="part-4" aria-labelledby="tab-4" tabindex="0">
+      <div class="panel-head">
+        <p class="panel-part"><span class="pn">Part 4</span></p>
+        <h3>ถึงเวลาใช้เงิน ขาย หรือ ค้ำด้วย Bitcoin</h3>
+        <p>และเก็บยังไงให้ปลอดภัย เรื่องที่คนมักคิดทีหลัง แต่ควรคิดตั้งแต่แรก</p>
+      </div>
+      <div class="items">
+        <a class="item" href="btc%20%E0%B8%A7%E0%B8%B2%E0%B8%87%E0%B9%81%E0%B8%9C%E0%B8%99%E0%B8%AB%E0%B8%A5%E0%B8%B1%E0%B8%87%E0%B9%80%E0%B8%81%E0%B8%A9%E0%B8%B5%E0%B8%A2%E0%B8%93.html">
+          <span class="item-head"><svg class="ic" viewBox="0 0 48 48" width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 40h36" opacity=".45"/><path d="M8 10c6 0 9 4 13 9s9 12 19 15"/><circle cx="14" cy="11" r="5" stroke="#f7931a"/><text x="14" y="14" text-anchor="middle" font-size="7" font-weight="700" fill="#f7931a" stroke="none" font-family="Arial">₿</text><path d="M30 26v8M27 31l3 3 3-3" stroke="#f7931a"/></svg><span class="kind tool">เครื่องมือ</span></span>
+          <span class="t">วางแผน Bitcoin หลังเกษียณ</span>
+          <span class="d">ถอนใช้เดือนละเท่านี้ Bitcoin จะหมดไหม และถ้าเริ่มถอนตอนราคาสูงหรือต่ำ ผลต่างกันแค่ไหน</span>
+          <span class="go">เปิดเครื่องมือ →</span>
+        </a>
+        <a class="item" href="LTV%20Bitcoin.html">
+          <span class="item-head"><svg class="ic" viewBox="0 0 48 48" width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 34a16 16 0 0 1 32 0"/><path d="M12 25l2 1.5M24 18v2.5M36 25l-2 1.5" opacity=".6"/><path d="M24 34 33 22" stroke="#f7931a" stroke-width="2"/><circle cx="24" cy="34" r="2.6" fill="#f7931a" stroke="none"/><path d="M8 40h32" opacity=".45"/></svg><span class="kind tool">เครื่องมือ</span></span>
+          <span class="t">ค้ำ BTC ไว้ ถอนใช้ได้เท่าไหร่</span>
+          <span class="d">ถอนคงที่ คุม LTV หรือกู้ก้อนเดียว เทียบกับตลาดหมีในอดีต</span>
+          <span class="go">เปิดเครื่องมือ →</span>
+        </a>
+        <a class="item" href="BTC-BTC+insurance.html">
+          <span class="item-head"><svg class="ic" viewBox="0 0 48 48" width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M24 6l14 5v12c0 9-6 15-14 19-8-4-14-10-14-19V11z"/><text x="24" y="30" text-anchor="middle" font-size="14" font-weight="700" fill="#f7931a" stroke="none" font-family="Arial">₿</text></svg><span class="kind tool">เครื่องมือ</span></span>
+          <span class="t">เก็บ BTC อย่างเดียว หรือ BTC + ประกันสุขภาพ</span>
+          <span class="d">แต่ละวัย ป่วยได้ไม่เกินเท่าไหร่ ถึงจะเทียบเท่าทำประกัน</span>
+          <span class="go">เปิดเครื่องมือ →</span>
+        </a>
+        <a class="item" href="guide.html#s7">
+          <span class="item-head"><svg class="ic" viewBox="0 0 48 48" width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M24 12c-5-3-12-3-17-2v28c5-1 12-1 17 2 5-3 12-3 17-2V10c-5-1-12-1-17 2z"/><path d="M24 12v28" opacity=".6"/><path d="M29 19h7M29 25h7" stroke="#f7931a"/></svg><span class="kind read">คู่มือ</span></span>
+          <span class="t">ขาย หรือ กู้: Buy · Borrow · Die</span>
+          <span class="d">แนวคิดกู้แทนขาย และเกณฑ์ LTV ที่ใช้ตัดสิน</span>
+          <span class="go">อ่านในคู่มือ →</span>
+        </a>
+        <a class="item" href="guide.html#s2">
+          <span class="item-head"><svg class="ic" viewBox="0 0 48 48" width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M24 12c-5-3-12-3-17-2v28c5-1 12-1 17 2 5-3 12-3 17-2V10c-5-1-12-1-17 2z"/><path d="M24 12v28" opacity=".6"/><path d="M29 19h7M29 25h7" stroke="#f7931a"/></svg><span class="kind read">คู่มือ</span></span>
+          <span class="t">เงินสำรองและประกัน</span>
+          <span class="d">กันไม่ให้ "เวลา" ที่สะสมมาหายไป</span>
+          <span class="go">อ่านในคู่มือ →</span>
+        </a>
+        <a class="item" href="guide.html#s8">
+          <span class="item-head"><svg class="ic" viewBox="0 0 48 48" width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M24 12c-5-3-12-3-17-2v28c5-1 12-1 17 2 5-3 12-3 17-2V10c-5-1-12-1-17 2z"/><path d="M24 12v28" opacity=".6"/><path d="M29 19h7M29 25h7" stroke="#f7931a"/></svg><span class="kind read">คู่มือ</span></span>
+          <span class="t">เก็บเอง: เรื่องที่ต้องศึกษาก่อน</span>
+          <span class="d">คิดแบบเลือกตู้เซฟ และเริ่มยังไงถ้ายังไม่เคยทำ</span>
+          <span class="go">อ่านในคู่มือ →</span>
+        </a>
+        <a class="item" href="guide.html#s9">
+          <span class="item-head"><svg class="ic" viewBox="0 0 48 48" width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M24 12c-5-3-12-3-17-2v28c5-1 12-1 17 2 5-3 12-3 17-2V10c-5-1-12-1-17 2z"/><path d="M24 12v28" opacity=".6"/><path d="M29 19h7M29 25h7" stroke="#f7931a"/></svg><span class="kind read">คู่มือ</span></span>
+          <span class="t">ความเสี่ยงที่ต้องยอมรับ</span>
+          <span class="d">เรื่องที่ต้องรู้และยอมรับได้ ก่อนเริ่มเก็บ Bitcoin</span>
+          <span class="go">อ่านในคู่มือ →</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4) แนะนำคอร์ส + ปุ่มสมัคร -->
+  <section class="section" id="course">
+    <div class="course-card">
+      <p class="sec-tag">คอร์ส <span class="soon-pill">Coming soon</span></p>
+      <h2 class="sec-title">Free your time with system (Bitcoin)</h2>
+      <div class="actions">
+        <!-- TODO: ใส่ลิงก์ Google Form ใบสมัครตรง href -->
+        <a class="btn btn-primary" href="#course">ลงทะเบียนล่วงหน้า <span aria-hidden="true">→</span></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5) About สั้นๆ -->
+  <section class="section" id="about">
+    <div class="about">
+      <div class="about-photo">
+        <img class="avatar" src="F36E85A7-2FE1-4DE7-A2A2-051699A0DAF1.jpg" alt="Juice Sakkasem" width="560" height="700" loading="lazy"
+           onerror="this.onerror=null;this.src='https://freeyourtimebitcoin.cashualme.com/F36E85A7-2FE1-4DE7-A2A2-051699A0DAF1.jpg'">
+      </div>
+      <div class="about-head">
+        <p class="sec-tag">เกี่ยวกับ</p>
+        <h2 class="name">Juice Sakkasem</h2>
+        <p class="role">Bitcoin Financial Planner</p>
+      </div>
+      <div class="about-body">
+        <div class="bio">
+          <p>ผม Juice Sakkasem (ศักดิ์เกษม สุวรรณดี) เป็นสถาปนิก และมีทำธุรกิจด้านอสังหาริมทรัพย์ แต่ผมสนใจเกี่ยวกับเรื่องของการวางแผนการเงินด้วย Bitcoin</p>
+          <h3 class="bio-h">ทำไมผมเขียนเรื่องนี้</h3>
+          <p>ผมเริ่มจาก วางแผนการเงินแบบเดิม ยังพาเราไปถึงวันเกษียณได้ไหม ถ้าเงินที่เก็บซื้อของได้น้อยลงทุกปี</p>
+          <p>ผมมอง Bitcoin เป็นเครื่องมือวางแผนระยะยาว ไม่ใช่ของเก็งกำไร อยากแชร์เรื่องระบบและวิธีคิด: เก็บเท่าไหร่ เก็บยังไง ถอนใช้ยังไงไม่ให้เงินหมดก่อน และความเสี่ยงที่ต้องยอมรับ</p>
+        </div>
+        <p class="social">
+          <a href="https://www.facebook.com/Juicesakkasemcashualme" target="_blank" rel="noopener">Facebook</a>
+          <a href="https://cashualme.com/" target="_blank" rel="noopener">Cashual Me</a>
+        </p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="foot">
+    <p class="disclaimer">เนื้อหาและเครื่องมือทั้งหมดในเว็บนี้ทำขึ้นเพื่อการศึกษา ไม่ใช่คำแนะนำการลงทุน ตัวเลขทุกตัวเป็นการจำลองจากสมมติฐานที่คุณปรับเองได้ ไม่ใช่การทำนายราคา</p>
+    <p class="copy">© 2026 FreeyourtimeBitcoin</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  // เมนูมือถือ
+  var nav=document.querySelector('.nav'), btn=document.querySelector('.menu-btn');
+  function closeMenu(){ nav.classList.remove('open'); btn.setAttribute('aria-expanded','false'); }
+  btn.addEventListener('click',function(){
+    var open=nav.classList.toggle('open');
+    btn.setAttribute('aria-expanded',String(open));
+  });
+  nav.querySelectorAll('.links a').forEach(function(a){ a.addEventListener('click',closeMenu); });
+
+  // แท็บเครื่องมือ (วางแผนเกษียณ + Part 1–4)
+  var tabs=[].slice.call(document.querySelectorAll('[role="tab"]'));
+  var panels=tabs.map(function(t){ return document.getElementById(t.getAttribute('aria-controls')); });
+  function select(i,focus){
+    tabs.forEach(function(t,j){
+      var on=(i===j);
+      t.setAttribute('aria-selected',String(on));
+      t.tabIndex=on?0:-1;
+      panels[j].hidden=!on;
+    });
+    if(focus) tabs[i].focus();
+  }
+  tabs.forEach(function(t,i){
+    t.addEventListener('click',function(){ select(i); });
+    t.addEventListener('keydown',function(e){
+      var n=null, last=tabs.length-1;
+      if(e.key==='ArrowRight'||e.key==='ArrowDown') n=(i===last)?0:i+1;
+      if(e.key==='ArrowLeft'||e.key==='ArrowUp') n=(i===0)?last:i-1;
+      if(e.key==='Home') n=0;
+      if(e.key==='End') n=last;
+      if(n!==null){ e.preventDefault(); select(n,true); }
+    });
+  });
+  // เปิดแท็บตามลิงก์ เช่น index.html#part-3
+  function openFromHash(){
+    var i=panels.findIndex(function(p){ return '#'+p.id===location.hash; });
+    if(i>=0){ select(i); document.getElementById('tools').scrollIntoView(); }
+    return i;
+  }
+  if(openFromHash()<0) select(0);
+  window.addEventListener('hashchange',openFromHash);
+
+  // บทความล่าสุดจาก cashualme.com (หมวด "วางแผนการเงินด้วย bitcoin" และ "bitcoin")
+  // ถ้าดึงไม่ได้ หน้าเว็บจะแสดงรายการที่ฝังไว้ใน HTML ตามเดิม
+  var box=document.getElementById('posts');
+  if(box && window.fetch && window.DOMParser){
+    fetch('https://public-api.wordpress.com/wp/v2/sites/cashualme.com/posts?per_page=6&categories=787711552,36507086&_fields=link,date,title')
+      .then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); })
+      .then(function(list){
+        if(!Array.isArray(list)) return;
+        var frag=document.createDocumentFragment(), parser=new DOMParser();
+        list.forEach(function(p){
+          if(!p || !/^https:\/\/cashualme\.com\//.test(p.link)) return;
+          var title=parser.parseFromString((p.title && p.title.rendered) || '','text/html').body.textContent.trim();
+          if(!title) return;
+          var a=document.createElement('a');
+          a.className='post'; a.href=p.link; a.target='_blank'; a.rel='noopener';
+          var d=document.createElement('span'); d.className='post-date';
+          var when=new Date(p.date);
+          d.textContent=isNaN(when)?'':when.toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'numeric'});
+          var t=document.createElement('span'); t.className='post-title'; t.textContent=title;
+          var g=document.createElement('span'); g.className='post-go'; g.textContent='อ่านบน Cashual Me ↗';
+          a.appendChild(d); a.appendChild(t); a.appendChild(g); frag.appendChild(a);
+        });
+        if(frag.childNodes.length>=3){ box.textContent=''; box.appendChild(frag); }
+      })
+      .catch(function(){ /* ใช้รายการที่ฝังไว้ */ });
+  }
+})();
+</script>
 </body>
 </html>

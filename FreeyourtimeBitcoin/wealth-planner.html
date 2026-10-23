@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wealth Planner Simulator</title>
+    <title>Wealth Planner — จำลองแผนออมแบบ DCA และจัดสัดส่วนสินทรัพย์เพื่อเกษียณ</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation"></script>
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
@@ -46,36 +46,150 @@
     .cnav-dd a:hover{background:rgba(247,147,26,.12);color:#f7931a}
     @media(max-width:640px){.cashual-nav{padding:0 1rem}.cashual-nav-toggle{display:block}.cashual-nav-links{display:none;position:absolute;top:72px;left:0;width:100%;height:auto;flex-direction:column;align-items:stretch;gap:0;background:rgba(15,15,15,0.98);backdrop-filter:blur(10px);border-bottom:1px solid #222;padding:6px 0;max-height:calc(100vh - 72px);overflow-y:auto}.cashual-nav.open .cashual-nav-links{display:flex}.cashual-nav-links>li{display:block;height:auto}.cnav-dd-btn{display:block;width:100%;text-align:left;padding:14px 1.5rem 6px;font-size:12px;color:#777;text-transform:uppercase;letter-spacing:.06em;cursor:default;pointer-events:none}.cnav-caret{display:none}.cnav-dd{display:block;position:static;transform:none;min-width:0;background:transparent;backdrop-filter:none;border:0;border-radius:0;padding:0;box-shadow:none}.cnav-dd a{padding:11px 1.5rem 11px 2.5rem;font-size:16px;border-radius:0}.cashual-nav-links>li>a{display:block;padding:14px 1.5rem;font-size:16px}}
     </style>
-</head>
-<body class="p-4 md:p-8 max-w-7xl mx-auto min-h-screen flex flex-col" style="padding-top:88px">
+<!-- seo:start -->
+<meta name="description" content="เครื่องจำลองแผนออมระยะยาว ใส่เงินตั้งต้น เงินออมต่อปี และสัดส่วนที่ DCA ในหุ้นสหรัฐ ทองคำ และ Bitcoin แล้วดูเส้นทางมูลค่าทั้งแบบตัวเลขและแบบหักเงินเฟ้อ ใช้ฟรี">
+<link rel="canonical" href="https://freeyourtimebitcoin.cashualme.com/wealth-planner.html">
+<meta name="author" content="Juice Sakkasem">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="FreeyourtimeBitcoin">
+<meta property="og:locale" content="th_TH">
+<meta property="og:url" content="https://freeyourtimebitcoin.cashualme.com/wealth-planner.html">
+<meta property="og:title" content="Wealth Planner — จำลองแผนออมแบบ DCA และจัดสัดส่วนสินทรัพย์เพื่อเกษียณ">
+<meta property="og:description" content="เครื่องจำลองแผนออมระยะยาว ใส่เงินตั้งต้น เงินออมต่อปี และสัดส่วนที่ DCA ในหุ้นสหรัฐ ทองคำ และ Bitcoin แล้วดูเส้นทางมูลค่าทั้งแบบตัวเลขและแบบหักเงินเฟ้อ ใช้ฟรี">
+<meta name="twitter:card" content="summary">
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@graph": [
+  {
+   "@type": "WebApplication",
+   "name": "Wealth Planner",
+   "description": "เครื่องจำลองแผนออมระยะยาว ใส่เงินตั้งต้น เงินออมต่อปี และสัดส่วนที่ DCA ในหุ้นสหรัฐ ทองคำ และ Bitcoin แล้วดูเส้นทางมูลค่าทั้งแบบตัวเลขและแบบหักเงินเฟ้อ ใช้ฟรี",
+   "url": "https://freeyourtimebitcoin.cashualme.com/wealth-planner.html",
+   "inLanguage": "th",
+   "applicationCategory": "FinanceApplication",
+   "operatingSystem": "Any (web browser)",
+   "isAccessibleForFree": true,
+   "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "THB"
+   },
+   "author": {
+    "@id": "https://cashualme.com/about-me/#juice"
+   },
+   "isPartOf": {
+    "@id": "https://freeyourtimebitcoin.cashualme.com/#website"
+   }
+  },
+  {
+   "@type": "WebSite",
+   "@id": "https://freeyourtimebitcoin.cashualme.com/#website",
+   "name": "FreeyourtimeBitcoin",
+   "url": "https://freeyourtimebitcoin.cashualme.com/",
+   "inLanguage": "th"
+  },
+  {
+   "@type": "Person",
+   "@id": "https://cashualme.com/about-me/#juice",
+   "name": "Juice Sakkasem",
+   "alternateName": "ศักดิ์เกษม สุวรรณดี",
+   "url": "https://cashualme.com/about-me/",
+   "sameAs": [
+    "https://cashualme.com/",
+    "https://www.facebook.com/Juicesakkasemcashualme",
+    "https://www.instagram.com/juice.sakkasem"
+   ]
+  }
+ ]
+}
+</script>
+<!-- seo:end -->
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style id="fyt-theme">
+/* ===== FreeyourtimeBitcoin: ธีมเดียวกับหน้าแรก ===== */
+html body{padding-top:0!important;background:#0b0a09!important;color:#d9d3cb;font-family:'Noto Sans Thai', system-ui, -apple-system, 'Segoe UI', sans-serif!important}
+html body .font-sans{font-family:'Noto Sans Thai', system-ui, -apple-system, 'Segoe UI', sans-serif!important}
+.fyt-nav{position:sticky;top:0;z-index:1000;background:rgba(11,10,9,.86);backdrop-filter:saturate(140%) blur(12px);-webkit-backdrop-filter:saturate(140%) blur(12px);border-bottom:1px solid #24211e;line-height:1.6;font-family:'Noto Sans Thai', system-ui, -apple-system, 'Segoe UI', sans-serif}
+.fyt-nav *{box-sizing:border-box}
+.fyt-nav .nav-in{max-width:1080px;margin:0 auto;padding:0 24px;height:64px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.fyt-nav .brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:#f4f0ea;font-weight:700;font-size:17px;white-space:nowrap}
+.fyt-nav .brand .mk{width:30px;height:30px;border-radius:50%;background:#f7931a;color:#1a1206;display:grid;place-items:center;font-size:17px;line-height:1;flex:none}
+.fyt-nav .brand b{color:#f7931a;font-weight:700}
+.fyt-nav .links{display:flex;align-items:center;gap:28px;list-style:none;margin:0;padding:0}
+.fyt-nav .links a{text-decoration:none;color:#a0978f;font-size:15.5px;font-weight:500;transition:color .2s}
+.fyt-nav .links a:hover{color:#f4f0ea}
+.fyt-nav .links .start{color:#f7931a}
+.fyt-nav .menu-btn{display:none;width:42px;height:42px;border:1px solid #34302b;border-radius:10px;background:transparent;cursor:pointer;place-content:center;gap:5px;padding:0}
+.fyt-nav .menu-btn span{display:block;width:18px;height:2px;background:#f4f0ea;border-radius:2px;transition:transform .2s,opacity .2s}
+.fyt-nav.open .menu-btn span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.fyt-nav.open .menu-btn span:nth-child(2){opacity:0}
+.fyt-nav.open .menu-btn span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+@media (max-width:980px){
+  .fyt-nav .menu-btn{display:grid}
+  .fyt-nav .links{display:none;position:absolute;top:64px;left:0;right:0;flex-direction:column;align-items:stretch;gap:0;background:#0b0a09;border-bottom:1px solid #24211e;box-shadow:0 18px 40px rgba(0,0,0,.55);padding:6px 0 10px}
+  .fyt-nav.open .links{display:flex}
+  .fyt-nav .links a{display:block;padding:12px 16px;font-size:17px}
+}
+@media (max-width:640px){ .fyt-nav .nav-in{padding:0 16px} }
+.fyt-head{position:relative;isolation:isolate;border-bottom:1px solid #24211e;margin-bottom:24px;font-family:'Noto Sans Thai', system-ui, -apple-system, 'Segoe UI', sans-serif}
+.fyt-head::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(50% 80% at 85% 30%, rgba(247,147,26,.14), transparent 65%)}
+.fyt-head .in{max-width:1080px;margin:0 auto;padding:44px 24px 32px}
+.fyt-head .eyebrow{margin:0 0 10px;font-size:13px;font-weight:600;color:#f7931a}
+.fyt-head h1{margin:0;font-family:'Noto Sans Thai', system-ui, -apple-system, 'Segoe UI', sans-serif;font-weight:600;color:#f4f0ea;font-size:clamp(28px,4.6vw,42px);line-height:1.3;letter-spacing:0;background:none;-webkit-text-fill-color:currentColor}
+.fyt-head .sub{margin:12px 0 0;font-size:17px;line-height:1.7;color:#d9d3cb;max-width:38em}
+@media (max-width:640px){ .fyt-head .in{padding:32px 16px 24px} }
+.fyt-foot{border-top:1px solid #24211e;margin-top:40px;font-family:'Noto Sans Thai', system-ui, -apple-system, 'Segoe UI', sans-serif}
+.fyt-foot div{max-width:1080px;margin:0 auto;padding:28px 24px 40px;font-size:14px;line-height:1.7;color:#766e66}
+.fyt-foot a{color:#a0978f}
+@media print{ .fyt-nav,.fyt-head,.fyt-foot{display:none!important} }
 
-    <nav class="cashual-nav">
-        <div class="cashual-nav-logo"><a href="index.html" style="text-decoration:none;color:inherit;">FreeyourtimeBitcoin</a></div>
-        <button class="cashual-nav-toggle" aria-label="เมนู" onclick="this.closest('.cashual-nav').classList.toggle('open')">&#9776;</button>
-        <ul class="cashual-nav-links">
-            <li>
-              <button class="cnav-dd-btn" type="button">Calculators <span class="cnav-caret">▾</span></button>
-              <ul class="cnav-dd">
-                <li><a href="1-btc-dashboard.html">1 BTC</a></li>
-                <li><a href="Bitcoin-DCA-Master.html">DCA Master</a></li>
-                <li><a href="Purchasing-Power.html">Purchasing Power</a></li>
-                <li><a href="BTC-BTC+insurance.html">BTC + ประกัน</a></li>
-                <li><a href="LTV Bitcoin.html">LTV Bitcoin</a></li>
-                <li><a href="mortgage.html">Mortgage</a></li>
-              </ul>
-            </li>
-            <li>
-              <button class="cnav-dd-btn" type="button">Planning <span class="cnav-caret">▾</span></button>
-              <ul class="cnav-dd">
-                <li><a href="dca-tracker.html">DCA Tracker</a></li>
-                <li><a href="wealth-planner.html">Wealth Planner</a></li>
-                <li><a href="retirement plan.html">Retirement Plan</a></li>
-                <li><a href="retirement-quick-check.html">Retirement Quick Check</a></li>
-              </ul>
-            </li>
-            <li><a href="https://cashualme.com/" target="_blank">Cashualme</a></li>
-        </ul>
-    </nav>
+html body .bg-slate-950{background-color:#0b0a09!important}
+html body .bg-slate-900{background-color:#121110!important}
+html body .bg-slate-800{background-color:#191715!important}
+html body .bg-slate-900\/50, html body .bg-slate-900\/80{background-color:rgba(18,17,16,.7)!important}
+html body .bg-slate-800\/50, html body .bg-slate-800\/30{background-color:rgba(25,23,21,.6)!important}
+html body .border-slate-800, html body .border-slate-800\/80, html body .border-slate-800\/50{border-color:#24211e!important}
+html body .border-slate-700, html body .border-slate-700\/50, html body .border-slate-600{border-color:#34302b!important}
+html body .text-white{color:#f4f0ea!important}
+html body .text-slate-100, html body .text-slate-200, html body .text-slate-300{color:#d9d3cb!important}
+html body .text-slate-400{color:#a0978f!important}
+html body .text-slate-500, html body .text-slate-600{color:#766e66!important}
+html body .card{background-color:#121110;border-color:#24211e}
+html body input, html body select{background-color:#191715;border-color:#34302b;color:#f4f0ea}
+
+/* หัวข้อเดิมของหน้า (มีหัวข้อใหม่ด้านบนแทน) */
+.fyt-wrap > div.mb-10:first-child{display:none!important}
+</style>
+</head>
+<body class="min-h-screen">
+
+<header class="fyt-nav" id="top">
+  <div class="nav-in">
+    <a class="brand" href="index.html" aria-label="FreeyourtimeBitcoin หน้าแรก">
+      <span class="mk" aria-hidden="true">₿</span>
+      <span>Freeyourtime<b>Bitcoin</b></span>
+    </a>
+    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="เปิดเมนู">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="links" id="nav-links">
+      <li><a class="start" href="guide.html">คู่มือวางแผนการเงินด้วย Bitcoin</a></li>
+      <li><a href="index.html#tools">เครื่องมือวางแผนการเงิน</a></li>
+      <li><a href="index.html#articles">บทความ</a></li>
+      <li><a href="course.html">คอร์ส</a></li>
+      <li><a href="index.html#about">เกี่ยวกับ</a></li>
+    </ul>
+  </div>
+</header>
+<section class="fyt-head">
+  <div class="in">
+    <p class="eyebrow">เครื่องมือวางแผนการเงิน</p>
+    <h1>Wealth Planner</h1>
+    <p class="sub">จำลองแผนออมระยะยาวด้วย DCA และการจัดสัดส่วนสินทรัพย์ หุ้นสหรัฐ ทองคำ และ Bitcoin</p>
+  </div>
+</section>
+<div class="fyt-wrap p-4 md:p-8 max-w-7xl mx-auto min-h-screen flex flex-col">
 
     <!-- Header -->
     <div class="mb-10 flex flex-col md:flex-row justify-between items-center gap-4">
@@ -430,5 +544,18 @@
         calculateAndUpdate();
 
     </script>
+</div>
+<footer class="fyt-foot"><div>
+  <p>เครื่องมือนี้ทำขึ้นเพื่อการศึกษา ไม่ใช่คำแนะนำการลงทุน ตัวเลขทุกตัวเป็นการจำลองจากสมมติฐานที่คุณปรับเองได้ ไม่ใช่การทำนายราคา</p>
+  <p style="margin-top:8px"><a href="index.html">← กลับหน้าแรก</a> · © 2026 FreeyourtimeBitcoin</p>
+</div></footer>
+<script>
+(function(){
+  var nav=document.querySelector('.fyt-nav'), btn=nav&&nav.querySelector('.menu-btn');
+  if(!btn) return;
+  btn.addEventListener('click',function(){ btn.setAttribute('aria-expanded',String(nav.classList.toggle('open'))); });
+  nav.querySelectorAll('.links a').forEach(function(a){ a.addEventListener('click',function(){ nav.classList.remove('open'); btn.setAttribute('aria-expanded','false'); }); });
+})();
+</script>
 </body>
 </html>

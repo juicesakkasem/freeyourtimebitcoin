@@ -3,158 +3,260 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Retirement Quick Check</title>
+  <title>Retirement Quick Check — อยากใช้เดือนละเท่านี้ตอนเกษียณ ต้องออมเดือนละเท่าไหร่</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
+    /* ธีมเดียวกับหน้าแรก (index.html) */
+    :root{
+      --bg:#0b0a09;--bg-2:#121110;--bg-3:#191715;--line:#24211e;--line-2:#34302b;
+      --text:#d9d3cb;--text-bright:#f4f0ea;--text-dim:#a0978f;--text-muted:#766e66;
+      --orange:#f7931a;--orange-hover:#ffa739;--orange-soft:rgba(247,147,26,.11);--on-orange:#1a1206;
+      --good:#8fd19e;--good-soft:rgba(110,190,125,.12);
+      --bad:#ff9b9b;--bad-soft:rgba(230,90,90,.13);
+      --warn:#ffc477;--warn-soft:rgba(247,147,26,.13);
+      --info:#9cc4f0;--info-soft:rgba(110,160,230,.13);
+      --font-display:'Noto Sans Thai', system-ui, -apple-system, 'Segoe UI', sans-serif;
+      --font-body:'Noto Sans Thai', system-ui, -apple-system, 'Segoe UI', sans-serif;
+      --max:1080px;--gut:16px;
+    }
+    @media (min-width:640px){ :root{ --gut:24px; } }
+
     *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f7f7f5;color:#111;min-height:100vh}
-    .wrap{max-width:680px;margin:0 auto;padding:1.5rem 12px 4rem}
-    h1{font-size:18px;font-weight:700;margin-bottom:4px}
-    .sub{font-size:12px;color:#888;margin-bottom:20px}
+    html{-webkit-text-size-adjust:100%}
+    body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:15px;line-height:1.6;min-height:100vh;overflow-x:clip}
+    a{color:inherit}
+    :focus-visible{outline:2px solid var(--orange);outline-offset:3px;border-radius:6px}
 
-    .card{background:#fff;border:0.5px solid #e0e0e0;border-radius:10px;padding:16px;margin-bottom:12px}
-    .ct{font-size:11px;font-weight:600;color:#888;letter-spacing:.8px;text-transform:uppercase;margin-bottom:12px}
-
-    .g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-    .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
-
-    label{display:block;font-size:11px;color:#666;margin-bottom:3px}
-    input{width:100%;padding:7px 10px;font-size:14px;border:0.5px solid #ddd;border-radius:6px;background:#fff;color:#111;outline:none;font-family:inherit}
-    input:focus{border-color:#185FA5}
-    input[type=checkbox]{width:14px;height:14px;padding:0;accent-color:#185FA5;flex-shrink:0;vertical-align:middle}
-    /* ช่องที่คำนวณให้ ไม่ใช่ช่องกรอก — หน้าตาใกล้ input แต่เส้นประ + พื้นเทา */
-    .derived{padding:7px 10px;font-size:14px;font-weight:700;border:0.5px dashed #ccc;border-radius:6px;background:#fafafa;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .cbx{display:flex;align-items:center;gap:5px;margin:5px 0 0;font-size:11px;color:#666;cursor:pointer}
-
-    .target{background:#f4f9ff;border:1.5px solid #185FA5;border-radius:10px;padding:14px 16px;margin-bottom:12px}
-    .target>label{font-size:13px;font-weight:600;color:#185FA5;margin-bottom:6px}
-    .target>label.cbx{font-size:11px;font-weight:400;color:#666;margin:5px 0 0}
-    .target>input{font-size:22px;font-weight:700;padding:9px 12px;text-align:right;border-color:#b9d6f0}
-    .infrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px;padding-top:10px;border-top:0.5px solid #d6e6f5;font-size:13px;color:#185FA5;font-weight:600}
-    .infrow input{width:76px;text-align:right;font-size:14px;padding:5px 8px}
-
-    .result-banner{border-radius:10px;padding:18px 20px;margin-bottom:12px;text-align:center}
-    .result-banner .big{font-size:40px;font-weight:800;line-height:1.1;word-break:break-word}
-    .result-banner .label{font-size:13px;margin-bottom:6px;opacity:.85}
-    .result-banner .sub2{font-size:11px;margin-top:6px;opacity:.75;line-height:1.6}
-    .ok{background:#eaf5e6;color:#2d5a0e}
-    .warn{background:#fff8e0;color:#7a5000}
-    .bad{background:#fcebeb;color:#8b1a1a}
-
-    .alt{display:flex;align-items:center;gap:11px;padding:9px 11px;border-radius:8px;margin-bottom:7px;border:0.5px solid #eee;background:#fafafa}
-    .alt .ico{font-size:17px;flex-shrink:0}
-    .alt .a-l{font-size:11px;color:#999}
-    .alt .a-v{font-size:14px;font-weight:600}
-    .alt .a-d{font-size:11px;color:#999;margin-top:1px}
-
-    .srow{display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap}
-    .sc{background:#fff;border:0.5px solid #e0e0e0;border-radius:8px;padding:10px 14px;flex:1;min-width:130px;text-align:center}
-    .sc .lbl{font-size:10px;color:#999;margin-bottom:3px}
-    .sc .val{font-size:15px;font-weight:700}
-    .sc .scwarn{font-size:10px;color:#A32D2D;line-height:1.5;margin-top:4px}
-    .sc .scwarn:empty{display:none}
-
-    .hint{font-size:11px;color:#bbb;margin-top:6px;line-height:1.5}
-    .divider{border:none;border-top:0.5px solid #f0f0f0;margin:10px 0}
-
-    .irow{display:grid;grid-template-columns:1fr auto auto;gap:6px;align-items:center;margin-bottom:7px}
-    .irow input{font-size:13px}
-    .del{width:24px;height:24px;border-radius:4px;border:0.5px solid #ddd;background:transparent;color:#bbb;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-    .del:hover{background:#fcebeb;color:#a32d2d;border-color:#a32d2d}
-    .addbtn{width:100%;margin-top:6px;padding:6px;font-size:12px;border:0.5px dashed #ccc;border-radius:6px;background:transparent;color:#999;cursor:pointer;font-family:inherit}
-    .addbtn:hover{background:#f5f5f5}
-
-    .tag-inc{background:#e6f1fb;color:#185FA5;border-radius:4px;padding:1px 6px;font-size:10px;font-weight:500}
-    .tag-exp{background:#fcebeb;color:#A32D2D;border-radius:4px;padding:1px 6px;font-size:10px;font-weight:500}
-    .tag-inv{background:#f0ebe0;color:#7a4f00;border-radius:4px;padding:1px 6px;font-size:10px;font-weight:500}
-    .inv-header{display:grid;grid-template-columns:1fr 140px 90px 28px;gap:6px;margin-bottom:5px;padding:0 2px}
-    .irow-inv{display:grid;grid-template-columns:1fr 140px 90px 28px;gap:6px;align-items:center;margin-bottom:7px}
-    .irow-inv input{font-size:13px}
-
-    canvas{max-height:240px}
-    .tbl-scroll{overflow:auto;max-height:420px}
-    #ret-table{width:100%;border-collapse:collapse;font-size:12px}
-    #ret-table thead th{position:sticky;top:0;background:#fff;z-index:1}
-    #ret-table th{text-align:right;font-size:10px;color:#999;font-weight:600;padding:4px 8px;border-bottom:1px solid #f0f0f0;white-space:nowrap}
-    #ret-table th:first-child{text-align:center}
-    #ret-table td{text-align:right;padding:5px 8px;border-bottom:0.5px solid #f5f5f5;white-space:nowrap}
-    #ret-table td:first-child{text-align:center;font-weight:600;color:#185FA5}
-    #ret-table tr.empty-row td{color:#A32D2D;font-weight:700;background:#fcebeb}
-    #ret-table tr.life-row td{background:#fff8e0}
-    #ret-table tr:last-child td{border-bottom:none}
-    .green{color:#3B6D11}.red{color:#A32D2D}.blue{color:#185FA5}
-
-    .badge{display:inline-block;font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px;margin-left:6px;vertical-align:middle}
-    .badge-ok{background:#eaf5e6;color:#2d5a0e}
-    .badge-bad{background:#fcebeb;color:#8b1a1a}
-
-    @media(max-width:480px){
-      .g3{grid-template-columns:1fr 1fr}
-      .srow{gap:8px}
-      .result-banner .big{font-size:32px}
-      /* คอลัมน์คงที่กินที่จนช่อง "ชื่อ" เหลือ 42px บนมือถือ — บีบลงให้พิมพ์ได้ */
-      .inv-header,.irow-inv{grid-template-columns:1fr 92px 60px 26px}
-      .inv-header span{font-size:10px;line-height:1.3}
+    /* ---------- NAV (เหมือนหน้าแรก) ---------- */
+    .nav{position:sticky;top:0;z-index:50;background:rgba(11,10,9,.84);backdrop-filter:saturate(140%) blur(12px);-webkit-backdrop-filter:saturate(140%) blur(12px);border-bottom:1px solid var(--line)}
+    .nav-in{max-width:var(--max);margin:0 auto;padding:0 var(--gut);height:64px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+    .brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text-bright);font-weight:700;font-size:17px;white-space:nowrap}
+    .brand .mk{width:30px;height:30px;border-radius:50%;background:var(--orange);color:var(--on-orange);display:grid;place-items:center;font-size:17px;line-height:1;flex:none}
+    .brand b{color:var(--orange);font-weight:700}
+    .links{display:flex;align-items:center;gap:28px;list-style:none}
+    .links a{text-decoration:none;color:var(--text-dim);font-size:15.5px;font-weight:500;transition:color .2s}
+    .links a:hover{color:var(--text-bright)}
+    .links .start{color:var(--orange)}
+    .links .start:hover{color:var(--orange-hover)}
+    .menu-btn{display:none;width:42px;height:42px;border:1px solid var(--line-2);border-radius:10px;background:transparent;cursor:pointer;place-content:center;gap:5px}
+    .menu-btn span{display:block;width:18px;height:2px;background:var(--text-bright);border-radius:2px;transition:transform .2s,opacity .2s}
+    .nav.open .menu-btn span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+    .nav.open .menu-btn span:nth-child(2){opacity:0}
+    .nav.open .menu-btn span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+    @media (max-width:980px){
+      .menu-btn{display:grid}
+      .links{display:none;position:absolute;top:64px;left:0;right:0;flex-direction:column;align-items:stretch;gap:0;background:var(--bg);border-bottom:1px solid var(--line);box-shadow:0 18px 40px rgba(0,0,0,.55);padding:6px 0 10px}
+      .nav.open .links{display:flex}
+      .links a{display:block;padding:12px var(--gut);font-size:17px}
     }
 
-    /* ── site navbar (shared across all pages) ── */
-    html{overflow-y:scroll}
-    body{padding-top:72px}
-    .cashual-nav{position:fixed;top:0;left:0;width:100%;background:rgba(15,15,15,0.95);backdrop-filter:blur(10px);border-bottom:1px solid #222;z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:0 2rem;height:72px}
-    .cashual-nav-logo{font-size:22px;font-weight:700;color:#f7931a;letter-spacing:0.05em}
-    .cashual-nav-links{display:flex;gap:2rem;list-style:none;margin:0;padding:0;align-items:stretch;height:72px}
-    .cashual-nav-links a{color:#aaa;text-decoration:none;font-size:17px;transition:color 0.2s}
-    .cashual-nav-links a:hover{color:#f7931a}
-    .cashual-nav-toggle{display:none;background:transparent;border:0;color:#f7931a;font-size:26px;line-height:1;cursor:pointer;padding:4px 8px}
-    .cashual-nav-links>li{position:relative;display:flex;align-items:center}
-    .cnav-dd-btn{font-family:inherit;background:transparent;border:0;color:#aaa;font-size:17px;cursor:pointer;display:inline-flex;align-items:center;gap:5px;padding:0;transition:color .2s}
-    .cnav-dd-btn:hover{color:#f7931a}
-    .cnav-caret{font-size:11px;transition:transform .2s}
-    .cnav-dd{display:none;position:absolute;top:100%;left:50%;transform:translateX(-50%);min-width:190px;background:rgba(20,20,20,0.98);backdrop-filter:blur(10px);border:1px solid #2a2a2a;border-radius:10px;padding:6px;list-style:none;margin:0;box-shadow:0 12px 32px rgba(0,0,0,.45);z-index:1001}
-    .cashual-nav-links>li:hover>.cnav-dd,.cashual-nav-links>li:focus-within>.cnav-dd{display:block}
-    .cashual-nav-links>li:hover .cnav-caret,.cashual-nav-links>li:focus-within .cnav-caret{transform:rotate(180deg)}
-    .cnav-dd>li{display:block;width:100%}
-    .cnav-dd a{display:block;padding:9px 14px;font-size:15px;border-radius:6px;white-space:nowrap}
-    .cnav-dd a:hover{background:rgba(247,147,26,.12);color:#f7931a}
-    @media(max-width:640px){.cashual-nav{padding:0 1rem}.cashual-nav-toggle{display:block}.cashual-nav-links{display:none;position:absolute;top:72px;left:0;width:100%;height:auto;flex-direction:column;align-items:stretch;gap:0;background:rgba(15,15,15,0.98);backdrop-filter:blur(10px);border-bottom:1px solid #222;padding:6px 0;max-height:calc(100vh - 72px);overflow-y:auto}.cashual-nav.open .cashual-nav-links{display:flex}.cashual-nav-links>li{display:block;height:auto}.cnav-dd-btn{display:block;width:100%;text-align:left;padding:14px 1.5rem 6px;font-size:12px;color:#777;text-transform:uppercase;letter-spacing:.06em;cursor:default;pointer-events:none}.cnav-caret{display:none}.cnav-dd{display:block;position:static;transform:none;min-width:0;background:transparent;backdrop-filter:none;border:0;border-radius:0;padding:0;box-shadow:none}.cnav-dd a{padding:11px 1.5rem 11px 2.5rem;font-size:16px;border-radius:0}.cashual-nav-links>li>a{display:block;padding:14px 1.5rem;font-size:16px}}
+    /* ---------- หัวหน้า ---------- */
+    .page-head{position:relative;isolation:isolate;border-bottom:1px solid var(--line);margin-bottom:28px}
+    .page-head::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(50% 80% at 85% 30%, rgba(247,147,26,.14), transparent 65%)}
+    .page-head-in{max-width:760px;margin:0 auto;padding:48px var(--gut) 36px;display:flex;justify-content:space-between;align-items:flex-end;gap:16px}
+    .eyebrow{font-size:13px;font-weight:600;color:var(--orange);margin-bottom:10px}
+    h1{font-family:var(--font-display);font-weight:600;color:var(--text-bright);font-size:clamp(30px,5vw,44px);line-height:1.3}
+    .sub{font-size:17px;color:var(--text);margin-top:10px;max-width:30em}
+    .btn-reset{flex-shrink:0;font-family:inherit;font-size:14px;font-weight:600;padding:8px 18px;border-radius:999px;border:1px solid var(--line-2);background:transparent;color:var(--text-dim);cursor:pointer;transition:border-color .2s,color .2s}
+    .btn-reset:hover{border-color:var(--orange);color:var(--orange)}
+
+    .wrap{max-width:760px;margin:0 auto;padding:0 var(--gut) 3rem}
+
+    .card{background:var(--bg-2);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:14px}
+    .ct{font-size:14px;font-weight:600;color:var(--text-bright);margin-bottom:14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+
+    .g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+
+    label{display:block;font-size:13px;color:var(--text-dim);margin-bottom:4px}
+    input{width:100%;padding:8px 11px;font-size:15px;border:1px solid var(--line-2);border-radius:8px;background:var(--bg-3);color:var(--text-bright);outline:none;font-family:inherit;transition:border-color .2s}
+    input::placeholder{color:var(--text-muted)}
+    input:focus{border-color:var(--orange)}
+    input[type=checkbox]{width:15px;height:15px;padding:0;accent-color:var(--orange);flex-shrink:0;vertical-align:middle}
+    /* ช่องที่คำนวณให้ ไม่ใช่ช่องกรอก — เส้นประ ไม่มีพื้น */
+    .derived{padding:8px 11px;font-size:15px;font-weight:700;border:1px dashed var(--line-2);border-radius:8px;background:transparent;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .cbx{display:flex;align-items:center;gap:6px;margin:6px 0 0;font-size:13px;color:var(--text-dim);cursor:pointer}
+
+    .target{background:var(--orange-soft);border:1.5px solid var(--orange);border-radius:14px;padding:16px 18px;margin-bottom:14px}
+    .target>label{font-size:15px;font-weight:600;color:var(--orange);margin-bottom:8px}
+    .target>label.cbx{font-size:13px;font-weight:400;color:var(--text-dim);margin:6px 0 0}
+    .target>input{font-size:24px;font-weight:700;padding:10px 14px;text-align:right;border-color:rgba(247,147,26,.45);background:var(--bg)}
+    .infrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:12px;padding-top:12px;border-top:1px solid rgba(247,147,26,.25);font-size:14px;color:var(--orange);font-weight:600}
+    .infrow input{width:80px;text-align:right;font-size:15px;padding:6px 9px}
+    .unit{color:var(--text-dim);font-weight:400}
+
+    .result-banner{border-radius:14px;padding:20px;margin-bottom:14px;text-align:center;background:var(--bg-2);border:1px solid var(--line);color:var(--text)}
+    .result-banner .big{font-family:var(--font-display);font-size:42px;font-weight:700;line-height:1.2;word-break:break-word}
+    .result-banner .label{font-size:14px;margin-bottom:6px;opacity:.9}
+    .result-banner .sub2{font-size:13px;margin-top:8px;opacity:.85;line-height:1.6}
+    .ok{background:var(--good-soft);border-color:rgba(110,190,125,.35);color:var(--good)}
+    .warn{background:var(--warn-soft);border-color:rgba(247,147,26,.4);color:var(--warn)}
+    .bad{background:var(--bad-soft);border-color:rgba(230,90,90,.38);color:var(--bad)}
+
+    .alt{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;margin-bottom:8px;border:1px solid var(--line);background:var(--bg-3)}
+    .alt .ico{font-size:17px;flex-shrink:0}
+    .alt .a-l{font-size:13px;color:var(--text-muted)}
+    .alt .a-v{font-size:15px;font-weight:600;color:var(--text-bright)}
+    .alt .a-d{font-size:13px;color:var(--text-muted);margin-top:1px}
+
+    .srow{display:flex;gap:12px;margin-bottom:14px;flex-wrap:wrap}
+    .sc{background:var(--bg-2);border:1px solid var(--line);border-radius:12px;padding:12px 14px;flex:1;min-width:140px;text-align:center}
+    .sc .lbl{font-size:13px;color:var(--text-dim);margin-bottom:4px}
+    .sc .val{font-size:17px;font-weight:700}
+    .sc .scwarn{font-size:12px;color:var(--bad);line-height:1.5;margin-top:4px}
+    .sc .scwarn:empty{display:none}
+
+    .hint{font-size:13px;color:var(--text-muted);margin-top:6px;line-height:1.5}
+    .hint:empty{display:none}
+    .divider{border:none;border-top:1px solid var(--line);margin:12px 0}
+
+    .irow{display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center;margin-bottom:8px}
+    .irow input{font-size:14px}
+    .del{width:28px;height:28px;border-radius:6px;border:1px solid var(--line-2);background:transparent;color:var(--text-muted);font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s}
+    .del:hover{background:var(--bad-soft);color:var(--bad);border-color:var(--bad)}
+    .addbtn{width:100%;margin-top:6px;padding:8px;font-size:14px;border:1px dashed var(--line-2);border-radius:8px;background:transparent;color:var(--text-dim);cursor:pointer;font-family:inherit;transition:all .2s}
+    .addbtn:hover{border-color:var(--orange);color:var(--orange)}
+    .growrow{margin-top:12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+    .growrow label{margin:0;white-space:nowrap}
+    .growrow input{width:80px;text-align:right}
+
+    .tag-inc,.tag-exp,.tag-inv{border-radius:999px;padding:1px 9px;font-size:12px;font-weight:500}
+    .tag-inc{background:var(--info-soft);color:var(--info)}
+    .tag-exp{background:var(--bad-soft);color:var(--bad)}
+    .tag-inv{background:var(--orange-soft);color:var(--orange)}
+    .inv-header{display:grid;grid-template-columns:1fr 140px 90px 28px;gap:8px;margin-bottom:6px;padding:0 2px;font-size:13px;color:var(--text-muted)}
+    .inv-header .r{text-align:right}
+    .irow-inv{display:grid;grid-template-columns:1fr 140px 90px 28px;gap:8px;align-items:center;margin-bottom:8px}
+    .irow-inv input{font-size:14px}
+
+    canvas{max-height:260px}
+    .tbl-scroll{overflow:auto;max-height:420px}
+    #ret-table{width:100%;border-collapse:collapse;font-size:14px}
+    #ret-table thead th{position:sticky;top:0;background:var(--bg-2);z-index:1}
+    #ret-table th{text-align:right;font-size:12px;color:var(--text-muted);font-weight:600;padding:6px 8px;border-bottom:1px solid var(--line-2);white-space:nowrap}
+    #ret-table th:first-child{text-align:center}
+    #ret-table td{text-align:right;padding:6px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+    #ret-table td:first-child{text-align:center;font-weight:600;color:var(--orange)}
+    #ret-table td.endbal{font-weight:600}
+    #ret-table tr.empty-row td{color:var(--bad);font-weight:700;background:var(--bad-soft)}
+    #ret-table tr.life-row td{background:var(--orange-soft)}
+    #ret-table tr:last-child td{border-bottom:none}
+    .green{color:var(--good)}.red{color:var(--bad)}.blue{color:var(--info)}.amber{color:var(--warn)}
+
+    .badge{display:inline-block;font-size:12px;font-weight:600;padding:2px 8px;border-radius:20px;margin-left:6px;vertical-align:middle}
+    .badge-ok{background:var(--good-soft);color:var(--good)}
+    .badge-bad{background:var(--bad-soft);color:var(--bad)}
+
+    footer{margin-top:40px;border-top:1px solid var(--line)}
+    .foot{max-width:760px;margin:0 auto;padding:28px var(--gut) 40px;font-size:14px;color:var(--text-muted)}
+    .foot a{color:var(--text-dim)}
+
+    @media(max-width:520px){
+      .page-head-in{flex-direction:column;align-items:flex-start;padding-top:36px}
+      .g3{grid-template-columns:1fr 1fr}
+      .srow{gap:8px}
+      .result-banner .big{font-size:34px}
+      /* คอลัมน์คงที่กินที่จนช่อง "ชื่อ" แคบบนมือถือ — บีบลงให้พิมพ์ได้ */
+      .inv-header,.irow-inv{grid-template-columns:1fr 92px 60px 28px}
+      .inv-header span{font-size:12px;line-height:1.3}
+    }
   </style>
+<!-- seo:start -->
+<meta name="description" content="เครื่องคำนวณเกษียณแบบเร็ว ใส่เงินที่อยากใช้ต่อเดือนหลังเกษียณเป็นค่าเงินวันนี้ ระบบปรับเงินเฟ้อให้ แล้วบอกว่าต้องมีเงินก้อนเท่าไหร่ และต้องออมเดือนละเท่าไหร่ ใช้ฟรี">
+<link rel="canonical" href="https://freeyourtimebitcoin.cashualme.com/retirement-quick-check.html">
+<meta name="author" content="Juice Sakkasem">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="FreeyourtimeBitcoin">
+<meta property="og:locale" content="th_TH">
+<meta property="og:url" content="https://freeyourtimebitcoin.cashualme.com/retirement-quick-check.html">
+<meta property="og:title" content="Retirement Quick Check — อยากใช้เดือนละเท่านี้ตอนเกษียณ ต้องออมเดือนละเท่าไหร่">
+<meta property="og:description" content="เครื่องคำนวณเกษียณแบบเร็ว ใส่เงินที่อยากใช้ต่อเดือนหลังเกษียณเป็นค่าเงินวันนี้ ระบบปรับเงินเฟ้อให้ แล้วบอกว่าต้องมีเงินก้อนเท่าไหร่ และต้องออมเดือนละเท่าไหร่ ใช้ฟรี">
+<meta name="twitter:card" content="summary">
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@graph": [
+  {
+   "@type": "WebApplication",
+   "name": "Retirement Quick Check",
+   "description": "เครื่องคำนวณเกษียณแบบเร็ว ใส่เงินที่อยากใช้ต่อเดือนหลังเกษียณเป็นค่าเงินวันนี้ ระบบปรับเงินเฟ้อให้ แล้วบอกว่าต้องมีเงินก้อนเท่าไหร่ และต้องออมเดือนละเท่าไหร่ ใช้ฟรี",
+   "url": "https://freeyourtimebitcoin.cashualme.com/retirement-quick-check.html",
+   "inLanguage": "th",
+   "applicationCategory": "FinanceApplication",
+   "operatingSystem": "Any (web browser)",
+   "isAccessibleForFree": true,
+   "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "THB"
+   },
+   "author": {
+    "@id": "https://cashualme.com/about-me/#juice"
+   },
+   "isPartOf": {
+    "@id": "https://freeyourtimebitcoin.cashualme.com/#website"
+   }
+  },
+  {
+   "@type": "WebSite",
+   "@id": "https://freeyourtimebitcoin.cashualme.com/#website",
+   "name": "FreeyourtimeBitcoin",
+   "url": "https://freeyourtimebitcoin.cashualme.com/",
+   "inLanguage": "th"
+  },
+  {
+   "@type": "Person",
+   "@id": "https://cashualme.com/about-me/#juice",
+   "name": "Juice Sakkasem",
+   "alternateName": "ศักดิ์เกษม สุวรรณดี",
+   "url": "https://cashualme.com/about-me/",
+   "sameAs": [
+    "https://cashualme.com/",
+    "https://www.facebook.com/Juicesakkasemcashualme",
+    "https://www.instagram.com/juice.sakkasem"
+   ]
+  }
+ ]
+}
+</script>
+<!-- seo:end -->
 </head>
 <body>
-<nav class="cashual-nav">
-  <div class="cashual-nav-logo"><a href="index.html" style="text-decoration:none;color:inherit;">FreeyourtimeBitcoin</a></div>
-  <button class="cashual-nav-toggle" aria-label="เมนู" onclick="this.closest('.cashual-nav').classList.toggle('open')">&#9776;</button>
-  <ul class="cashual-nav-links">
-    <li>
-      <button class="cnav-dd-btn" type="button">Calculators <span class="cnav-caret">▾</span></button>
-      <ul class="cnav-dd">
-        <li><a href="1-btc-dashboard.html">1 BTC</a></li>
-        <li><a href="Bitcoin-DCA-Master.html">DCA Master</a></li>
-        <li><a href="Purchasing-Power.html">Purchasing Power</a></li>
-        <li><a href="BTC-BTC+insurance.html">BTC + ประกัน</a></li>
-        <li><a href="LTV Bitcoin.html">LTV Bitcoin</a></li>
-        <li><a href="mortgage.html">Mortgage</a></li>
-      </ul>
-    </li>
-    <li>
-      <button class="cnav-dd-btn" type="button">Planning <span class="cnav-caret">▾</span></button>
-      <ul class="cnav-dd">
-        <li><a href="dca-tracker.html">DCA Tracker</a></li>
-        <li><a href="wealth-planner.html">Wealth Planner</a></li>
-        <li><a href="retirement plan.html">Retirement Plan</a></li>
-        <li><a href="retirement-quick-check.html">Retirement Quick Check</a></li>
-      </ul>
-    </li>
-    <li><a href="https://cashualme.com/" target="_blank">Cashualme</a></li>
-  </ul>
-</nav>
-<div class="wrap">
-  <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">
+
+<header class="nav" id="top">
+  <div class="nav-in">
+    <a class="brand" href="index.html" aria-label="FreeyourtimeBitcoin หน้าแรก">
+      <span class="mk" aria-hidden="true">₿</span>
+      <span>Freeyourtime<b>Bitcoin</b></span>
+    </a>
+    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="เปิดเมนู">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="links" id="nav-links">
+      <li><a class="start" href="guide.html">คู่มือวางแผนการเงินด้วย Bitcoin</a></li>
+      <li><a href="index.html#tools">เครื่องมือวางแผนการเงิน</a></li>
+      <li><a href="index.html#articles">บทความ</a></li>
+      <li><a href="course.html">คอร์ส</a></li>
+      <li><a href="index.html#about">เกี่ยวกับ</a></li>
+    </ul>
+  </div>
+</header>
+
+<main id="main">
+<section class="page-head">
+  <div class="page-head-in">
     <div>
-      <h1>Retirement Quick Check 📊</h1>
+      <p class="eyebrow">เครื่องมือวางแผนเกษียณ</p>
+      <h1>Retirement Quick Check</h1>
       <p class="sub">อยากใช้เดือนละเท่านี้ตอนเกษียณ — ต้องออมเดือนละเท่าไหร่?</p>
     </div>
-    <button onclick="resetAll()" style="flex-shrink:0;font-size:11px;padding:4px 10px;border-radius:6px;border:0.5px solid #ddd;background:transparent;color:#999;cursor:pointer;font-family:inherit">รีเซ็ต</button>
+    <button class="btn-reset" type="button" onclick="resetAll()">รีเซ็ต</button>
   </div>
+</section>
+<div class="wrap">
 
   <!-- เป้าหมาย -->
   <div class="target">
@@ -165,7 +267,7 @@
     <div class="infrow">
       <span>เงินเฟ้อ</span>
       <input type="number" id="inflation" value="3" step="0.5" min="0" max="20" oninput="calc()">
-      <span style="color:#666">%/ปี</span>
+      <span class="unit">%/ปี</span>
     </div>
   </div>
 
@@ -231,10 +333,10 @@
     <div class="ct">รายรับ/เดือน <span class="tag-inc">Income</span></div>
     <div id="inc-list"></div>
     <button class="addbtn" onclick="addRow('inc')">+ เพิ่มรายรับ</button>
-    <div style="margin-top:10px;display:flex;align-items:center;gap:8px">
-      <label style="margin:0;white-space:nowrap">รายรับเพิ่มขึ้นปีละ</label>
-      <input type="number" id="inc-growth" value="3" step="0.5" min="0" max="50" oninput="calc()" style="width:80px;text-align:right">
-      <span style="font-size:13px;color:#666">%/ปี</span>
+    <div class="growrow">
+      <label for="inc-growth">รายรับเพิ่มขึ้นปีละ</label>
+      <input type="number" id="inc-growth" value="3" step="0.5" min="0" max="50" oninput="calc()">
+      <span class="unit">%/ปี</span>
       <div class="hint" style="margin:0">เงินเดือนขึ้น / เลื่อนตำแหน่ง</div>
     </div>
   </div>
@@ -253,9 +355,9 @@
   <div class="card">
     <div class="ct">เงินลงทุนที่มีอยู่แล้ว <span class="tag-inv">Investment</span></div>
     <div class="inv-header">
-      <span style="font-size:11px;color:#999">ชื่อ</span>
-      <span style="font-size:11px;color:#999;text-align:right">มูลค่าปัจจุบัน (฿)</span>
-      <span style="font-size:11px;color:#999;text-align:right">ผลตอบแทน %/ปี</span>
+      <span>ชื่อ</span>
+      <span class="r">มูลค่าปัจจุบัน (฿)</span>
+      <span class="r">ผลตอบแทน %/ปี</span>
       <span></span>
     </div>
     <div id="inv-list"></div>
@@ -288,6 +390,22 @@
     </div>
   </div>
 </div>
+</main>
+
+<footer>
+  <div class="foot">
+    <p>เครื่องมือนี้ทำขึ้นเพื่อการศึกษา ไม่ใช่คำแนะนำการลงทุน ตัวเลขทุกตัวเป็นการจำลองจากสมมติฐานที่คุณปรับเองได้ ข้อมูลที่กรอกเก็บไว้ในเครื่องของคุณเท่านั้น</p>
+    <p style="margin-top:8px"><a href="index.html">← กลับหน้าแรก</a> · © 2026 FreeyourtimeBitcoin</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var nav=document.querySelector('.nav'), btn=document.querySelector('.menu-btn');
+  btn.addEventListener('click',function(){ btn.setAttribute('aria-expanded',String(nav.classList.toggle('open'))); });
+  nav.querySelectorAll('.links a').forEach(function(a){ a.addEventListener('click',function(){ nav.classList.remove('open'); btn.setAttribute('aria-expanded','false'); }); });
+})();
+</script>
 
 <script>
 let INC = [{id:1,label:'เงินเดือน',amount:50000},{id:2,label:'รายได้เสริม',amount:0}];
@@ -615,11 +733,11 @@ function renderChartTable(I, s) {
           {
             label: 'เงินที่เหลือ',
             data: s.pots,
-            borderColor: '#185FA5',
+            borderColor: '#f7931a',
             backgroundColor: (ctx2) => {
               const g = ctx2.chart.ctx.createLinearGradient(0, 0, 0, 220);
-              g.addColorStop(0, 'rgba(24,95,165,0.18)');
-              g.addColorStop(1, 'rgba(24,95,165,0.01)');
+              g.addColorStop(0, 'rgba(247,147,26,0.25)');
+              g.addColorStop(1, 'rgba(247,147,26,0.01)');
               return g;
             },
             borderWidth: 2,
@@ -641,15 +759,17 @@ function renderChartTable(I, s) {
         },
         scales: {
           x: {
-            title: { display: true, text: 'อายุ', font: {size:10} },
-            ticks: { font: {size:10} }
+            title: { display: true, text: 'อายุ', color: '#a0978f', font: {size:12} },
+            ticks: { color: '#a0978f', font: {size:11} },
+            grid: { color: 'rgba(255,255,255,0.05)' }
           },
           y: {
             ticks: {
-              font: {size:10},
+              color: '#a0978f',
+              font: {size:11},
               callback: v => useMil ? '฿'+(v/1e6).toFixed(1)+'M' : '฿'+Math.round(v/1000)+'K'
             },
-            grid: { color: 'rgba(0,0,0,0.04)' }
+            grid: { color: 'rgba(255,255,255,0.05)' }
           }
         },
         animation: { duration: 400 }
@@ -666,15 +786,15 @@ function renderChartTable(I, s) {
           const ctx3 = ch.ctx;
           ctx3.save();
           ctx3.setLineDash([4,3]);
-          ctx3.strokeStyle = '#e07b00';
+          ctx3.strokeStyle = '#a0978f';
           ctx3.lineWidth = 1.5;
           ctx3.beginPath();
           ctx3.moveTo(x, top);
           ctx3.lineTo(x, bottom);
           ctx3.stroke();
           ctx3.setLineDash([]);
-          ctx3.fillStyle = '#e07b00';
-          ctx3.font = '10px sans-serif';
+          ctx3.fillStyle = '#d9d3cb';
+          ctx3.font = "12px 'Noto Sans Thai', sans-serif";
           ctx3.fillText(`อายุ ${I.ageEnd}`, x + 3, top + 12);
           ctx3.restore();
         }
@@ -701,7 +821,7 @@ function renderChartTable(I, s) {
         <td>${r.age}${r.isLife ? ' 🎯' : ''}</td>
         <td>${fmtFull(r.startBal)}</td>
         <td class="red">-${fmtFull(r.annualExp)}</td>
-        <td style="font-weight:600;color:${r.isEnd?'#A32D2D':r.endBal<s.aRetExp*2?'#7a5000':'#2d5a0e'}">${fmtFull(r.endBal)}</td>
+        <td class="endbal ${r.isEnd?'red':r.endBal<s.aRetExp*2?'amber':'green'}">${fmtFull(r.endBal)}</td>
       </tr>`).join('');
   } else {
     tc.style.display = 'none';

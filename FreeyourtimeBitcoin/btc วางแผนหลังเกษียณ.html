@@ -1,0 +1,1508 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="description" content="เครื่องมือวางแผนถอน Bitcoin มาใช้หลังเกษียณ ใส่จำนวน BTC เงินที่ใช้ต่อเดือน และเงินเฟ้อ แล้วดูว่าถ้าเริ่มถอนคนละปี Bitcoin เหลือต่างกันแค่ไหน พร้อมตารางรายปี ใช้ฟรี">
+<title>วางแผน Bitcoin หลังเกษียณ — ถอนใช้ยังไงไม่ให้หมดก่อน</title>
+<style>
+  :root{
+    --bg:#F3EEE2; --surface:#FBF8F1; --surface-2:#FFFFFF;
+    --ink:#1C1710; --ink-2:#6C6353; --ink-3:#9A9080;
+    --border:rgba(28,23,16,.12); --border-2:rgba(28,23,16,.22);
+    --accent:#D9790A; --accent-2:#B4620A; --accent-soft:rgba(217,121,10,.13);
+    --grid:rgba(28,23,16,.08); --wash:rgba(28,23,16,.035);
+    --good:#1E8A4C; --good-bg:rgba(30,138,76,.12);
+    --warn:#B26A12; --warn-bg:rgba(178,106,18,.12);
+    --bad:#BE3A2C; --bad-bg:rgba(190,58,44,.12);
+    /* สีเส้นกราฟ (ผ่าน validator ทั้งสองธีม) */
+    --s1:#C96F08; --s2:#2A78D6; --s3:#138A62; --s4:#4A3AA7;
+    --mono:ui-monospace,"SF Mono","Cascadia Code","Segoe UI Mono",Consolas,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,"Noto Sans Thai",sans-serif;
+    color-scheme:light;
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --bg:#0E0C09; --surface:#17140F; --surface-2:#201B13;
+      --ink:#F3ECDD; --ink-2:#A79E8C; --ink-3:#746C5C;
+      --border:rgba(243,236,221,.13); --border-2:rgba(243,236,221,.24);
+      --accent:#F7931A; --accent-2:#FBA83E; --accent-soft:rgba(247,147,26,.15);
+      --grid:rgba(243,236,221,.07); --wash:rgba(243,236,221,.04);
+      --good:#3FB765; --good-bg:rgba(63,183,101,.14);
+      --warn:#E0A44A; --warn-bg:rgba(224,164,74,.14);
+      --bad:#E5604F; --bad-bg:rgba(229,96,79,.15);
+      --s1:#D9790A; --s2:#3987E5; --s3:#199E70; --s4:#9085E9;
+      color-scheme:dark;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0E0C09; --surface:#17140F; --surface-2:#201B13;
+    --ink:#F3ECDD; --ink-2:#A79E8C; --ink-3:#746C5C;
+    --border:rgba(243,236,221,.13); --border-2:rgba(243,236,221,.24);
+    --accent:#F7931A; --accent-2:#FBA83E; --accent-soft:rgba(247,147,26,.15);
+    --grid:rgba(243,236,221,.07); --wash:rgba(243,236,221,.04);
+    --good:#3FB765; --good-bg:rgba(63,183,101,.14);
+    --warn:#E0A44A; --warn-bg:rgba(224,164,74,.14);
+    --bad:#E5604F; --bad-bg:rgba(229,96,79,.15);
+    --s1:#D9790A; --s2:#3987E5; --s3:#199E70; --s4:#9085E9;
+    color-scheme:dark;
+  }
+
+  body{margin:0}
+  [hidden]{display:none!important}
+  body{background:var(--bg);color:var(--ink);font-family:var(--sans)}
+  *{box-sizing:border-box}
+  .wrap{color:var(--ink);max-width:1180px;margin:0 auto;padding:22px 20px 40px;line-height:1.55;animation:fade .5s ease both}
+  @media (max-width:480px){.wrap{padding:18px 16px 32px}}
+  @keyframes fade{from{transform:translateY(6px)}to{transform:none}}
+  @media (prefers-reduced-motion:reduce){.wrap{animation:none}.fill{transition:none!important}}
+  a{color:var(--accent-2)}
+  :root[data-theme="dark"] a{color:var(--accent)}
+
+  .top{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:14px}
+  .brand{display:flex;align-items:center;gap:13px}
+  .coin{width:44px;height:44px;border-radius:50%;background:var(--accent);color:#1C1305;display:flex;
+    align-items:center;justify-content:center;font-family:var(--mono);font-weight:700;font-size:24px;flex:0 0 auto}
+  .brand h1{margin:0;font-size:26px;font-weight:600;letter-spacing:-.01em;line-height:1.05}
+  .actions{display:flex;gap:8px;flex-wrap:wrap}
+  .btn{font-family:var(--sans);font-size:13px;color:var(--ink-2);background:transparent;border:1px solid var(--border-2);
+    border-radius:8px;padding:8px 13px;cursor:pointer;transition:background .15s,color .15s;white-space:nowrap}
+  .btn:hover{background:var(--surface);color:var(--ink)}
+  .btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .btn.sm{font-size:12px;padding:6px 10px}
+  .btn:disabled{opacity:.45;cursor:not-allowed}
+
+  .jump{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 14px}
+  .jump a{font-size:12.5px;color:var(--ink-2);text-decoration:none;border:1px solid var(--border);border-radius:20px;
+    padding:4px 12px;background:var(--surface)}
+  .jump a:hover{color:var(--ink);border-color:var(--border-2)}
+
+  .verdict{display:flex;align-items:flex-start;gap:12px;border:1px solid var(--border);border-left-width:4px;
+    border-radius:12px;padding:14px 16px;margin-bottom:20px;background:var(--surface);scroll-margin-top:12px}
+  .verdict.good{border-left-color:var(--good);background:var(--good-bg)}
+  .verdict.warn{border-left-color:var(--warn);background:var(--warn-bg)}
+  .verdict.bad{border-left-color:var(--bad);background:var(--bad-bg)}
+  .vmark{width:24px;height:24px;border-radius:50%;flex:0 0 auto;display:flex;align-items:center;justify-content:center;
+    font-size:14px;font-weight:700;color:#fff;margin-top:1px;background:var(--ink-3)}
+  .good .vmark{background:var(--good)} .warn .vmark{background:var(--warn)} .bad .vmark{background:var(--bad)}
+  .verdict b{font-weight:600}
+  #vtext{font-size:14.5px}
+
+  .board{display:grid;grid-template-columns:310px minmax(0,1fr);gap:20px;align-items:start}
+  @media (max-width:860px){.board{grid-template-columns:minmax(0,1fr)}}
+  .board > main{min-width:0}
+  .panel{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px}
+  .controls{position:sticky;top:14px;max-height:calc(100vh - 28px);overflow-y:auto;scrollbar-width:thin}
+  @media (max-width:860px){.controls{position:static;max-height:none;overflow:visible}}
+  .controls h2{margin:0 0 4px;font-size:13px;font-weight:600;color:var(--ink-2);letter-spacing:.02em}
+  .controls h2.grp{margin-top:18px;padding-top:14px;border-top:2px solid var(--border-2)}
+  .controls .hint{margin:0 0 10px;font-size:12px;color:var(--ink-3)}
+
+  .ctrl{padding:13px 0;border-top:1px solid var(--border)}
+  .ctrl.first{border-top:0;padding-top:4px}
+  .ctrl-head{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:8px}
+  .ctrl-head label{font-size:13.5px;font-weight:500}
+  .ctrl-head .unit{font-size:11px;color:var(--ink-3);text-align:right}
+  .numwrap{display:flex;align-items:center;gap:6px;margin-bottom:9px}
+  .numwrap .pre{font-family:var(--mono);font-size:14px;color:var(--ink-3)}
+  input.num{flex:1;font-family:var(--mono);font-size:16px;font-weight:600;color:var(--ink);background:var(--surface-2);
+    border:1px solid var(--border-2);border-radius:8px;padding:8px 10px;width:100%;font-variant-numeric:tabular-nums}
+  input.num:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:transparent}
+  .ctrl .note{margin:7px 0 0;font-size:11.5px;color:var(--ink-3)}
+  .ctrl .note b{color:var(--ink-2);font-weight:600}
+
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:4px;
+    background:var(--border-2);cursor:pointer;margin:2px 0}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:18px;height:18px;border-radius:50%;
+    background:var(--accent);border:3px solid var(--surface);box-shadow:0 0 0 1px var(--border-2);cursor:pointer}
+  input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;background:var(--accent);
+    border:3px solid var(--surface);cursor:pointer}
+  input[type=range]:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+
+  .chips{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:9px}
+  .chips .cl{font-size:11.5px;color:var(--ink-3);margin-right:2px}
+  .chips button{font-family:var(--mono);font-size:12px;color:var(--ink-2);background:var(--surface-2);border:1px solid var(--border-2);
+    border-radius:20px;padding:3px 11px;cursor:pointer;transition:background .15s,color .15s}
+  .chips button:hover{color:var(--ink)}
+  .chips button.on{background:var(--accent-soft);border-color:var(--accent);color:var(--accent-2);font-weight:600}
+  :root[data-theme="dark"] .chips button.on{color:var(--accent)}
+  .chips button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+  .seg3{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+  .seg3 button,.tpl button{text-align:left;font-family:var(--sans);background:var(--surface-2);border:1px solid var(--border-2);border-radius:9px;
+    padding:8px 10px;cursor:pointer;color:var(--ink);transition:background .15s,border-color .15s}
+  .seg3 button{text-align:center;padding:9px 4px}
+  .seg3 button b,.tpl button b{display:block;font-size:13.5px;font-weight:600}
+  .seg3 button small{display:block;font-family:var(--mono);font-size:11px;color:var(--ink-3)}
+  .tpl{display:grid;gap:6px}
+  .tpl button small{display:block;font-size:11px;color:var(--ink-3);margin-top:1px}
+  .seg3 button:hover,.tpl button:hover{border-color:var(--ink-3)}
+  .seg3 button.on,.tpl button.on{background:var(--accent-soft);border-color:var(--accent)}
+  .seg3 button:focus-visible,.tpl button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+  /* ---- hero ---- */
+  .hero{border:1px solid var(--border);border-radius:14px;padding:20px 22px;background:var(--surface);margin-bottom:14px}
+  .hero .lab{font-size:13px;color:var(--ink-2)}
+  .hero .big{font-family:var(--mono);font-weight:700;font-size:clamp(36px,7vw,56px);line-height:1.05;letter-spacing:-.02em;
+    color:var(--ink);margin:6px 0 2px}
+  .hero .big.bad{color:var(--bad)} .hero .big.good{color:var(--good)} .hero .big.warn{color:var(--warn)}
+  .hero .big .sym{font-size:.42em;color:var(--ink-2);font-weight:500;margin:0 10px 0 6px;letter-spacing:0}
+  .prog{position:relative;height:12px;background:var(--surface-2);border:1px solid var(--border);border-radius:20px;
+    margin:16px 0 8px;overflow:hidden}
+  .fill{position:absolute;left:0;top:0;bottom:0;border-radius:20px;background:var(--accent);width:0;transition:width .5s ease,background .3s}
+  .fill.good{background:var(--good)} .fill.warn{background:var(--warn)} .fill.bad{background:var(--bad)}
+  .prlabels{display:flex;justify-content:space-between;gap:10px;font-size:11.5px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+  .hero .sub{font-size:13.5px;color:var(--ink-2);margin-top:8px}
+  .hero .sub b{color:var(--ink);font-weight:600}
+
+  /* ---- ตาราง 3×3 เริ่มถอน × แบบรอบ ---- */
+  .gridcard{margin-bottom:16px;padding:6px 4px 8px}
+  .gc-head{padding:10px 14px 8px}
+  .gc-head h3{margin:0;font-size:15px;font-weight:600}
+  .gc-head p{margin:3px 0 0;font-size:12px;color:var(--ink-3)}
+  table.g3{border-collapse:separate;border-spacing:6px}
+  table.g3 th,table.g3 td{padding:0;text-align:center;white-space:normal;border:0!important}
+  table.g3 thead th{font-size:12px;color:var(--ink-2);font-weight:600;padding:2px 4px;vertical-align:bottom}
+  table.g3 th small{display:block;font-weight:400;color:var(--ink-3);font-size:11px}
+  table.g3 tbody th{text-align:left;font-size:13px;font-weight:600;color:var(--ink);padding:0 6px 0 8px;white-space:nowrap}
+  table.g3 td{background:var(--surface-2);border-radius:10px;min-width:118px}
+  table.g3 td.x{background:var(--bad-bg)} table.g3 td.lo{background:var(--warn-bg)} table.g3 td.ok{background:var(--good-bg)}
+  table.g3 td button{width:100%;font-family:var(--sans);background:transparent;border:2px solid transparent;border-radius:10px;
+    padding:9px 8px;cursor:pointer;color:var(--ink);text-align:center}
+  table.g3 td button b{display:block;font-family:var(--mono);font-size:15px;font-weight:700}
+  table.g3 td button small{display:block;font-size:11px;color:var(--ink-2);margin-top:2px}
+  table.g3 td button:hover{border-color:var(--border-2)}
+  table.g3 td.on button{border-color:var(--accent)}
+  table.g3 td button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+  table.g3 .short{display:none}
+  @media (max-width:560px){
+    table.g3{border-spacing:4px}
+    table.g3 .full{display:none} table.g3 .short{display:inline}
+    table.g3 td{min-width:0}
+    table.g3 td button{padding:7px 3px}
+    table.g3 td button b{font-size:13px}
+    table.g3 td button small{font-size:10.5px}
+    table.g3 thead th{font-size:11.5px;padding:2px}
+    table.g3 tbody th{padding:0 2px 0 4px;font-size:12.5px}
+  }
+
+  .chartcard{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px 18px 12px;margin-bottom:16px}
+  .chartcard h3{margin:0 0 8px;font-size:14px;font-weight:600}
+  .chartcard .ch-note{margin:6px 0 0;font-size:11.5px;color:var(--ink-3)}
+  .legend{display:flex;gap:6px 16px;font-size:12px;color:var(--ink-2);flex-wrap:wrap;margin-bottom:8px}
+  .legend span{display:flex;align-items:center;gap:6px}
+  .legend span.dim{opacity:.55}
+  .swatch{width:18px;height:3px;border-radius:2px;display:inline-block;flex:0 0 auto}
+  .sw1{background:var(--s1)} .sw2{background:var(--s2)} .sw3{background:var(--s3)}
+  .sw3.dash{background:repeating-linear-gradient(90deg,var(--s3) 0 6px,transparent 6px 9px)}
+  .swp{background:var(--ink-2);height:2px}
+  .swl{height:2px;background:repeating-linear-gradient(90deg,var(--ink-3) 0 5px,transparent 5px 8px)}
+  .canvas-box{position:relative;width:100%;height:440px}
+  @media (max-width:600px){.canvas-box{height:380px}}
+  /* กราฟเทียบจังหวะเริ่มถอน (ส่วนราคาสูงสุด / ต่ำสุด) */
+  #mxcBox{height:300px}
+  @media (max-width:600px){#mxcBox{height:260px}}
+  .mxc .chips{margin:0 0 10px}
+  .mxc .mode{grid-template-columns:repeat(2,minmax(0,1fr));max-width:520px;margin:0 0 12px}
+  .mxc .mode button small{font-family:var(--sans)}
+  /* ผลของแต่ละเส้น (ใช้แทนคำอธิบายสี): เริ่มวันไหน ราคาเท่าไหร่ → ผลเป็นยังไง */
+  .mxres{display:grid;grid-template-columns:18px auto auto;justify-content:start;align-items:center;gap:7px 12px;margin:0 0 12px;font-size:13px}
+  .mxres .mr{display:contents}
+  .mxres .nm{color:var(--ink);font-weight:600}
+  .mxres .nm small{display:inline-block;margin-left:8px;font-weight:400;font-size:11.5px;color:var(--ink-3)}
+  .mxres b{font-family:var(--mono);font-size:12.5px;font-weight:600;color:var(--ink);white-space:nowrap;
+    padding:3px 9px;border-radius:7px;background:var(--surface-2);border:1px solid var(--border);font-variant-numeric:tabular-nums}
+  .mxres b.x{background:var(--bad-bg);border-color:transparent}
+  .mxres b.lo{background:var(--warn-bg);border-color:transparent}
+  @media (max-width:560px){.mxres{gap:8px 10px}.mxres .nm small{display:block;margin-left:0}}
+  canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:pan-y}
+  canvas:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+  .tip{position:absolute;top:0;left:0;z-index:2;pointer-events:none;background:var(--surface-2);border:1px solid var(--border-2);
+    border-radius:9px;padding:8px 11px;font-size:12px;box-shadow:0 4px 18px rgba(0,0,0,.10);min-width:200px;max-width:280px}
+  .tip .th{font-size:11.5px;color:var(--ink-2);margin-bottom:5px}
+  .tip .tr{display:grid;grid-template-columns:16px auto 1fr;align-items:center;gap:0 8px;margin:3px 0}
+  .tip .tr i{height:2px;border-radius:2px}
+  .tip .tr i.dash{background:repeating-linear-gradient(90deg,var(--s3) 0 4px,transparent 4px 6px)!important}
+  .tip .tr b{font-family:var(--mono);font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
+  .tip .tr span{color:var(--ink-3);font-size:11.5px;text-align:right}
+
+  /* ---- sections ---- */
+  .sec{margin-top:26px;scroll-margin-top:12px}
+  .sec > h2{margin:0 0 4px;font-size:18px;font-weight:600;letter-spacing:-.01em}
+  /* ส่วนที่พับไว้: กดหัวข้อ (summary) แล้วค่อยเปิดดูรายละเอียด */
+  .fold > summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:6px 12px;flex-wrap:wrap;border-radius:10px}
+  .fold > summary::-webkit-details-marker{display:none}
+  .fold > summary h2{margin:0;font-size:18px;font-weight:600;letter-spacing:-.01em}
+  .fold > summary h2 .nw{white-space:nowrap}
+  .fold-btn{font-size:12.5px;font-weight:600;color:var(--accent-2);background:var(--accent-soft);border:1px solid transparent;
+    border-radius:20px;padding:4px 12px;white-space:nowrap}
+  :root[data-theme="dark"] .fold-btn{color:var(--accent)}
+  .fold-btn::after{content:"▾";margin-left:6px}
+  .fold[open] .fold-btn::after{content:"▴"}
+  .fold .fold-btn .o,.fold[open] .fold-btn .c{display:none}
+  .fold[open] .fold-btn .o{display:inline}
+  .fold > summary:hover .fold-btn{border-color:var(--accent)}
+  .fold > summary:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+  .fold > .lead{margin:10px 0 14px;font-size:13px;color:var(--ink-2);max-width:820px}
+  .sec > .lead{margin:0 0 14px;font-size:13px;color:var(--ink-2);max-width:820px}
+  /* คำอธิบายแบบ tooltip (ตารางรายปี · ตารางราคาสูงสุด/ต่ำสุด) */
+  #ybyLead p{margin:0 0 8px} #ybyLead p:last-child{margin-bottom:0}
+  #ybyLead b{color:var(--ink);font-weight:600}
+  .tipwrap{position:relative;display:inline-block}
+  .tipbtn{font:inherit;font-size:12.5px;font-weight:600;color:var(--accent-2);background:var(--accent-soft);
+    border:1px solid transparent;border-radius:20px;padding:4px 12px 4px 6px;cursor:help;display:inline-flex;align-items:center;gap:7px}
+  :root[data-theme="dark"] .tipbtn{color:var(--accent)}
+  .tipbtn .ico{width:17px;height:17px;border-radius:50%;background:var(--accent);color:#1C1305;font:700 11px/17px var(--mono);text-align:center}
+  .tipbtn:hover,.tipwrap.open .tipbtn{border-color:var(--accent)}
+  .tipbtn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  /* กล่องข้อความลอย: padding-top เป็นสะพานให้เลื่อนเมาส์จากปุ่มลงมาอ่านได้โดยกล่องไม่หาย */
+  .tippop{display:none;position:absolute;left:0;top:100%;z-index:5;padding-top:6px;width:min(640px,calc(100vw - 32px))}
+  @media (hover:hover){.tipwrap:hover .tippop{display:block}}
+  .tipwrap.open .tippop,.tipbtn:focus-visible + .tippop{display:block}
+  .tipin{display:grid;gap:6px;background:var(--surface-2);border:1px solid var(--border-2);border-radius:10px;padding:11px 14px;
+    box-shadow:0 8px 28px rgba(0,0,0,.16);color:var(--ink-2);font-variant-numeric:tabular-nums}
+  .tipin .eh{font-size:12px;color:var(--ink-3)}
+  .tipin b{color:var(--ink);font-weight:600}
+
+  .whygrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(250px,100%),1fr));gap:12px}
+  .why{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:15px 16px}
+  .why .wn{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--accent-2);letter-spacing:.06em;margin-bottom:4px}
+  :root[data-theme="dark"] .why .wn{color:var(--accent)}
+  .why h4{margin:0 0 10px;font-size:14.5px;font-weight:600;line-height:1.35}
+  .why p{margin:8px 0 0;font-size:13px;color:var(--ink-2)}
+  .why p b{color:var(--ink);font-weight:600}
+  .why p.small{font-size:12px;color:var(--ink-3)}
+  .brow{display:grid;grid-template-columns:92px 1fr auto;align-items:center;gap:8px;margin:6px 0;font-size:12px;color:var(--ink-2)}
+  .brow .bt{height:14px;position:relative}
+  .brow .bt i{position:absolute;left:0;top:0;bottom:0;background:var(--s1);border-radius:0 4px 4px 0;min-width:2px}
+  .brow .bv{font-family:var(--mono);color:var(--ink);font-variant-numeric:tabular-nums}
+  .stack{display:flex;height:14px;gap:2px;margin:4px 0 8px}
+  .stack i{display:block;height:100%}
+  .stack i:first-child{border-radius:4px 0 0 4px} .stack i:last-child{border-radius:0 4px 4px 0}
+  .stack i:only-child{border-radius:4px}
+  .skey{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:11.5px;color:var(--ink-2)}
+  .skey span{display:flex;align-items:center;gap:5px}
+  .skey i{width:10px;height:10px;border-radius:3px;display:inline-block}
+  .seq{list-style:none;margin:6px 0 0;padding:0;font-size:13px}
+  .seq li{display:flex;align-items:center;gap:8px;padding:3px 0;color:var(--ink-2)}
+  .seq li b{margin-left:auto;font-family:var(--mono);color:var(--ink);font-weight:600}
+
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  .tablecard{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:6px 4px}
+  .tscroll{overflow-x:auto}
+  th,td{text-align:right;padding:8px 12px;font-variant-numeric:tabular-nums;white-space:nowrap}
+  th:first-child,td:first-child{text-align:left}
+  thead th{font-size:11.5px;font-weight:600;color:var(--ink-3);border-bottom:1px solid var(--border);vertical-align:bottom}
+  tbody td{font-family:var(--mono);color:var(--ink)}
+  tbody td:first-child{font-family:var(--sans);color:var(--ink-2)}
+  tbody tr:not(:last-child) td{border-bottom:1px solid var(--grid)}
+  tbody tr.below td{background:var(--warn-bg)}
+  tbody tr.dead td{background:var(--bad-bg);font-weight:600}
+  tbody tr.gap td{font-family:var(--sans);color:var(--bad);white-space:normal;text-align:left;font-weight:600}
+  /* คอลัมน์แรกค้างไว้ตอนเลื่อนตารางแนวนอน (มือถือ) — ซ้อนสีแถวบนพื้นทึบ */
+  .tscroll th:first-child,.tscroll td:first-child{position:sticky;left:0;z-index:1;background:var(--surface)}
+  tbody tr.below td:first-child{background:linear-gradient(var(--warn-bg),var(--warn-bg)),var(--surface)}
+  tbody tr.dead td:first-child{background:linear-gradient(var(--bad-bg),var(--bad-bg)),var(--surface)}
+  .tbl-head{padding:10px 14px 6px;font-size:12px;color:var(--ink-2);display:flex;gap:6px 16px;flex-wrap:wrap}
+  .tbl-head span{display:flex;align-items:center;gap:6px}
+  .tbl-head i{width:11px;height:11px;border-radius:3px;display:inline-block}
+
+  /* ตารางยอด vs ก้น: พอดีกว้างกล่องทุกขนาดจอ ไม่ต้องเลื่อน — คอลัมน์แบ่งเท่ากัน ข้อความตัดบรรทัดได้ */
+  #backtest .mxtabs{max-width:480px;margin:0 0 10px}
+  table.mx{table-layout:fixed}
+  table.mx th,table.mx td{text-align:center;padding:7px 6px;white-space:normal;overflow-wrap:break-word;line-height:1.35}
+  table.mx th:first-child,table.mx td:first-child{text-align:left;padding-left:12px;width:clamp(66px,18%,130px)}
+  table.mx td{font-size:12.5px}
+  table.mx thead th small,table.mx td small{display:block;font-weight:400;color:var(--ink-3);font-size:10.5px}
+  table.mx td.x{background:var(--bad-bg);color:var(--ink)}
+  table.mx td.lo{background:var(--warn-bg)}
+  table.mx tr.me td{font-weight:700;box-shadow:inset 0 1px 0 var(--accent),inset 0 -1px 0 var(--accent)}
+  table.mx tr.me td:first-child{color:var(--accent-2)}
+  :root[data-theme="dark"] table.mx tr.me td:first-child{color:var(--accent)}
+  table.mx .nw{white-space:nowrap}
+  /* แถวที่เลือก = แถวที่กราฟด้านบนแสดง · กดแถวเพื่อเปลี่ยน */
+  table.mx tbody tr[data-mxrow]{cursor:pointer}
+  table.mx tr.sel td:first-child{box-shadow:inset 4px 0 0 var(--accent);color:var(--ink);font-weight:700}
+  table.mx tr.me.sel td:first-child{box-shadow:inset 4px 0 0 var(--accent),inset 0 1px 0 var(--accent),inset 0 -1px 0 var(--accent);color:var(--accent-2)}
+  @media (max-width:560px){
+    table.mx th,table.mx td{padding:6px 3px;font-size:11.5px}
+    table.mx th:first-child,table.mx td:first-child{padding-left:8px}
+    table.mx thead th small,table.mx td small{font-size:10px}
+  }
+
+  footer{margin-top:24px;font-size:12px;color:var(--ink-3);line-height:1.7}
+  footer b{color:var(--ink-2);font-weight:600}
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style id="fyt-theme">
+/* ===== FreeyourtimeBitcoin: ธีมเดียวกับหน้าแรก ===== */
+html body{padding-top:0!important;background:#0b0a09!important;color:#d9d3cb;font-family:'Noto Sans Thai', system-ui, -apple-system, 'Segoe UI', sans-serif!important}
+html body .font-sans{font-family:'Noto Sans Thai', system-ui, -apple-system, 'Segoe UI', sans-serif!important}
+.fyt-nav{position:sticky;top:0;z-index:1000;background:rgba(11,10,9,.86);backdrop-filter:saturate(140%) blur(12px);-webkit-backdrop-filter:saturate(140%) blur(12px);border-bottom:1px solid #24211e;line-height:1.6;font-family:'Noto Sans Thai', system-ui, -apple-system, 'Segoe UI', sans-serif}
+.fyt-nav *{box-sizing:border-box}
+.fyt-nav .nav-in{max-width:1080px;margin:0 auto;padding:0 24px;height:64px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.fyt-nav .brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:#f4f0ea;font-weight:700;font-size:17px;white-space:nowrap}
+.fyt-nav .brand .mk{width:30px;height:30px;border-radius:50%;background:#f7931a;color:#1a1206;display:grid;place-items:center;font-size:17px;line-height:1;flex:none}
+.fyt-nav .brand b{color:#f7931a;font-weight:700}
+.fyt-nav .links{display:flex;align-items:center;gap:28px;list-style:none;margin:0;padding:0}
+.fyt-nav .links a{text-decoration:none;color:#a0978f;font-size:15.5px;font-weight:500;transition:color .2s}
+.fyt-nav .links a:hover{color:#f4f0ea}
+.fyt-nav .links .start{color:#f7931a}
+.fyt-nav .menu-btn{display:none;width:42px;height:42px;border:1px solid #34302b;border-radius:10px;background:transparent;cursor:pointer;place-content:center;gap:5px;padding:0}
+.fyt-nav .menu-btn span{display:block;width:18px;height:2px;background:#f4f0ea;border-radius:2px;transition:transform .2s,opacity .2s}
+.fyt-nav.open .menu-btn span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.fyt-nav.open .menu-btn span:nth-child(2){opacity:0}
+.fyt-nav.open .menu-btn span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+@media (max-width:980px){
+  .fyt-nav .menu-btn{display:grid}
+  .fyt-nav .links{display:none;position:absolute;top:64px;left:0;right:0;flex-direction:column;align-items:stretch;gap:0;background:#0b0a09;border-bottom:1px solid #24211e;box-shadow:0 18px 40px rgba(0,0,0,.55);padding:6px 0 10px}
+  .fyt-nav.open .links{display:flex}
+  .fyt-nav .links a{display:block;padding:12px 16px;font-size:17px}
+}
+@media (max-width:640px){ .fyt-nav .nav-in{padding:0 16px} }
+.fyt-head{position:relative;isolation:isolate;border-bottom:1px solid #24211e;margin-bottom:24px;font-family:'Noto Sans Thai', system-ui, -apple-system, 'Segoe UI', sans-serif}
+.fyt-head::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(50% 80% at 85% 30%, rgba(247,147,26,.14), transparent 65%)}
+.fyt-head .in{max-width:1080px;margin:0 auto;padding:44px 24px 32px}
+.fyt-head .eyebrow{margin:0 0 10px;font-size:13px;font-weight:600;color:#f7931a}
+.fyt-head h1{margin:0;font-family:'Noto Sans Thai', system-ui, -apple-system, 'Segoe UI', sans-serif;font-weight:600;color:#f4f0ea;font-size:clamp(28px,4.6vw,42px);line-height:1.3;letter-spacing:0;background:none;-webkit-text-fill-color:currentColor}
+.fyt-head .sub{margin:12px 0 0;font-size:17px;line-height:1.7;color:#d9d3cb;max-width:38em}
+@media (max-width:640px){ .fyt-head .in{padding:32px 16px 24px} }
+.fyt-foot{border-top:1px solid #24211e;margin-top:40px;font-family:'Noto Sans Thai', system-ui, -apple-system, 'Segoe UI', sans-serif}
+.fyt-foot div{max-width:1080px;margin:0 auto;padding:28px 24px 40px;font-size:14px;line-height:1.7;color:#766e66}
+.fyt-foot a{color:#a0978f}
+@media print{ .fyt-nav,.fyt-head,.fyt-foot{display:none!important} }
+
+html:root, html:root[data-theme]{
+  --bg:#0b0a09; --surface:#121110; --surface-2:#191715;
+  --ink:#f4f0ea; --ink-2:#a0978f; --ink-3:#766e66;
+  --border:#24211e; --border-2:#34302b;
+  --accent:#f7931a; --accent-2:#ffa739; --accent-soft:rgba(247,147,26,.11);
+  --grid:rgba(255,255,255,.06);
+  --good:#8fd19e; --good-bg:rgba(110,190,125,.12);
+  --warn:#ffc477; --warn-bg:rgba(247,147,26,.13);
+  --bad:#ff9b9b; --bad-bg:rgba(230,90,90,.13);
+  --sans:'Noto Sans Thai', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color-scheme:dark;
+}
+#theme{display:none!important}
+
+/* หัวข้อเดิมของหน้า (มีหัวข้อใหม่ด้านบนแทน) */
+.top .brand{display:none!important} .top{justify-content:flex-end}
+</style>
+<!-- seo:start -->
+<link rel="canonical" href="https://freeyourtimebitcoin.cashualme.com/btc%20%E0%B8%A7%E0%B8%B2%E0%B8%87%E0%B9%81%E0%B8%9C%E0%B8%99%E0%B8%AB%E0%B8%A5%E0%B8%B1%E0%B8%87%E0%B9%80%E0%B8%81%E0%B8%A9%E0%B8%B5%E0%B8%A2%E0%B8%93.html">
+<meta name="author" content="Juice Sakkasem">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="FreeyourtimeBitcoin">
+<meta property="og:locale" content="th_TH">
+<meta property="og:url" content="https://freeyourtimebitcoin.cashualme.com/btc%20%E0%B8%A7%E0%B8%B2%E0%B8%87%E0%B9%81%E0%B8%9C%E0%B8%99%E0%B8%AB%E0%B8%A5%E0%B8%B1%E0%B8%87%E0%B9%80%E0%B8%81%E0%B8%A9%E0%B8%B5%E0%B8%A2%E0%B8%93.html">
+<meta property="og:title" content="วางแผน Bitcoin หลังเกษียณ — ถอนใช้ยังไงไม่ให้หมดก่อน">
+<meta property="og:description" content="เครื่องมือวางแผนถอน Bitcoin มาใช้หลังเกษียณ ใส่จำนวน BTC เงินที่ใช้ต่อเดือน และเงินเฟ้อ แล้วดูว่าถ้าเริ่มถอนคนละปี Bitcoin เหลือต่างกันแค่ไหน พร้อมตารางรายปี ใช้ฟรี">
+<meta name="twitter:card" content="summary">
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@graph": [
+  {
+   "@type": "WebApplication",
+   "name": "วางแผน Bitcoin หลังเกษียณ",
+   "description": "เครื่องมือวางแผนถอน Bitcoin มาใช้หลังเกษียณ ใส่จำนวน BTC เงินที่ใช้ต่อเดือน และเงินเฟ้อ แล้วดูว่าถ้าเริ่มถอนคนละปี Bitcoin เหลือต่างกันแค่ไหน พร้อมตารางรายปี ใช้ฟรี",
+   "url": "https://freeyourtimebitcoin.cashualme.com/btc%20%E0%B8%A7%E0%B8%B2%E0%B8%87%E0%B9%81%E0%B8%9C%E0%B8%99%E0%B8%AB%E0%B8%A5%E0%B8%B1%E0%B8%87%E0%B9%80%E0%B8%81%E0%B8%A9%E0%B8%B5%E0%B8%A2%E0%B8%93.html",
+   "inLanguage": "th",
+   "applicationCategory": "FinanceApplication",
+   "operatingSystem": "Any (web browser)",
+   "isAccessibleForFree": true,
+   "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "THB"
+   },
+   "author": {
+    "@id": "https://cashualme.com/about-me/#juice"
+   },
+   "isPartOf": {
+    "@id": "https://freeyourtimebitcoin.cashualme.com/#website"
+   }
+  },
+  {
+   "@type": "WebSite",
+   "@id": "https://freeyourtimebitcoin.cashualme.com/#website",
+   "name": "FreeyourtimeBitcoin",
+   "url": "https://freeyourtimebitcoin.cashualme.com/",
+   "inLanguage": "th"
+  },
+  {
+   "@type": "Person",
+   "@id": "https://cashualme.com/about-me/#juice",
+   "name": "Juice Sakkasem",
+   "alternateName": "ศักดิ์เกษม สุวรรณดี",
+   "url": "https://cashualme.com/about-me/",
+   "sameAs": [
+    "https://cashualme.com/",
+    "https://www.facebook.com/Juicesakkasemcashualme",
+    "https://www.instagram.com/juice.sakkasem"
+   ]
+  }
+ ]
+}
+</script>
+<!-- seo:end -->
+</head>
+<body>
+<header class="fyt-nav" id="top">
+  <div class="nav-in">
+    <a class="brand" href="index.html" aria-label="FreeyourtimeBitcoin หน้าแรก">
+      <span class="mk" aria-hidden="true">₿</span>
+      <span>Freeyourtime<b>Bitcoin</b></span>
+    </a>
+    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="เปิดเมนู">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="links" id="nav-links">
+      <li><a class="start" href="guide.html">คู่มือวางแผนการเงินด้วย Bitcoin</a></li>
+      <li><a href="index.html#tools">เครื่องมือวางแผนการเงิน</a></li>
+      <li><a href="index.html#articles">บทความ</a></li>
+      <li><a href="course.html">คอร์ส</a></li>
+      <li><a href="index.html#about">เกี่ยวกับ</a></li>
+    </ul>
+  </div>
+</header>
+<section class="fyt-head">
+  <div class="in">
+    <p class="eyebrow">เครื่องมือวางแผนการเงิน</p>
+    <h1>วางแผน Bitcoin หลังเกษียณ</h1>
+    <p class="sub">ถอน Bitcoin มาใช้หลังเกษียณยังไงไม่ให้หมดก่อน ลองดูว่าถ้าเริ่มถอนคนละปี ด้วยราคาชุดเดียวกัน Bitcoin ที่เหลือต่างกันแค่ไหน</p>
+  </div>
+</section>
+<div class="wrap" lang="th">
+  <div class="top">
+    <div class="brand">
+      <div class="coin">&#8383;</div>
+      <div><h1>วางแผน Bitcoin หลังเกษียณ</h1></div>
+    </div>
+    <div class="actions">
+      <button class="btn" id="theme" type="button">&#9680; ธีม</button>
+      <button class="btn" id="reset" type="button">&#8635; รีเซ็ต</button>
+    </div>
+  </div>
+
+  <nav class="jump" aria-label="ไปยังส่วน">
+    <a href="#calc">เครื่องคิด</a><a href="#why">ทำไมถึงหมด</a><a href="#backtest">ราคาสูงสุด / ต่ำสุด</a><a href="#yby">ตารางรายปี</a>
+  </nav>
+
+  <div class="verdict" id="verdict" role="status" aria-live="polite">
+    <div class="vmark" id="vmark">!</div>
+    <div id="vtext"></div>
+  </div>
+
+  <div class="board" id="calc">
+    <aside class="panel controls" aria-label="ตั้งค่า">
+      <h2>Bitcoin ที่มี</h2>
+      <p class="hint">พิมพ์ตัวเลขหรือเลื่อนแถบ ผลอัปเดตทันที</p>
+
+      <div class="ctrl first">
+        <div class="ctrl-head"><label for="btc">จำนวน BTC</label><span class="unit">ตอนเริ่มถอน</span></div>
+        <div class="numwrap"><input class="num" type="text" inputmode="decimal" autocomplete="off" id="btc"><span class="pre">&#8383;</span></div>
+        <input type="range" id="btcR" min="0.05" max="10" step="0.05" aria-label="จำนวน BTC">
+        <div class="chips" id="btcChips">
+          <button type="button" data-btc="0.5">0.5</button><button type="button" data-btc="1">1</button><button type="button" data-btc="2">2</button><button type="button" data-btc="5">5</button>
+        </div>
+        <p class="note" id="btcNote"></p>
+      </div>
+
+      <h2 class="grp">เริ่มถอนเมื่อไหร่</h2>
+      <div class="ctrl first">
+        <div class="seg3" id="starts" role="group" aria-label="เริ่มถอนเมื่อไหร่"></div>
+        <p class="note" id="startNote"></p>
+      </div>
+
+      <h2 class="grp">การถอนใช้</h2>
+      <div class="ctrl first">
+        <div class="ctrl-head"><label for="spend">ถอนใช้เดือนละ</label><span class="unit">บาท &middot; ค่าเงินวันนี้</span></div>
+        <div class="numwrap"><span class="pre">&#3647;</span><input class="num" type="text" inputmode="numeric" autocomplete="off" id="spend"></div>
+        <input type="range" id="spendR" min="0" max="300000" step="1000" aria-label="ถอนใช้เดือนละ">
+        <div class="chips" id="wrChips">
+          <span class="cl">ตั้งเป็นถอนปีละ</span><button type="button" data-wr="4">4%</button><button type="button" data-wr="10">10%</button><button type="button" data-wr="15">15%</button>
+        </div>
+        <p class="note" id="spendNote"></p>
+      </div>
+
+      <div class="ctrl">
+        <div class="ctrl-head"><label for="infl">ค่าใช้จ่ายขึ้นตามเงินเฟ้อ</label><span class="unit">% ต่อปี</span></div>
+        <div class="numwrap"><input class="num" type="number" id="infl" min="0" max="15" step="0.5"><span class="pre">%</span></div>
+        <input type="range" id="inflR" min="0" max="10" step="0.5" aria-label="เงินเฟ้อ">
+      </div>
+
+      <div class="ctrl">
+        <div class="ctrl-head"><label for="horizon">ต้องพอใช้อีก</label><span class="unit">ปี นับจากเริ่มถอน</span></div>
+        <div class="numwrap"><input class="num" type="number" id="horizon" min="5" max="60" step="1"><span class="pre">ปี</span></div>
+        <input type="range" id="horizonR" min="5" max="60" step="1" aria-label="ต้องพอใช้อีกกี่ปี">
+      </div>
+
+      <h2 class="grp">ราคา model ที่ใช้</h2>
+      <div class="ctrl first">
+        <div class="tpl" id="tpls" role="group" aria-label="ราคา model ที่ใช้"></div>
+        <p class="note" id="tplNote"></p>
+      </div>
+
+      <div class="ctrl">
+        <div class="ctrl-head"><label for="price">ราคา BTC วันนี้</label><span class="unit">บาท / BTC</span></div>
+        <div class="numwrap"><span class="pre">&#3647;</span><input class="num" type="text" inputmode="numeric" autocomplete="off" id="price"></div>
+        <p class="note" id="priceNote"></p>
+      </div>
+    </aside>
+
+    <main>
+      <div class="hero">
+        <div class="lab" id="hLab"></div>
+        <div class="big" id="hBig"></div>
+        <div class="prog" aria-hidden="true"><div class="fill" id="fill"></div></div>
+        <div class="prlabels"><span id="hL"></span><span id="hR"></span></div>
+        <div class="sub" id="hSub"></div>
+      </div>
+
+      <div class="tablecard gridcard">
+        <div class="gc-head"><h3 id="gTitle"></h3><p id="gSub"></p></div>
+        <div class="tscroll"><table class="g3" id="g3"></table></div>
+      </div>
+
+      <div class="chartcard">
+        <h3>Bitcoin ที่มีเหลือเท่าไหร่ ถ้าเริ่มถอนคนละปี &mdash; ราคาชุดเดียวกัน</h3>
+        <div class="legend" id="legend"></div>
+        <div class="canvas-box" id="cbox"><canvas id="chart" tabindex="0" role="img"></canvas><div class="tip" id="tip" hidden></div></div>
+        <p class="ch-note" id="chNote"></p>
+      </div>
+
+      <section class="sec" id="why">
+        <details class="fold" id="whyFold">
+          <summary><h2>เก็บ Bitcoin ครบตามเป้าหมายแล้ว <span class="nw">ทำไมถึงไม่พอใช้เกษียณ?</span></h2><span class="fold-btn" aria-hidden="true"><span class="c">กดดูคำตอบ</span><span class="o">ซ่อน</span></span></summary>
+          <p class="lead">ตอนสะสม ราคาตกคือโอกาส (เงินเท่าเดิมซื้อได้มากขึ้น) &mdash; แต่ตอนขายกิน ราคาตกคือศัตรู (ค่าครองชีพเท่าเดิมต้องขายมากขึ้น) ตัวเลขข้างล่างมาจากการเริ่มถอนที่เลือกอยู่</p>
+          <div class="whygrid" id="whyGrid"></div>
+        </details>
+      </section>
+
+      <section class="sec" id="backtest">
+        <h2>ถ้าเริ่มถอนตอนราคาสูงสุด / ต่ำสุด <span id="mxWin"></span></h2>
+        <div class="lead">
+          <div class="tipwrap" id="mxEx">
+            <button type="button" class="tipbtn" id="mxExBtn" aria-expanded="false" aria-controls="mxLead"><span class="ico" aria-hidden="true">i</span>วิธีอ่านตาราง</button>
+            <div class="tippop"><div class="tipin" id="mxLead"></div></div>
+          </div>
+        </div>
+        <div class="seg3 mxtabs" id="mxTabs" role="group" aria-label="ช่วงที่จะเริ่มถอน"></div>
+        <div class="chartcard mxc">
+          <h3 id="mxcTitle"></h3>
+          <div class="seg3 mode" id="mxcMode" role="group" aria-label="เทียบแบบไหน">
+            <button type="button" data-mxmode="sell" aria-pressed="true"><b>เทียบจังหวะขาย</b><small>ทุกเส้นเริ่มวันเดียวกัน</small></button>
+            <button type="button" data-mxmode="start" aria-pressed="false"><b>เทียบวันเกษียณ</b><small>แต่ละเส้นเริ่มคนละวัน</small></button>
+          </div>
+          <div class="chips" id="mxcRates" role="group" aria-label="ถอนปีละกี่ % ในกราฟ"></div>
+          <div class="mxres" id="mxcLegend"></div>
+          <div class="canvas-box" id="mxcBox"><canvas id="mxChart" tabindex="0" role="img"></canvas><div class="tip" id="mxTip" hidden></div></div>
+          <p class="ch-note" id="mxcNote"></p>
+        </div>
+        <div class="tablecard"><div class="tscroll"><table class="mx" id="mx"></table></div></div>
+      </section>
+
+      <section class="sec" id="yby">
+        <h2>ตารางรายปี</h2>
+        <div class="lead" id="ybyLead">
+          <p id="ybyCtx"></p>
+          <div class="tipwrap" id="ybyEx">
+            <button type="button" class="tipbtn" id="ybyExBtn" aria-expanded="false" aria-controls="ybyExBody"><span class="ico" aria-hidden="true">i</span>ตัวอย่างวิธีอ่านตาราง</button>
+            <div class="tippop"><div class="tipin" id="ybyExBody"></div></div>
+          </div>
+        </div>
+        <div class="tablecard">
+          <div class="tbl-head"><span><i style="background:var(--warn-bg);border:1px solid var(--warn)"></i>ปีที่ขายเฉลี่ยต่ำกว่าราคาวันเริ่มถอน</span><span><i style="background:var(--bad-bg);border:1px solid var(--bad)"></i>ปีที่ Bitcoin หมด</span></div>
+          <div class="tscroll">
+            <table>
+              <thead><tr><th>ปีที่</th><th>ถึงราว</th><th>ถอนใช้/เดือน</th><th>ราคาขายเฉลี่ย</th><th>เทียบวันเริ่ม</th><th>BTC ที่ขาย</th><th>BTC คงเหลือ</th><th>มูลค่าคงเหลือ</th></tr></thead>
+              <tbody id="rows"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <footer>
+    <b>หมายเหตุ:</b> เครื่องมือเพื่อการศึกษา ไม่ใช่คำแนะนำการลงทุน &middot; อดีตไม่ได้รับประกันอนาคต &middot; ราคา BTC ผันผวนสูงมาก<br>
+    <b>ข้อมูล:</b> ราคา BTC รายวันจาก Blockchain.com &middot; ค่าเงินบาทจาก ECB (ผ่าน Frankfurter) &middot; ราคาวันนี้จาก CoinGecko<br>
+    <span class="retire-link" hidden><b>อยากดูทางที่ไม่ต้องขาย:</b> <a href="retire-off-bitcoin-th.html">เกษียณด้วย Bitcoin &mdash; กู้ค้ำ BTC แทนการขาย</a></span>
+  </footer>
+</div>
+<script>
+(function(){
+  "use strict";
+  var $=function(id){return document.getElementById(id)};
+
+  // ---------- ราคาจริง ----------
+  // USD = ราคา BTC/USD รายวันตั้งแต่ 1 ม.ค. 2013 (Blockchain.com · เฉลี่ยหลายตลาด)
+  // FXM = USD/THB เฉลี่ยรายเดือนตั้งแต่ ม.ค. 2013 (ECB ผ่าน Frankfurter)
+  var USD=[13.6,13.5,13.4,13.5,13.5,13.5,13.5,13.6,13.8,14,14.3,14.3,14.3,14.3,14.3,14.5,14.9,15.5,15.9,15.8,16.1,17.1,17.6,18,19.1,18.5,17.7,18.1,18.8,19.8,20.1,21.4,21.2,21,20.8,21,20.9,21.5,22.1,23.4,23.8,24,24.6,25.1,24.3,27.2,27.3,27.4,26.9,27,29.5,29.8,29.8,30.5,29.8,29.9,30.4,31.2,31.3,33.4,34.5,34.2,34.2,36.4,40.6,42,43.1,44,46.9,45.6,48.2,44.3,47.1,46.9,46.9,47.2,47.4,52.1,59.5,65.9,70.2,70.2,64,71.9,74.1,78.8,88.8,87.5,90,92.5,93.2,104,117.3,131,133,142.1,143.6,163.3,187,231.1,159.9,124.9,122.6,100,100,68.1,68,93.9,111,118.9,127.5,119,127,142.5,155.1,142,137,128.5,134.4,144.5,139,117,103.3,96.8,113.1,116,112.3,111.7,113.3,112.7,117.2,115.7,115.1,118,112,114.2,117.4,123.3,123.3,122,122,122.7,123,126.7,133.5,132,133.5,129.8,129,132.3,128.9,129,129.3,122.4,122,121.4,121.9,119,111.5,108,100.2,106.1,109,108.1,103.9,100,99.7,99.9,102,107.4,107.7,111.1,109.9,108.3,108,103,103.9,104,101.8,94.7,95,97.2,87,91,78.1,80,68.9,70.3,75,76.5,76.7,87.9,88.9,94,98,94.7,98.4,97,98.8,90.1,92,89.4,90.8,92,95.6,94.5,97,96,94.1,98.7,101.5,107.8,106.2,104.6,104.5,105,105.5,106.7,106.6,106,103,102.8,103,105,106.6,109.3,99.2,98.1,98.2,99.7,99.3,102.8,104.9,110.4,109.7,107.7,109,113.3,111.8,117.7,117.9,118.5,124.8,128.5,130.7,130.1,129.1,122.3,122.6,117.6,119.9,118.2,120.5,122,126.5,127.1,127.1,124,125.3,126.2,139.2,127.1,124.2,123,123.4,122.9,122.7,123.8,123.4,124.7,126.7,126.5,127,126.2,127.5,103.8,117.6,121.9,121.2,122.5,123.8,124.1,125.9,126.8,127.4,127.6,132.6,135.2,141,138.2,143.9,168.2,183.2,186.1,179.8,189.8,203.7,195.3,186.8,179.6,194.1,206.9,216,206,203.5,203,204.9,209.8,229.9,252.6,265.1,291,334,330,328,343.6,354.9,393,415,412,437.2,475,660.2,547,598,716.8,795,830,807.5,814.6,917.8,965,1014,1134,1119,955,1044,1050,1137,1035,800,705.9,786.6,894,978.8,876.9,874.7,885,850.8,863,690,673.6,522,685.3,613.9,599.9,614.1,660,653,679,747,724,715,728.2,736.5,732,749.3,781.2,807.4,828.7,905,915.7,790,823.3,826.3,854,895,844,823,816,841.8,817.1,792,811.2,841.1,827.8,824.8,819.6,811.2,780,805,814.2,747.6,785.6,794,800,803,817.1,814.3,808.5,803,781,764,710,680.8,687.4,688.7,675.1,652.9,610,670.3,655.7,623.9,630,629.6,624.9,563,579.5,612.5,611,542.7,559.5,585.2,583,553,567.5,561,682,673.3,670.7,669,632,622.4,639.9,629.3,632.1,635,641,630.4,637.2,635,624.7,615.5,611.2,585.6,572.9,563,559.5,585.6,585.8,578.5,474.2,499.6,490,458.7,457.5,479,439.1,448.7,452,463,458,450,453,441.9,369,423.4,423.4,417.6,459.6,523,526.3,498.2,482.1,503.8,501.5,498.4,488.5,492,502.1,463.1,461.5,438.8,442.4,448,452,461,454.9,440,436.8,433,428,440.9,437.6,449,457,437.8,442.4,439.1,444.6,446.5,449.1,448.7,446.9,448,488.1,494,528.3,521.1,527.9,569.9,584.9,572.7,581,569,621.3,626.5,630.7,662,670.1,642.9,661.5,649,657.1,657.1,648.8,648.5,625,574.9,591.5,572.3,592.9,586,608,608,595.1,593.5,591,598.8,588.2,575,560.8,577.3,599,590,600,639,639.2,650.5,645.4,626.2,631,633.7,624.4,625,622,616.8,634,636.2,630.4,621.2,624.1,617.4,625.8,631.9,630,627,622.2,620,620.4,604,602.9,595.9,593.7,589.9,585.5,563.4,582,595.8,589.6,583.8,588.5,582,582.7,585,589,589.6,590.7,574,569,550,504.5,500.4,523.9,498.2,474.9,490,518.8,521.1,515.7,495.3,508,501.6,513.9,511.8,506.6,509.3,501,478.9,476.4,473.5,474.5,488.9,485.9,479.6,476.5,467.9,473.4,477.7,477.7,474.6,476.9,474.4,470.8,463.4,453.9,425.6,395.7,411.7,401.1,399.9,440,423.7,410.2,404.7,400.4,375.2,373.9,390.2,384,375.8,358.9,328.4,323.9,327.6,334.1,357,363.6,360.9,361.9,380.8,392,402.5,394.8,383.9,383.1,391,389.4,381.5,385.9,384.1,357.2,358.5,347,355.3,350.9,355.8,335.3,345.3,337.8,324.5,324.4,326.5,330.2,338.6,350,342.2,346.9,365.9,365.8,369.4,420.2,420,399.1,377,389.9,388.9,374.9,379.1,356.5,350.2,353,367.1,374.6,376.2,366.9,370,377,375.6,376,377.4,379.6,376,368.7,376,375.1,376,363,351.8,348.8,349,352.2,351.8,357.8,348,329.8,321.3,312.3,318.6,331.5,320,332,336.9,323.7,319.8,329.9,316.1,317.4,313.4,311,321,314.8,316.5,285.1,263.2,274.3,287.3,298,284.5,290.8,276,269.7,267,222,172,210.2,208.1,199.8,212,216,210.7,224.6,233.5,233.7,249.3,254.3,274.4,263.5,236.2,236,227,219.2,227,238,227.5,226.7,217,222.4,229.3,223.9,219.9,220.4,219.6,222.3,236.9,257.5,234.2,234.5,245.3,237.4,241.4,245.8,245.4,236,238.9,239.9,238,236.6,252.1,253.5,257.1,275.9,279.5,270.1,273.1,272.3,276.7,275,287,290,296.6,294.9,285,282.2,286.8,289.3,284.5,257,261.4,262.1,260,267.8,266,245,247.1,249.2,247.6,253,242.3,248,243.6,246.5,253.3,254.3,253.7,260.5,255.2,253.9,245,243,236,236.4,236.5,223,216.2,222.6,227.5,222.6,223.4,222.6,224.3,235.8,233.6,236,231.2,226.3,219.5,227,225.2,225.6,236,231,233.8,239.5,238.2,235.9,229,237.2,243.2,242.2,239.1,240.9,241.1,236,237.1,237.4,236.6,235.8,232.8,231.4,234.1,235,238.8,237.8,239.6,235.6,235.7,235.3,236.4,235.7,232.3,228.3,223.5,225.2,225.4,222.9,224.8,225,222.3,227.7,228.9,227.8,229,229.6,231.5,232.1,236,250,247.4,248.3,243.8,244.8,243.6,246.8,243.9,240.2,242.1,243,251.2,248.6,256.1,262.4,257.8,254.7,256.1,260.3,271.3,268.5,265.8,270.3,269,284.9,291.6,310.6,291.9,287.9,285.7,277.8,279.4,276.7,275.5,279,276.8,278,276.6,289,288.8,292.8,293.9,293.9,290.2,288.4,284.3,280.9,282.3,281.1,285,281,277.1,279.3,262.2,265.1,264.5,271,267.5,264.5,265.9,261.4,256.1,256.7,222.1,226.2,235.3,233.5,231,228.1,211,222.1,225,225.1,231.5,229.6,228.4,230.2,228,229.3,227.2,230.7,235.7,240.2,240.5,244.2,238.3,238.8,239.9,234.7,230,229.7,229.5,228.3,232.2,232.5,230.2,230.2,226.3,230.4,229.4,234,235.2,234,232.4,239.1,236.9,236.2,238,237.8,239.1,238.4,240.6,246.8,243,243,244.5,245.7,248,245.5,250,252.5,254.5,262.3,270,261,263.6,270.8,268,274.4,278.6,282.7,282.8,286.7,295.4,304.8,314.8,328.2,310.2,325.8,361.5,404.5,408,386,373.7,387,371.1,380.6,336.3,309,340.8,337,332.1,319,330.7,336,333.7,325.9,322.1,326.3,323.8,323.5,319.6,328.9,356.3,358,356.4,371,377.3,362.6,359.1,361.5,363.8,386.9,387.3,394.9,413.6,416.5,415.1,450.9,436.2,433.4,443.8,464,455.5,456.6,463,461.8,442.5,438.4,435.3,442.5,456,455.5,417.1,422.4,421,433.2,428.2,430.9,434.8,432.8,430.8,434.2,432.4,429.3,458.7,452.6,448.5,448.4,448,437,432.6,429.6,363.8,387.9,380.2,385.5,377.4,420.4,409.6,381.5,385.1,403.2,390.9,391.7,394.4,379.8,378.2,376.6,367.9,372,373.1,368.5,388,384.1,375.3,375,371.6,373.5,379.1,378,382.6,389.9,405.1,399.2,407,414.9,420.5,420,435.2,438,436.8,419.2,423.8,423.5,430,431.6,431.9,436.8,433.7,422.5,420.1,408.4,399.2,405.7,412.4,412.1,412.8,416,420.1,409.9,412.9,415,415.7,416.6,418.5,408,409.1,411.8,411.9,416.4,418,415.2,416,417,425,422.9,415.8,413.7,414.8,416.3,419.1,418.5,419.7,421.7,421.6,419.9,417.9,418.6,420.8,422.6,425.7,423.9,424.4,429.4,430.6,427.3,427.4,435.9,441.8,451,447.7,451.9,460,462.5,467.6,445.3,450,456,448.8,453,443.8,450.6,446.8,449.4,459,459,458.3,460.7,450.8,452.8,454.3,455.8,456.3,457.3,454,453.1,453,436.1,442.5,443.2,438.5,443,444.1,448.7,452.1,470,526.6,511.3,526.4,532,538.4,538,567.9,573.9,573.9,583.7,578.1,583.1,574.3,578,608,665.9,704.5,685.2,693.9,765,746.6,752,759.4,724,664.5,592.8,622.1,665,660.4,630.2,651.9,645.1,636,668,675.6,701.4,657,682,668,673.8,638.5,663,647.4,648.4,649.3,664.5,652.9,659.1,663.2,661.3,679.6,673.5,675,667.5,664,649.8,655.5,661.5,655,651.2,655.4,655.5,654.9,654.7,623.9,605.6,530.7,564,577.4,572.7,589.5,592.6,591.7,585,591.5,586,585.9,583.3,567.3,565.7,574.9,570.9,570.3,572.8,577.5,577.2,583.3,582,578.8,575.8,577.8,567.2,573.2,571.5,576,570.8,571,572,595,604,605,608.2,615.3,625.1,622,621.6,604,608,608.8,609,606.7,607,604.1,607.3,608.7,605.5,595.5,594.1,600.7,599.3,599,606.8,604.3,603.9,604.1,608.4,613,608.6,613,607.2,608,609.4,614.7,614.5,613.1,614.8,638.3,635.2,634,638.2,636.9,639,635.5,636,627.7,628.9,629,653.2,649.7,643.9,651.5,674.6,685,685.9,712,697.2,697,726.6,741.1,683.7,702.7,703.5,710,703.2,708.1,721.5,714.5,716.2,702.3,700.4,705,711.7,739.4,736.8,749,750.7,727.1,737,749.3,740.2,735.6,737.1,729.9,727.3,729.5,730,742,750.8,770,763,762,750.6,759,766.5,767.3,769.1,772.3,768.2,778,778.5,777.1,775.9,781.3,787.3,788.7,791,801.5,835,860.2,913.9,892.6,891,896.8,930.3,975.9,970.4,958.1,964.8,997.4,1013,1038,1109,999.6,892,906.2,910.5,896.9,903.7,780.9,805.5,825,819.5,822,830.6,906.6,885.4,903.1,895.6,922,922.3,920,883.6,893.1,915,918,918.6,912.2,920,964.1,983.4,1009,1016,1034,1011,1024,1053,1051,985.3,997.6,1012,1001,1001,1007,1011,1035,1055,1056,1051,1084,1125,1130,1187,1180,1150,1180,1194,1191,1225,1258,1287,1262,1271,1280,1234,1155,1192,1105,1177,1228,1241,1247,1257,1170,1068,967.7,1011,1032,1113,1030,1030,927.9,961.8,959.5,1041,1043,1040,1035,1073,1083,1080,1147,1141,1134,1194,1190,1184,1206,1210,1219,1212,1174,1170,1190,1161,1177,1201,1205,1237,1244,1233,1241,1254,1273,1288,1330,1331,1333,1355,1391,1448,1501,1537,1519,1554,1559,1651,1720,1775,1829,1693,1771,1780,1718,1709,1784,1880,1957,2009,2018,2100,2256,2421,2277,2280,2048,2177,2290,2205,2298,2410,2489,2541,2530,2699,2872,2683,2809,2825,2899,2955,2657,2706,2445,2425,2478,2630,2522,2600,2740,2659,2713,2685,2557,2502,2430,2558,2558,2542,2477,2421,2513,2550,2599,2600,2600,2503,2555,2510,2327,2311,2388,2338,2216,1972,1911,2220,2300,2265,2840,2673,2826,2748,2760,2564,2517,2657,2785,2705,2739,2863,2731,2699,2790,2857,3251,3210,3380,3409,3340,3413,3650,3869,4074,4316,4180,4376,4280,4105,4146,4055,3986,4091,4134,4332,4358,4340,4339,4377,4595,4583,4733,4908,4586,4604,4203,4385,4612,4614,4312,4331,4233,4199,4170,3865,3216,3708,3689,3679,4092,3899,3894,3601,3605,3778,3666,3932,3881,4205,4189,4164,4354,4405,4394,4308,4212,4319,4370,4439,4606,4774,4776,4822,5436,5636,5826,5692,5764,5595,5572,5697,5986,6013,5982,5901,5511,5732,5890,5770,5729,6136,6133,6416,6752,7025,7213,7366,7393,6961,7129,7468,7092,6569,6341,5890,6494,6593,7280,7869,7718,7791,8050,8243,8096,8237,8043,8213,8769,9312,9717,9919,9646,9988,10880,10913,11180,11591,11660,13844,16861,15875,14652,15069,16733,16917,16252,16408,17508,19280,18905,18912,17383,16357,15521,13777,14122,13554,13741,15678,15422,14214,14414,12613,13796,13375,14793,15039,15170,16915,17156,16193,14963,14437,14883,13286,13791,14246,13584,13554,11307,11091,11175,11507,12745,11513,10770,10831,11392,11151,11094,11431,11742,11186,10083,10204,9098,8853,9225,8202,6925,7712,7585,8245,8689,8561,8068,8896,8528,9472,10034,10179,11086,10392,11172,11246,10486,9851,10171,9700,9582,10319,10629,10332,10931,11041,11453,11517,11442,10728,9920,9324,9263,8777,9539,9130,9154,8215,8263,8298,7885,8214,8606,8910,8909,8725,8917,8534,8458,8146,7797,7951,7099,6854,6938,6828,7065,7426,6811,6787,6635,6910,7030,6784,6849,6955,7941,7895,8014,8368,8069,7907,8176,8288,8877,8931,8813,8953,9658,8870,9295,8929,9349,9398,9240,9075,9221,9753,9696,9838,9631,9369,9187,9310,9016,8397,8464,8691,8672,8471,8343,8064,8239,8242,8521,8397,7987,7512,7577,7465,7335,7345,7106,7457,7387,7490,7519,7637,7714,7495,7619,7654,7687,7616,7497,6762,6879,6553,6300,6637,6391,6489,6446,6712,6743,6761,6720,6059,6170,6157,6250,6097,6144,5878,6223,6409,6366,6626,6519,6602,6556,6629,6778,6724,6683,6329,6403,6239,6220,6249,6348,6733,7322,7371,7474,7335,7409,7407,7715,8418,8172,7940,8178,8220,8221,8171,7735,7608,7536,7415,7011,7032,6937,6718,6278,6532,6139,6228,6313,6252,6190,6271,6313,6578,6394,6487,6263,6472,6355,6526,6691,6738,6708,6901,7078,7032,6987,7019,7197,7292,7265,7359,6695,6501,6400,6184,6241,6307,6284,6326,6480,6487,6522,6497,6254,6342,6389,6496,6756,6719,6706,6583,6433,6459,6686,6629,6593,6611,6587,6521,6484,6568,6621,6574,6589,6641,6627,6581,6208,6247,6266,6265,6599,6616,6596,6510,6464,6505,6505,6494,6477,6490,6466,6472,6457,6449,6308,6302,6339,6373,6390,6361,6454,6438,6478,6537,6445,6377,6388,6409,6385,6358,5757,5659,5593,5572,5616,4849,4492,4616,4312,4353,3862,4011,3793,3828,4257,4279,4014,4188,4141,3894,3957,3745,3485,3426,3454,3588,3473,3407,3488,3308,3242,3232,3247,3557,3714,3735,4135,3900,4032,3995,4075,3822,3848,3639,3923,3770,3865,3738,3856,3931,3823,3857,3832,4072,4032,4021,4017,3646,3657,3637,3532,3682,3600,3621,3658,3626,3704,3549,3540,3587,3566,3586,3578,3576,3554,3449,3422,3470,3445,3475,3506,3456,3452,3467,3406,3395,3661,3664,3686,3629,3632,3614,3600,3608,3620,3671,3911,3927,3987,3945,3983,4140,3767,3848,3831,3833,3850,3835,3831,3815,3731,3872,3877,3887,3876,3951,3928,3881,3893,3878,3885,3936,4016,3995,3999,4029,4056,3992,3999,4012,3994,3936,3948,4049,4037,4116,4114,4114,4153,4883,4960,4911,5029,5054,5189,5269,5176,5310,5035,5073,5065,5153,5036,5197,5220,5276,5277,5309,5282,5377,5518,5434,5196,5293,5280,5301,5261,5270,5327,5390,5657,5771,5718,5684,5756,5937,6147,6348,7248,6979,7823,7993,8207,7886,7362,7265,8194,8007,7952,7626,7880,8003,8071,8744,8770,8720,8663,8272,8554,8555,8739,8135,7676,7786,7803,7998,7931,7641,8020,7918,8173,8238,8694,8859,8979,9327,9076,9282,9531,10209,10669,10814,11018,11766,12933,11133,12374,11890,10738,10579,10805,11985,11160,10955,11232,11477,12313,12587,12100,11353,11804,11389,10187,10874,9398,9674,10639,10536,10765,10587,10324,9844,9772,9875,9849,9474,9530,9501,9589,10085,10407,10530,10815,10980,11788,11466,11961,11996,11857,11282,11567,11386,10858,10017,10302,10359,10215,10318,10917,10761,10129,10112,10406,10144,10135,10360,10172,9718,9485,9578,9601,9770,10387,10621,10584,10578,10317,10487,10406,10314,10101,10159,10420,10364,10361,10310,10266,10190,10158,10276,10173,9979,10033,9683,8554,8432,8056,8194,8225,8057,8308,8323,8382,8236,8155,8148,7870,8212,8190,8588,8587,8270,8308,8284,8354,8162,8003,8077,7954,7960,8231,8223,8027,7470,7432,8667,9260,9552,9219,9433,9165,9148,9253,9301,9206,9418,9310,9343,9204,8766,8809,9037,8718,8802,8762,8632,8458,8483,8504,8176,8121,8082,7617,7286,7324,6907,7130,7164,7524,7431,7757,7558,7403,7310,7297,7193,7396,7547,7505,7522,7337,7221,7202,7189,7252,7068,7111,6880,6612,7284,7151,7190,7143,7514,7322,7251,7193,7194,7244,7301,7385,7220,7168,7176,6944,7326,7348,7352,7759,8165,8043,7818,8185,8021,8174,8105,8842,8814,8722,8900,8911,8703,8626,8722,8659,8388,8428,8327,8588,8896,9386,9280,9502,9334,9378,9315,9285,9162,9615,9756,9808,9907,10162,9855,10275,10354,10242,10369,9904,9938,9704,10181,9605,9607,9697,9670,9989,9664,9309,8786,8805,8712,8531,8534,8913,8754,8759,9067,9156,8899,8039,7932,7885,7937,4830,5609,5166,5348,5026,5358,5410,6195,6226,6190,5823,6502,6768,6698,6764,6369,6261,5885,6405,6428,6653,6809,6742,6872,6777,7343,7206,7365,7294,6873,6892,6915,6858,6872,6624,7112,7035,7259,7130,6840,6853,7131,7478,7507,7550,7699,7791,7765,8778,8629,8825,8974,8904,8886,9031,9171,10002,9822,9527,8754,8617,8815,9306,9790,9304,9386,9669,9719,9786,9511,9058,9167,9178,8731,8900,8843,9198,9569,9426,9698,9451,10204,9526,9658,9795,9624,9670,9754,9783,9775,9892,9286,9460,9474,9330,9427,9526,9455,9380,9300,9357,9285,9692,9621,9277,9241,9154,9004,9127,9185,9134,9236,9088,9072,9131,9089,9349,9256,9440,9238,9287,9236,9296,9238,9255,9194,9131,9154,9175,9215,9164,9393,9537,9613,9551,9708,9939,11042,10935,11103,11115,11344,11824,11078,11243,11194,11750,11773,11606,11768,11684,11893,11392,11573,11777,11774,11874,11914,12294,11970,11734,11866,11523,11683,11653,11764,11337,11467,11302,11535,11482,11708,11660,11923,11397,10188,10468,10160,10255,10368,10122,10228,10353,10395,10446,10331,10675,10786,10948,10944,10932,11081,10920,10430,10532,10234,10732,10693,10732,10774,10692,10841,10778,10619,10575,10552,10673,10789,10604,10671,10923,11063,11303,11377,11540,11428,11431,11504,11328,11367,11508,11758,11925,12832,12990,12945,13128,13037,13076,13651,13289,13459,13565,13810,13759,13575,14023,14156,15591,15596,14840,15491,15329,15317,15709,16296,16339,16091,15968,16725,17680,17798,17821,18687,18700,18422,18399,19173,18740,17151,17139,17732,18192,19710,18793,19227,19455,18670,19155,19378,19181,18319,18554,18248,18029,18803,19164,19277,19440,21379,22847,23151,23870,23491,22745,23825,23253,23716,24694,26443,26247,27037,27376,28857,28983,29394,32195,33001,32035,34047,36860,39486,40670,40241,38240,35545,34012,37393,39158,36829,36065,35793,36632,36020,35539,30798,33002,32100,32277,32243,32542,30419,33403,34314,34318,33136,33523,35530,37676,37002,38279,39323,38928,46364,46590,44878,48013,47471,47185,48720,47952,49160,52118,51608,55916,56001,57488,54123,48880,50625,46800,46340,46156,45114,49618,48356,50478,48449,48861,48882,51170,52299,54882,55997,57764,57253,61259,59133,55755,56872,58913,57666,58075,58086,57411,54205,54477,52508,51416,55074,55864,55784,57628,58730,58735,58737,59031,57076,58207,59054,58020,55947,58049,58103,59774,59965,59835,63554,62969,63253,61456,60087,56251,55703,56508,53809,51732,51153,50111,49076,54057,55071,54884,53584,57797,57858,56610,57213,53242,57473,56428,57380,58929,58281,55884,56750,49007,49702,49923,46737,46442,43596,42912,36964,40784,37280,37528,34755,38729,38410,39266,38445,35690,34648,35685,37311,36663,37585,39189,36886,35530,35816,33515,33450,37338,36705,37313,35495,39067,40526,40189,38325,38068,35730,35524,35592,31687,32448,33675,34639,31641,32161,34644,34457,35848,35047,33537,33857,34689,35309,33748,34211,33839,32877,33819,33516,34228,33158,32687,32815,31739,31421,31521,31783,30816,29790,32118,32298,33582,34279,35365,37318,39406,40003,40006,42214,41659,40000,39194,38138,39750,40882,42826,44634,43816,46333,45608,45611,44418,47834,47112,47056,45983,44649,44778,46735,49328,48932,49336,49524,47745,48972,46963,49057,48898,48807,47075,47156,48863,49329,50035,49947,51769,52677,46809,46078,46369,44847,45145,46059,44969,47072,48168,47785,47264,48259,47249,42902,40619,43605,44889,42816,42742,43183,42238,41011,41522,43758,48140,47727,48206,49144,51506,55344,53801,53867,55123,54626,57452,56243,57407,57398,61641,60949,61546,61972,64288,66064,62355,60697,61277,60884,63071,60345,58538,60587,62249,61731,61373,61030,63241,62955,61442,61072,61516,63293,67562,66954,64977,64839,64255,64421,65469,63584,60172,60381,56921,58133,59778,58756,56302,57578,57188,58935,53588,54801,57292,57828,57026,57230,56508,53714,49254,49380,50565,50645,50511,47660,47137,49380,50117,46757,48393,48885,47658,46174,46864,46689,46910,48935,48628,50786,50815,50471,50801,50692,47601,46409,47133,46250,47763,47328,46442,45863,43436,43121,41528,41691,41864,41849,42723,43926,42546,43099,43147,43102,42248,42381,41708,40684,36481,35071,36281,36679,36949,36824,37147,37770,38186,37919,38522,38740,36913,37092,41584,41435,42451,43834,44133,44397,43531,42401,42246,42105,42581,44536,43949,40566,40015,40115,38382,37031,38262,37291,38345,39223,39104,37705,43226,44419,43935,42464,39141,39400,38408,38032,38753,41957,39438,38741,38809,37820,39681,39321,41133,40947,41796,42222,41251,41071,42373,42905,44004,44334,44542,46859,47116,47448,47064,45539,46283,45825,46426,46611,45508,43190,43464,42279,42788,42144,39489,40102,41148,39940,40566,40389,39711,40806,41507,41376,40514,39728,39429,39466,40473,38115,39249,39770,38596,37661,38475,38511,37727,39675,36550,36013,35471,34082,30176,31004,28907,28931,29234,30075,31277,29834,30407,28681,30290,29160,29410,30279,29074,29635,29519,29194,28579,29014,29449,31716,31776,29781,30430,29682,29845,29901,31350,31118,30189,30083,29059,28344,26593,22431,22189,22551,20350,20435,18978,20540,20582,20704,19954,21088,21195,21481,21020,20702,20257,20086,19866,19227,19225,19289,20208,20182,20546,21633,21636,21583,20835,19946,19293,20224,20569,20836,21197,20774,22538,23403,23227,23154,22687,22462,22582,21301,21267,22950,23856,23792,23648,23326,23299,22982,22832,22608,23295,22947,23174,23816,23156,23960,23954,24418,24447,24315,24096,23876,23332,23194,20843,21150,21521,21403,21516,21378,21598,20233,20036,19550,20290,19793,20048,20131,19953,19835,19995,19790,18807,19280,19328,21388,21673,21795,22393,20173,20220,19695,19788,20123,19416,19542,18880,18507,19409,19281,18932,18808,19227,19105,19531,19599,19427,19315,19050,19633,20342,20168,19956,19545,19418,19442,19133,19050,19156,19383,19185,19063,19266,19549,19331,19126,19047,19171,19205,19566,19339,20101,20772,20289,20602,20816,20628,20499,20486,20154,20208,21153,21293,20920,20598,18540,15857,17550,16990,16776,16310,16588,16874,16662,16682,16683,16688,16260,15760,16195,16607,16593,16507,16453,16420,16209,16433,17171,16972,17091,16894,17118,16967,17085,16836,17235,17129,17125,17099,17207,17771,17802,17357,16638,16784,16746,16440,16905,16814,16819,16780,16838,16827,16916,16699,16539,16630,16600,16527,16614,16672,16670,16851,16826,16952,16945,17108,17192,17444,17935,18859,19933,20955,20881,21190,21145,20673,21088,22693,22772,22724,22924,22634,23090,23008,23076,23032,23756,22836,23134,23722,23454,23440,23328,22937,22764,23255,22965,21794,21639,21862,21787,21788,22212,24341,23545,24573,24642,24290,24835,24438,24186,23946,23192,23177,23563,23498,23128,23642,23467,22352,22349,22428,22411,22197,21698,20363,20225,20657,22205,24214,24767,24376,25054,27463,26975,28046,27791,28192,27306,28332,27496,27496,28000,27141,27275,28356,28033,28480,28465,28185,27802,28170,28180,28040,27926,27956,28336,29656,30235,29899,30408,30486,30319,30315,29447,30394,28830,28243,27268,27816,27591,27516,28302,28430,29480,29330,29245,29264,28087,28678,29008,28852,29535,28903,28457,27691,27640,27617,26993,26803,26786,26926,27192,27036,27398,26833,26890,27124,26757,26850,27223,26327,26477,26720,26873,28083,27745,27704,27214,26815,27252,27073,27125,25747,27244,26352,26507,26484,25853,25933,25904,25921,25127,25576,26326,26510,26337,26849,28327,29993,29904,30693,30549,30459,30267,30699,30084,30449,30472,30592,30618,31151,30775,30503,29918,30345,30215,30215,30412,30623,30392,31485,30330,30292,30240,30144,29859,29912,29802,29908,29774,30082,29178,29226,29345,29214,29316,29360,29275,29228,29684,29152,29183,29075,29048,29041,29182,29768,29566,29434,29399,29413,29284,29414,29169,28701,26662,26047,26091,26190,26123,26037,26427,26165,26049,26006,26089,26108,27731,27301,25933,25802,25869,25969,25811,25785,25753,26243,25906,25894,25833,25163,25836,26228,26536,26606,26569,26537,26764,27222,27134,26570,26582,26581,26253,26293,26213,26358,27021,26917,26970,27984,27533,27430,27798,27417,27947,27973,27937,27581,27396,26868,26759,26867,26856,27168,28517,28413,28332,28723,29683,29922,29991,33060,33903,34493,34158,33911,34091,34532,34501,34662,35441,34935,34737,35088,35048,35035,35436,35630,36696,37322,37140,37059,36497,35546,37891,36156,36624,36588,37396,37480,35809,37427,37298,37720,37801,37469,37249,37833,37867,37712,38698,39476,39976,41986,44077,43745,43299,44184,43709,43788,41238,41458,42887,43023,41935,42237,41342,41265,42263,43640,43871,43997,43742,43013,43600,42515,43471,42609,42086,42148,42250,44176,44959,42855,44190,44181,43976,43928,46972,46143,46649,46356,42844,42837,41716,42498,43132,42743,41263,41620,41659,41558,39505,39856,40068,39926,41813,42124,42031,43275,42951,42557,43061,43183,42992,42576,42653,43081,44319,45312,47135,47771,48302,49958,49739,51822,51946,52172,51685,52129,51782,52270,51863,51303,50728,51560,51728,54530,57075,62499,61172,62437,62034,63168,68378,63798,66102,66937,68307,68499,69027,72121,71489,73094,71394,69496,65304,68359,67601,61919,67857,65493,63795,64083,67226,69963,69991,69447,70755,69910,69651,71332,69701,65447,65984,68527,67857,68910,69374,71646,69142,70562,70036,67199,64020,65735,63436,63821,61281,63508,63824,64992,64950,66845,66416,64272,64486,63750,63420,63113,63833,60603,58268,59120,62885,63902,64045,63158,62323,61182,63067,60794,60806,61449,62914,61557,66239,65232,67060,66927,66266,71443,70140,69134,67942,68532,69273,68487,69374,68290,67574,68352,67485,67719,67752,68803,70553,71084,70764,69332,69298,69645,69513,67332,68240,66758,65993,66188,66637,66481,65148,64960,64830,64096,64251,63167,60280,61795,60808,61616,60316,60871,62676,62845,62028,60146,57034,56649,58265,55849,56706,58011,57743,57352,57908,59231,60798,64860,65077,64105,63969,66713,67165,68156,67597,65921,65358,65791,67915,67826,68257,66777,66180,64622,65298,61410,60677,58116,53979,56083,55033,61699,60879,60943,58717,59350,60600,58727,57523,58887,59483,58446,59476,59025,61170,60382,64082,64175,64328,62858,59467,59024,59389,59108,58969,57323,59114,57430,57967,56165,53952,54158,54857,57056,57636,57345,58136,60566,60004,59137,58195,60304,61684,62938,63213,63377,63626,63331,64279,63139,65180,65782,65888,65621,63324,60839,60639,60754,62080,62065,62815,62238,62124,60574,60269,62457,63189,62843,66049,67050,67599,67402,68426,68366,69012,67363,67368,66656,68162,66639,67019,67939,69913,72706,72330,70219,69491,69302,68744,67809,69383,75643,75926,76559,76729,80478,88720,87973,90538,87292,91063,90562,89829,90541,92369,94354,98501,99012,97777,98043,93003,91968,95957,95652,97504,96450,97274,95857,95941,98769,97080,99888,99914,101180,97466,96653,101192,100041,101468,101404,104342,106059,106156,100157,97470,97769,97227,95095,94716,98614,99300,95686,94153,95145,93536,92653,93407,94409,96854,98122,98242,98319,102253,96917,95049,92493,94703,94570,94478,94498,96527,100512,99977,104103,104409,101217,102042,106158,103637,103950,104855,104722,102593,102102,101323,103705,104744,102406,100627,97676,101415,97877,96608,96564,96541,96487,96487,97461,95752,97877,96629,97495,97594,96176,95771,95544,96643,98331,96111,96581,96275,91538,88664,84116,84646,84380,86025,94256,86082,87226,90609,89920,86746,86163,80669,78558,82859,83704,81076,83983,84340,82582,84041,82718,86868,84174,84042,83813,86057,87509,87475,86907,87188,84363,82612,82338,82531,85186,82487,83103,83842,83500,78372,79189,76267,82576,79588,83424,85283,83710,84553,83632,84034,84915,84467,85091,85173,87523,93473,93709,93971,94724,94660,93782,94998,94275,94206,96507,96927,95896,94312,94728,96818,97043,103223,102982,104766,104131,102827,104155,103552,103757,103500,103159,106425,105622,106806,109668,111722,107304,107810,109029,109481,108988,107808,105588,104028,104655,105701,105907,105434,104744,101566,104382,105633,105771,110300,110279,108689,105755,106122,105467,105559,106798,104606,104911,104680,103303,102142,100998,105380,106119,107386,106979,107110,107334,108386,107130,105706,108847,109637,108026,108243,109224,108301,108936,111305,115994,117562,117446,119095,119871,117762,118748,119277,118020,117923,117316,117447,120001,118780,118353,117648,117947,119462,118037,117926,117829,115754,113263,112522,114227,115068,114138,115024,117511,116677,116485,119295,118716,120169,123359,118388,117420,117484,117456,116251,112816,114263,112433,116867,115372,113468,110139,111803,111252,112573,108371,108791,108235,109251,111203,111738,110733,110657,110231,111175,112079,111523,113969,115518,116105,115965,115385,115402,116798,116453,117129,115691,115751,115317,112752,112010,113317,109037,109699,109689,112177,114404,114035,118618,120628,122283,122433,123519,124777,121425,123341,121684,113139,110788,115105,115216,113093,110785,108193,106466,107210,108688,110577,108448,107614,110083,111021,111638,114532,114121,112924,110069,108303,109553,110047,110602,106533,101523,103884,101283,103329,102280,104712,105962,103018,101659,99675,94399,95534,94188,92093,92979,91453,86467,85097,84678,86787,88276,87331,90518,91305,90915,90831,90376,86316,91320,93468,92142,89343,89231,90455,90644,92704,91985,92498,90270,90281,88166,86423,87835,86133,85458,88099,88337,88616,88485,87425,87608,87224,87300,87790,87835,87123,88424,87494,88735,89944,90591,91468,93882,93739,91273,91030,90496,90379,90818,91194,95334,96932,95560,95528,95098,93665,92553,88325,89375,89462,89506,89082,86571,88246,89117,89160,84563,84120,78586,76880,78680,75632,73004,62812,70520,69283,70285,70131,68794,66980,66206,68852,69755,68785,68840,67460,66428,66957,67995,67966,67615,64620,64043,67985,67471,65867,67006,65762,68776,68265,72758,70887,68129,67280,65941,68453,69922,70197,70494,70966,71219,72820,74860,73928,71263,69911,70508,68890,67850,70885,70518,71301,68779,66330,66320,65957,66694,68217,68100,66891,66932,67286,68997,68857,71950,71130,71771,72976,73065,70768,74501,74195,74815,75170,77143,75735,73857,75874,76353,78206,78267,77459,77636,78649,77373,76347,75782,76286,78196,78670,78543,79828,80928,81437,80016,80198,80672,82146,81738,80491,79286,81068,79063,78141,77409,76947,76753,77463,77538,75461,76674,76985,77285,75823,74348,73539,73372,73755,73571,71326,66677,64013,63813,61039,60861,63275,63090,61642,61450,63548,63540,64427,65713,66285,65612,64429,62901,63486,64250,63235,63952,62654,60984,59710,60024,59941,59497,60136,58534,59964,61484,62545,63086,63572,64000,63287,62250,63188,64125,63783,63744,62242,64960,64715,63791,63899,64798,64682,65210,66512,66074,65051,64095,64312,65335,63711,63873,63897,64721,62811,62760,63487,63461,64054,64600,64255,64879,64906,64855,63917,63552,63401,63406,62972,63024,62826,64504,64684,69284,73025,78324,77077,77701,78976,78522,79030,80273,77835,78232,77690,78550,77411,77304,81273,79677,79833,80341,79094,78444,78273,76540,77210,77273,76830,78170,75609,76142,76395,80872];
+  var FXM=[30.05,29.82,29.52,29.06,29.79,30.83,31.13,31.61,31.7,31.21,31.64,32.34,32.93,32.63,32.39,32.33,32.54,32.51,32.11,32.02,32.2,32.46,32.8,32.9,32.74,32.57,32.63,32.54,33.55,33.73,34.34,35.43,36.03,35.69,35.8,36,36.14,35.62,35.22,35.08,35.42,35.29,35.05,34.71,34.73,35.07,35.34,35.79,35.47,35.01,34.87,34.48,34.46,34,33.74,33.26,33.15,33.23,32.91,32.64,31.9,31.49,31.27,31.32,31.99,32.48,33.28,33.03,32.61,32.79,32.96,32.71,31.81,31.3,31.74,31.86,31.8,31.12,30.8,30.75,30.57,30.36,30.24,30.2,30.46,31.33,32.1,32.63,32.06,31.17,31.41,31.21,31.37,31.25,30.45,30.08,30.01,30.01,30.79,31.35,31.28,31.44,32.64,33.09,33.07,33.46,33.09,33.56,33.24,32.64,33.26,33.8,34.4,34.95,36.38,35.85,37.04,37.95,36.37,34.77,33.29,34.06,34.48,34.24,34.2,34.92,34.59,35.01,35.85,36.5,35.47,35.02,35.21,35.86,35.95,36.78,36.63,36.71,36.26,34.75,33.33,33.39,34.43,34.16,34.24,33.8,33.8,33.79,32.94,32.62,32.44,32.46,32.01,32.58,32.38,31.61,31.3,31.26,32.27,32.28,32.51,32.88,33.51,33.01,33.11];
+
+  var DAY=864e5, D0=Date.UTC(2013,0,1), WPY=365.25/7, LAST=USD.length-1;
+  var KMAX=Math.ceil(100*WPY);                              // หลังเริ่มถอน ดูไกลสุด 100 ปี
+  var NOW=Date.now();
+  var TH_M=["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."];
+  function dOf(i){return new Date(D0+i*DAY);}
+  function iOf(y,m,d){return Math.round((Date.UTC(y,m-1,d)-D0)/DAY);}
+  var THB=new Float64Array(LAST+1);
+  for(var q=0;q<=LAST;q++){var dq=dOf(q),mq=(dq.getUTCFullYear()-2013)*12+dq.getUTCMonth(); THB[q]=USD[q]*FXM[Math.min(FXM.length-1,mq)];}
+  function fDate(i){var d=dOf(i); return d.getUTCDate()+" "+TH_M[d.getUTCMonth()]+" "+d.getUTCFullYear();}
+  function fMonYr(ms){var d=new Date(ms); return TH_M[d.getUTCMonth()]+" "+d.getUTCFullYear();}
+  function yearOf(ms){return new Date(ms).getUTCFullYear();}
+  var LAST_LABEL=fDate(LAST);
+
+  // ---------- เริ่มถอนเมื่อไหร่ ----------
+  var STARTS=[{d:0,name:"ปัจจุบัน",short:"ตอนนี้"},{d:5,name:"อีก 5 ปี",short:"+5 ปี"},{d:10,name:"อีก 10 ปี",short:"+10 ปี"}];
+  var SKEY=["s1","s2","s3"];                                  // สีเส้นของแต่ละจุดเริ่ม
+  var KFUT=Math.round(15*WPY)+KMAX+2;                         // ความยาวเส้นราคาอนาคต (สัปดาห์) — ถึงช่วงปีที่ 10–15 + 100 ปี
+
+  // ---------- รูปแบบรอบในอดีต: ยอด → ยอดถัดไป (ราคาเป็นบาท) ----------
+  var PK=[iOf(2013,12,5),iOf(2017,12,17),iOf(2021,11,9),iOf(2025,10,7)];
+  var TPL=[
+    {id:"c3",name:"รอบ 2021→2025",s:PK[2],e:PK[3]},
+    {id:"c2",name:"รอบ 2017→2021",s:PK[1],e:PK[2]}
+  ];
+  TPL.forEach(function(t){
+    t.L=t.e-t.s; var lo=Infinity;
+    for(var j=t.s;j<=t.e;j++)if(THB[j]<lo){lo=THB[j];t.b=j-t.s;}
+    t.dec=lo/THB[t.s]; t.ral=THB[t.e]/lo;                    // ร่วงถึงก้น (สัดส่วน) · ขึ้นจากก้นถึงยอดใหม่ (เท่า)
+    t.cagr=Math.pow(THB[t.e]/THB[t.s],365.25/t.L)-1;          // โตจากยอดถึงยอดจริง ต่อปี
+  });
+  var TAU0=LAST-PK[3];                                        // วันนี้อยู่หลังยอดล่าสุดกี่วัน
+
+  // ---------- Power Law: ราคา ($) = 10^A × (จำนวนวันนับจาก 3 ม.ค. 2009)^B — ค่าที่ใช้กันทั่วไป ----------
+  // ราคาสูงสุดแต่ละรอบแตะเส้น (ต.ค. 2025 อยู่ ~0.95 เท่าของเส้น) · ราคาต่ำสุดราว 0.37 เท่า (พ.ย. 2022)
+  // จังหวะขึ้นลงระหว่างรอบใช้ของรอบ 2021→2025 โดยบีบขาลงให้อยู่ในกรอบนี้ (ขาลงจริงเริ่มจากฟองสบู่ 2.4 เท่าของเส้น)
+  var PLA=-17.016, PLB=5.845, DG=Math.round((D0-Date.UTC(2009,0,3))/DAY);
+  function plUSD(dg){return Math.pow(10,PLA+PLB*Math.log10(dg));}
+  (function(){
+    var t=TPL[0], L=t.L, b=t.b, mh=new Float64Array(L+1);
+    for(var j=0;j<=L;j++)mh[j]=Math.log(USD[t.s+j]/plUSD(DG+t.s+j));   // ราคาจริงเป็นกี่เท่าของเส้น (log) ตลอดรอบ 2021→2025
+    var r0=mh[0], rb=mh[b], lt=mh[L], d1=DG+PK[3]+L;
+    var pl={id:"pl",pl:true,name:"Power Law",s:t.s,e:t.e,L:L,b:b,mTop:Math.exp(lt),mBot:Math.exp(rb)};
+    pl.lm=function(tau){return tau<=b?rb+(mh[tau]-rb)*(lt-rb)/(r0-rb):mh[tau];};
+    pl.gAt=function(n){var a=DG+PK[3]+n*L; return Math.pow(plUSD(a+L)/plUSD(a),365.25/L)-1;};   // ราคาสูงสุดโตปีละเท่าไหร่ในรอบที่ n
+    pl.cagr=pl.gAt(0);
+    pl.dec=Math.exp(rb-lt)*plUSD(d1+b)/plUSD(d1);                    // ราคาต่ำสุด ÷ ราคาสูงสุด ของรอบถัดไป
+    TPL.push(pl);
+  })();
+  TPL.forEach(function(t){t.lab="แบบ"+(t.pl?" ":"")+t.name;});
+
+  // เส้นราคาอนาคตรายสัปดาห์ (k=0 = วันนี้): ขาลงใช้ % จริง · ขาขึ้นย่อให้ยอดใหม่ = ยอดเดิม × (1+g)^ความยาวรอบ
+  // รอบปัจจุบันเริ่มจากราคาวันนี้ แล้วค่อย ๆ กลืนเข้าหาแม่แบบจนถึงยอดถัดไป
+  function buildFuture(t,g,Ptoday){
+    if(t.pl)return buildPL(t,Ptoday);
+    var L=t.L, b=t.b, base=THB[t.s], bot=THB[t.s+b];
+    var Rt=Math.pow(1+g,L/365.25), sc=Math.log(Rt/t.dec)/Math.log(t.ral);
+    function ratio(tau){return tau<=b?THB[t.s+tau]/base:t.dec*Math.pow(THB[t.s+tau]/bot,sc);}
+    var Ppk=THB[PK[3]], off=Math.log(Ptoday/(Ppk*ratio(TAU0))), P=new Float64Array(KFUT+1);
+    for(var k=0;k<=KFUT;k++){
+      var days=TAU0+7*k, n=Math.floor(days/L), tau=days-n*L, p=Ppk*Math.pow(Rt,n)*ratio(tau);
+      if(n===0)p*=Math.exp(off*(L-tau)/(L-TAU0));
+      P[k]=p;
+    }
+    return {P:P,Rt:Rt,sc:sc,L:L,peakDay:function(n){return PK[3]+n*L;}};
+  }
+  // Power Law: ราคา = เส้น × (กี่เท่าของเส้นตามจังหวะรอบ) · รอบปัจจุบันเริ่มจากราคาวันนี้ แล้วค่อย ๆ กลืนเข้าหาจนถึงยอดถัดไป
+  function buildPL(t,Ptoday){
+    var L=t.L, base=DG+PK[3], P=new Float64Array(KFUT+1), line=new Float64Array(KFUT+1);
+    var off=Math.log(Ptoday/(plUSD(base+TAU0)*fx*Math.exp(t.lm(TAU0))));
+    for(var k=0;k<=KFUT;k++){
+      var days=TAU0+7*k, n=Math.floor(days/L), tau=days-n*L, ln=plUSD(base+days)*fx, p=ln*Math.exp(t.lm(tau));
+      if(n===0)p*=Math.exp(off*(L-tau)/(L-TAU0));
+      P[k]=p; line[k]=ln;
+    }
+    return {P:P,line:line,L:L,peakDay:function(n){return PK[3]+n*L;}};
+  }
+
+  // ---------- ตัวเลข ----------
+  var nf0=new Intl.NumberFormat("en-US",{maximumFractionDigits:0});
+  function grp(v){return nf0.format(Math.round(v));}
+  function trim(x,d){return x.toLocaleString("en-US",{maximumFractionDigits:d});}
+  function fB(v){if(v==null||!isFinite(v))return "—"; return (v<0?"−":"")+"฿"+grp(Math.abs(v));}
+  function fMs(v){
+    if(v==null||!isFinite(v))return "—";
+    var s=v<0?"−":"",a=Math.abs(v);
+    if(a>=1e12)return s+"฿"+trim(a/1e12,2)+"ลล";
+    if(a>=1e6)return s+"฿"+trim(a/1e6,a<1e7?2:1)+"ล";
+    return s+"฿"+grp(a);
+  }
+  function fBtc(v){if(v==null||!isFinite(v))return "—"; var a=Math.abs(v);
+    return a>=100?v.toFixed(1):a>=1?v.toFixed(3):a>=0.01?v.toFixed(4):v.toFixed(5);}
+  function fPct(x,d){return (x*100).toFixed(d==null?1:d)+"%";}
+  function fPct0(x){return x>0&&x<0.005?"<1%":fPct(x,0);}
+  function fX(r){if(r==null||!isFinite(r))return "—"; return "×"+(r>=100?grp(r):r>=10?r.toFixed(1):r.toFixed(2));}
+  function fYrs(t){                                          // 9.33 → "9 ปี 4 เดือน"
+    if(t==null)return "ไม่หมด";
+    var m=Math.round(t*12); if(m<1)return "ไม่ถึงเดือน";
+    var y=Math.floor(m/12),mm=m%12;
+    return (y>0?y+" ปี":"")+(y>0&&mm>0?" ":"")+(mm>0?mm+" เดือน":"");
+  }
+
+  // ---------- จำลองการถอน ----------
+  // บริบทของการเริ่มถอนที่ delay ปี บนเส้นราคา F (ยอดถอนต่อเดือนเป็นค่าเงินวันนี้)
+  function makeCtx(v,F,delay){
+    var infl=v.infl/100, up=Math.pow(1+infl,delay), k0=Math.round(delay*WPY), P=F.P.subarray(k0);
+    var wk0=v.spend*12/WPY*up;
+    return {P:P,k0:k0,delay:delay,btc0:v.btc,P0:P[0],iw:Math.pow(1+infl,1/WPY),wk0:wk0,wkUnit:12/WPY*up,
+      KH:Math.round(v.horizon*WPY),H:v.horizon,startMs:NOW+delay*365.25*DAY,stack0:v.btc*P[0],
+      wr:v.btc>0?wk0*WPY/(v.btc*P[0]):0,spendStartMo:v.spend*up};
+  }
+  // ขายต้นสัปดาห์ให้พอค่าใช้จ่ายสัปดาห์นั้น จนกว่ากองจะหมด (ดูไกลสุด 100 ปี)
+  function runSell(P,c,track){
+    var b=c.btc0, sp=c.wk0, first=c.wk0/P[0], KH=c.KH;
+    var r={depl:null,bH:0,soldBelow:0,spentBelow:0,maxMult:0,maxK:0,series:null,sold:null};
+    if(track){r.series=new Float64Array(KH+1); r.sold=new Float64Array(KH+1);}
+    for(var k=0;k<=KMAX;k++){
+      if(r.depl===null){
+        var p=P[k], s=sp/p, take=Math.min(s,b);
+        if(track&&k<=KH){r.series[k]=b; r.sold[k]=take;}
+        if(k===KH)r.bH=b;
+        if(p<P[0]){r.soldBelow+=take; r.spentBelow+=take*p;}
+        if(first>0&&s/first>r.maxMult){r.maxMult=s/first; r.maxK=k;}
+        if(s>b){r.depl=(k+(s>0?b/s:0))/WPY; b=0;}         // เงินพอแค่บางส่วนของสัปดาห์นี้
+        else b-=s;
+      }
+      if(r.depl!==null&&k>=KH)break;
+      sp*=c.iw;
+    }
+    return r;
+  }
+  // BTC ที่ต้องใช้ต่อการถอน ฿1/เดือน (ค่าเงินวันนี้) ให้พอครบขอบเวลา — ใช้หายอดถอนปลอดภัย
+  function needPerBaht(P,c){var sp=c.wkUnit,t=0; for(var k=0;k<c.KH;k++){t+=sp/P[k]; sp*=c.iw;} return t;}
+
+  // ---------- ตารางเริ่มตอนราคาสูงสุด/ต่ำสุด: แถว = ถอนปีละกี่ % ของมูลค่ากองตอนเริ่ม ----------
+  var MX_WR=[4,6,8,10,12,15,20];
+
+  // ---------- ค่าตั้งต้น & input ----------
+  var FALLBACK_PRICE=2713560, FALLBACK_FX=33.4;            // CoinGecko 19 ก.ย. 2026
+  var fx=FALLBACK_FX, livePrice=null, priceTouched=false;
+  var DEF={btc:1,spend:20000,infl:3,horizon:30,price:FALLBACK_PRICE};
+  var DEF_ST={start:0,tpl:0,mxRow:"10",mxMode:"sell"};                                 // ปัจจุบัน · รอบ 2021→2025 (ล่าสุด)
+  var st={start:DEF_ST.start,tpl:DEF_ST.tpl,mxRow:DEF_ST.mxRow,mxMode:DEF_ST.mxMode};  // mxRow = แถวที่กราฟราคาสูงสุด/ต่ำสุดแสดง ("4"…"20" หรือ "me") · mxMode = "sell" เทียบจังหวะขาย / "start" เทียบวันเกษียณ
+  var CFG={
+    btc:{min:0.001,max:1000,range:true},
+    spend:{min:0,max:50000000,comma:true,range:true},
+    infl:{min:0,max:15,range:true},
+    horizon:{min:5,max:60,range:true,int:true},
+    price:{min:100000,max:500000000,comma:true}
+  };
+
+  function num(id){
+    var cfg=CFG[id],raw=(""+$(id).value).replace(/,/g,"").trim(),v=parseFloat(raw);
+    if(isNaN(v))v=id==="spend"?0:cfg.min;
+    if(v<cfg.min)v=cfg.min; if(v>cfg.max)v=cfg.max;
+    if(cfg.int)v=Math.round(v);
+    return v;
+  }
+  function commafy(el){
+    var val=el.value, sel=el.selectionStart||0;
+    var before=val.slice(0,sel).replace(/\D/g,"").length;
+    var digits=val.replace(/\D/g,"");
+    if(digits===""){el.value="";return;}
+    var f=Number(digits).toLocaleString("en-US"); el.value=f;
+    var pos=0,seen=0; while(pos<f.length&&seen<before){var cc=f.charCodeAt(pos); if(cc>=48&&cc<=57)seen++; pos++;}
+    try{el.setSelectionRange(pos,pos);}catch(e){}
+  }
+  function showVal(id,v){
+    var cfg=CFG[id];
+    $(id).value=cfg.comma?grp(v):String(+(+v).toFixed(id==="btc"?6:3));
+    if(cfg.range&&$(id+"R"))$(id+"R").value=v;
+  }
+  function setVals(v){for(var k in v)if(CFG[k])showVal(k,v[k]);}
+  function getVals(){var v={}; for(var k in CFG)v[k]=num(k); return v;}
+
+  // ================= render =================
+  var last=null;
+  function render(){
+    var v=getVals(), g=TPL[st.tpl].cagr;                       // แต่ละรอบโตเฉลี่ยเท่าที่เคยเกิดจริง (ยอดถึงยอด)
+    var F=TPL.map(function(t){return buildFuture(t,t.cagr,v.price);});
+    var grid=F.map(function(f){return STARTS.map(function(s){var c=makeCtx(v,f,s.d); return {c:c,r:runSell(c.P,c,false)};});});
+    var Fs=F[st.tpl];
+    var runs=STARTS.map(function(s){var c=makeCtx(v,Fs,s.d); return {c:c,r:runSell(c.P,c,true)};});
+    var sel=runs[st.start], c=sel.c;
+    last={v:v,g:g,F:F,Fs:Fs,grid:grid,runs:runs,c:c,r:sel.r,
+      tpl:TPL[st.tpl],start:STARTS[st.start]};
+    renderNotes(); renderTop(); renderGrid(); renderWhy(); renderMatrix(); renderTable(); syncUI();
+    drawChart(); drawMx();
+  }
+  function deplOf(x,H){return x.depl!==null&&x.depl<H;}
+  function whereTxt(s,c){return s.d?"อีก "+s.d+" ปี ("+yearOf(c.startMs)+")":"ตอนนี้";}
+
+  function renderNotes(){
+    var L=last,v=L.v,c=L.c,F=L.Fs;
+    $("btcNote").textContent="มูลค่าวันนี้ ≈ "+fMs(v.btc*v.price)+" (≈ $"+grp(v.btc*v.price/fx)+")";
+    $("startNote").innerHTML=L.start.d
+      ?"เริ่มราว <b>"+fMonYr(c.startMs)+"</b> · ราคา"+L.tpl.lab+" ≈ <b>"+fMs(c.P0)+"</b>/₿ · มูลค่า Bitcoin ที่มี ≈ "+fMs(c.stack0)
+      :"เริ่มถอนทันที ที่ราคาวันนี้";
+    var sn=v.spend>0?"= ถอนปีละ <b>"+fPct(c.wr,1)+"</b> ของมูลค่า Bitcoin ที่มีตอนเริ่ม":"ยังไม่ได้ใส่ยอดถอน";
+    if(L.start.d&&v.spend>0)sn+=" · ปี "+yearOf(c.startMs)+" เท่ากับเดือนละ "+fB(c.spendStartMo);
+    $("spendNote").innerHTML=sn;
+    var pk1=F.peakDay(1), pk1Price=F.P[Math.max(0,Math.round((pk1-LAST)/7))];
+    // รอบที่เลือก: ร่วงเท่าไหร่ โตเฉลี่ยเท่าไหร่ ยอดถัดไปอยู่ราวไหน
+    var t=L.tpl, pk0=THB[PK[3]], p10=F.P[Math.min(F.P.length-1,Math.round(10*WPY))];
+    if(t.pl){
+      $("tplNote").innerHTML="แบบ Power Law: ราคาสูงสุดแต่ละรอบแตะเส้น Power Law (แบบ ต.ค. 2025) ราคาต่ำสุดราว "+t.mBot.toFixed(2)+" เท่าของเส้น (แบบ พ.ย. 2022) · เส้นโตปีละ <b>"+fPct(t.gAt(0),0)+"</b> ในรอบนี้ แล้วช้าลงทุกรอบ<br>"+
+        "วันนี้ราคาอยู่ "+(v.price/F.line[0]).toFixed(2)+" เท่าของเส้น (เส้น ≈ "+fMs(F.line[0])+") · ราคาสูงสุดครั้งถัดไปราว "+fMonYr(D0+pk1*DAY)+" ≈ <b>"+fMs(pk1Price)+"</b> ("+fX(pk1Price/pk0)+")"+
+        "<br>เป็นกรณีมองโลกแง่ดี: ปี "+yearOf(NOW+10*365.25*DAY)+" ราคาราว "+fMs(p10)+"/₿";
+      return;
+    }
+    $("tplNote").innerHTML=t.lab+": ร่วงจากราคาสูงสุด "+fPct(1-t.dec,0)+" แล้วฟื้นไปทำราคาสูงสุดใหม่ ที่โตเฉลี่ยปีละ <b>"+fPct(t.cagr,0)+"</b> (เทียบราคาสูงสุดรอบก่อนกับรอบถัดไป)<br>"+
+      "ราคาสูงสุด ต.ค. 2025 ≈ "+fMs(pk0)+" → ราคาสูงสุดครั้งถัดไปราว "+fMonYr(D0+pk1*DAY)+" ≈ <b>"+fMs(pk1Price)+"</b> ("+fX(pk1Price/pk0)+")"+
+      (t.cagr>0.3?"<br>รอบนี้โตเร็ว ถ้าซ้ำแบบนี้ไปเรื่อย ๆ ปี "+yearOf(NOW+10*365.25*DAY)+" ราคาจะราว "+fMs(p10)+"/₿ — เป็นกรณีมองโลกแง่ดี":"");
+  }
+
+  function renderTop(){
+    var L=last,v=L.v,c=L.c,r=L.r,H=c.H,P=c.P,cls,mark,msg,where=whereTxt(L.start,c);
+    var dead=deplOf(r,H), left=c.btc0>0?r.bH/c.btc0:0;
+    if(!(v.spend>0)){cls="";mark="i";msg="ใส่ยอดถอนต่อเดือน เพื่อดูว่า Bitcoin ที่มีจะพอใช้กี่ปี";}
+    else if(dead){
+      cls="bad";mark="✕";
+      msg=r.depl<1/12?"<b>เริ่มถอน"+where+" Bitcoin ที่มีจะหมดตั้งแต่เดือนแรก</b>"
+        :"<b>เริ่มถอน"+where+" Bitcoin ที่มีจะหมดในปีที่ "+r.depl.toFixed(1)+"</b> (ราว "+fMonYr(c.startMs+r.depl*365.25*DAY)+")";
+    }else if(left<0.25){
+      cls="warn";mark="!";
+      msg="<b>เริ่มถอน"+where+" พอใช้ครบ "+H+" ปี แต่เหลือ BTC แค่ "+fPct0(left)+"</b> ("+fBtc(r.bH)+" ₿)";
+    }else{
+      cls="good";mark="✓";
+      msg="<b>เริ่มถอน"+where+" พอใช้ครบ "+H+" ปี ยังเหลือ "+fBtc(r.bH)+" ₿ ("+fPct0(left)+")</b>";
+    }
+    $("verdict").className="verdict "+cls; $("vmark").textContent=mark; $("vtext").innerHTML=msg;
+
+    $("hLab").textContent="เริ่มถอน"+where+" · "+fBtc(v.btc)+" ₿ · เดือนละ "+fB(v.spend)+" · ราคา"+L.tpl.lab+(dead?" — BTC จะหมดภายใน":" — ครบ "+H+" ปี ยังเหลือ");
+    var big=$("hBig");
+    if(dead){
+      var m=Math.round(r.depl*12),yy=Math.floor(m/12),mm=m%12;
+      big.innerHTML=m<1?"ไม่ถึงเดือน":(yy>0?yy+'<span class="sym">ปี</span>':"")+(mm>0?mm+'<span class="sym">เดือน</span>':"");
+      big.className="big bad";
+    }else{
+      big.innerHTML=fBtc(r.bH)+'<span class="sym">₿ ('+fPct0(left)+')</span>';
+      big.className="big "+(v.spend>0?(left<0.25?"warn":"good"):"");
+    }
+    var f=$("fill"); f.style.width=(dead?Math.max(0.5,r.depl/H*100):100)+"%"; f.className="fill "+(dead?"bad":left<0.25?"warn":"good");
+    $("hL").textContent="เริ่มถอน "+fMonYr(c.startMs);
+    $("hR").textContent="ต้องพอ "+H+" ปี · "+fMonYr(c.startMs+H*365.25*DAY);
+    var sub;
+    if(dead)sub="หมดราว <b>"+fMonYr(c.startMs+r.depl*365.25*DAY)+"</b> · ต้องหาเงินจากทางอื่นอีก <b>"+(H-r.depl).toFixed(1)+" ปี</b>";
+    else{
+      sub="ขายไปแล้ว <b>"+(left<0.005?">99%":fPct(1-left,0))+"</b> ของ Bitcoin ที่มี · ที่เหลือมีค่า ≈ <b>"+fMs(r.bH*P[c.KH])+"</b> ตอนครบ "+H+" ปี";
+      if(r.depl!==null)sub+=" · ถ้าใช้ต่อไปเรื่อย ๆ จะหมดราวปีที่ "+r.depl.toFixed(1);
+    }
+    $("hSub").innerHTML=v.spend>0?sub:"";
+  }
+
+  // ตาราง 3×3: เริ่มถอนเมื่อไหร่ × ราคาขึ้นลงแบบรอบไหน
+  function renderGrid(){
+    var L=last,v=L.v,H=L.c.H;
+    $("gTitle").textContent="มี "+fBtc(v.btc)+" ₿ ถอนเดือนละ "+fB(v.spend)+" — หมดภายในกี่ปี";
+    $("gSub").textContent="แถว = เริ่มถอนเมื่อไหร่ · คอลัมน์ = ราคา model ที่ใช้ (ซ้ำรอบในอดีต หรือ Power Law) · กดช่องเพื่อดูรายละเอียดด้านล่าง";
+    var h='<thead><tr><th scope="col">เริ่มถอน</th>';
+    TPL.forEach(function(t){h+='<th scope="col"><span class="full">'+t.lab+'</span><span class="short">'+t.name.replace("รอบ ","")+'</span><small>ร่วง '+fPct(1-t.dec,0)+' · โต '+fPct(t.cagr,0)+'/ปี'+(t.pl?' แล้วช้าลง':'')+'</small></th>';});
+    h+='</tr></thead><tbody>';
+    STARTS.forEach(function(s,si){
+      h+='<tr><th scope="row"><span class="full">'+s.name+'</span><span class="short">'+s.short+'</span><small>'+yearOf(L.grid[0][si].c.startMs)+'</small></th>';
+      TPL.forEach(function(t,ti){
+        var g=L.grid[ti][si], x=g.r, dead=deplOf(x,H), left=x.bH/(g.c.btc0||1), on=si===st.start&&ti===st.tpl;
+        var cls=!(v.spend>0)?"":dead?"x":left<0.25?"lo":"ok";
+        var l1=dead?"✕ "+x.depl.toFixed(1)+" ปี":"✓ พอ "+H+" ปี";
+        var l2=dead?"หมดราว "+yearOf(g.c.startMs+x.depl*365.25*DAY):"เหลือ "+fBtc(x.bH)+" ₿";
+        h+='<td class="'+cls+(on?" on":"")+'"><button type="button" data-cell="'+si+','+ti+'" aria-pressed="'+on+'">'+
+          '<b>'+l1+'</b><small>'+l2+'</small><small>ถอนปีละ '+fPct(g.c.wr,1)+'</small></button></td>';
+      });
+      h+='</tr>';
+    });
+    $("g3").innerHTML=h+'</tbody>';
+  }
+
+
+  // ถอนได้กี่ % ของมูลค่ากองตอนเริ่ม ให้พอครบขอบเวลา ถ้าเริ่มสัปดาห์ k0 ของเส้นราคานี้
+  function safeWrAt(F,v,delay){var c=makeCtx(v,F,delay), n=needPerBaht(c.P,c); return n>0?c.wkUnit*WPY/(n*c.P0):0;}
+  function renderWhy(){
+    var L=last,c=L.c,r=L.r,P=c.P,v=L.v,H=c.H,mo=WPY/12,out=[];
+    // 1) ขายหนักตอนราคาต่ำ
+    var firstBtc=c.wk0*mo/P[0], kx=r.maxK, worstBtc=c.wk0*Math.pow(c.iw,kx)*mo/P[kx], w1;
+    if(!(v.spend>0))w1="<p>ใส่ยอดถอนก่อน แล้วจะเห็นว่าเดือนที่ราคาต่ำต้องขายมากกว่าเดือนแรกกี่เท่า</p>";
+    else if(r.maxMult>1.02){
+      w1='<div class="brow"><span>เดือนแรก</span><span class="bt"><i style="width:'+(firstBtc/worstBtc*100).toFixed(1)+'%"></i></span><span class="bv">'+fBtc(firstBtc)+' ₿</span></div>'+
+         '<div class="brow"><span>เดือนที่หนักสุด</span><span class="bt"><i style="width:100%"></i></span><span class="bv">'+fBtc(worstBtc)+' ₿</span></div>'+
+         '<p>เดือนแรกถอน '+fB(c.spendStartMo)+' ที่ราคา '+fMs(P[0])+' ขาย '+fBtc(firstBtc)+' ₿ &mdash; ปีที่ '+(kx/WPY).toFixed(1)+
+         ' ราคาเหลือ '+fX(P[kx]/P[0])+' ค่าครองชีพเกือบเท่าเดิม แต่ต้องขาย <b>'+fX(r.maxMult)+'</b></p>';
+    }else w1="<p>ช่วงที่ถอน ราคาไม่เคยต่ำกว่าวันเริ่ม ยิ่งราคาขึ้นยิ่งขายน้อยลง &mdash; เริ่มถอนตอนราคาต่ำจึงได้เปรียบ</p>";
+    out.push('<div class="why"><div class="wn">01</div><h4>ค่าใช้จ่ายเท่าเดิม แต่ต้องขายมากขึ้นหลายเท่า</h4>'+w1+'</div>');
+
+    // 2) ที่ขายไปแล้วไม่ได้กลับมา — แท่งแบ่งกองเป็น 3 ส่วน
+    var btc0=c.btc0||1, below=r.soldBelow, rest=r.bH, above=Math.max(0,btc0-below-rest), w2;
+    var segs=[[below,"var(--s1)","ขายตอนต่ำกว่าราคาวันเริ่ม"],[above,"var(--s2)","ขายตอนสูงกว่า"],[rest,"var(--ink-3)","ยังเหลือตอนครบ "+H+" ปี"]];
+    w2='<div class="stack">'+segs.filter(function(s){return s[0]/btc0>0.002;}).map(function(s){
+        return '<i style="flex:'+(s[0]/btc0).toFixed(4)+';background:'+s[1]+'" title="'+s[2]+'"></i>';}).join("")+'</div>'+
+       '<div class="skey">'+segs.map(function(s){return '<span><i style="background:'+s[1]+'"></i>'+s[2]+' '+fPct0(s[0]/btc0)+'</span>';}).join("")+'</div>';
+    if(below>0){
+      var avg=r.spentBelow/below;
+      w2+='<p>ช่วงราคาต่ำกว่าวันเริ่ม ต้องขายไป <b>'+fBtc(below)+' ₿</b> ในราคาเฉลี่ย '+fMs(avg)+'/₿ ถูกกว่าวันเริ่ม '+fPct(1-avg/c.P0,0)+
+          ' &mdash; ส่วนนี้หายไปถาวร ไม่ได้อยู่รอรับตอนราคาฟื้น</p>';
+    }else w2+='<p>ไม่ต้องขายต่ำกว่าราคาวันเริ่มเลย Bitcoin ที่มีจึงลดลงช้า</p>';
+    out.push('<div class="why"><div class="wn">02</div><h4>BTC ที่ขายไปแล้ว ไม่ได้กลับมาตอนราคาฟื้น</h4>'+w2+'</div>');
+
+    // 3) จังหวะเริ่มสำคัญ — ถ้าตั้งยอดถอนเป็น % ของกองตอนเริ่ม
+    var best=null,worst=null;
+    for(var q=0;q<=96;q+=2){var wr=safeWrAt(L.Fs,v,q/12); if(!worst||wr<worst.wr)worst={wr:wr,d:q/12}; if(!best||wr>best.wr)best={wr:wr,d:q/12};}
+    var cur=safeWrAt(L.Fs,v,L.start.d);
+    function when(d){return fMonYr(NOW+d*365.25*DAY);}
+    var w3='<p>ถ้าตั้งยอดถอนเป็น % ของมูลค่า Bitcoin ที่มีตอนเริ่ม (แบบกฎ 4%) ให้พอ '+H+' ปีเท่ากัน ถอนได้ไม่เท่ากันเลยแล้วแต่จังหวะ</p>'+
+      '<ul class="seq"><li>เริ่มช่วงราคาสูงสุด (ราว '+when(worst.d)+')<b>'+fPct(worst.wr,1)+'</b></li>'+
+      '<li>เริ่มช่วงราคาต่ำสุด (ราว '+when(best.d)+')<b>'+fPct(best.wr,1)+'</b></li>'+
+      '<li>ที่เลือกอยู่ ('+L.start.name+')<b>'+fPct(cur,1)+'</b></li></ul>'+
+      '<p class="small">ใช้ราคา'+L.tpl.lab+' · ตัวอย่างของ Fidelity: สองคนมีเงิน 1 ล้านดอลลาร์ ถอนปีละ 50,000 เจอผลตอบแทน 30 ปีชุดเดียวกัน แค่สลับลำดับ คนหนึ่งโตเป็นกว่า 3 ล้าน อีกคนเหลือศูนย์</p>';
+    out.push('<div class="why"><div class="wn">03</div><h4>จังหวะเริ่มถอน สำคัญกว่าค่าเฉลี่ย</h4>'+w3+'</div>');
+    $("whyGrid").innerHTML=out.join("");
+  }
+
+  function fLeft(x){return x<0.005?"<1%":Math.round(x*100)+"%";}
+  function renderMatrix(){
+    var L=last,v=L.v,c=L.c,P=L.Fs.P,H=c.H,KH=c.KH,iw=c.iw,d0=L.start.d;
+    function when(k){return fMonYr(NOW+k*7*DAY);}
+    function yr(t){return yearOf(NOW+t*365.25*DAY);}
+    // ช่วง 5 ปีตามจุดเริ่มที่เลือก (ตอนนี้ / อีก 5 ปี / อีก 10 ปี) — หาวันที่ราคาสูงสุดและต่ำสุดในช่วงนั้น
+    var a=Math.round(d0*WPY), b=Math.round((d0+5)*WPY), hi=a, lo=a;
+    for(var k=a;k<=b;k++){if(P[k]>P[hi])hi=k; if(P[k]<P[lo])lo=k;}
+    var cols=[{hi:true,k:hi},{hi:false,k:lo}];
+    var sel=st.mxRow; if(sel==="me"&&!(v.spend>0))sel="10";   // แถวที่กราฟแสดง
+    // ถอนปีละ wr ของมูลค่ากองตอนเริ่ม (ขึ้นตามเงินเฟ้อ) นับถึงครบ H ปี
+    function wrRun(k0,wr){var b=1,sp=wr*P[k0]/WPY; for(var k=0;k<KH;k++){var s=sp/P[k0+k]; if(s>b)return {dead:true,t:(k+b/s)/WPY}; b-=s; sp*=iw;} return {dead:false,left:b};}
+    function cell(r,ok,sub){
+      return r.dead?'<td class="x">✕ หมด<small>ใน '+r.t.toFixed(1)+' ปี</small></td>'
+        :'<td'+(r.low?' class="lo"':'')+'>'+ok+(sub?'<small>'+sub+'</small>':'')+'</td>';}
+    $("mxWin").textContent="ช่วง "+yr(d0)+"–"+yr(d0+5);
+    var h='<thead><tr><th scope="col">ถอนปีละ</th>';
+    cols.forEach(function(col){h+='<th scope="col">เริ่มตอน'+(col.hi?"ราคาสูงสุด":"ราคาต่ำสุด")+'<small>'+when(col.k)+'</small><small>'+fMs(P[col.k])+'</small></th>';});
+    h+='</tr></thead><tbody>';
+    MX_WR.forEach(function(w){
+      h+='<tr data-mxrow="'+w+'"'+(sel===String(w)?' class="sel"':'')+'><td>'+w+'%</td>';
+      cols.forEach(function(col){var r=wrRun(col.k,w/100); r.low=!r.dead&&r.left<0.25; h+=cell(r,"เหลือ "+fLeft(r.left));});
+      h+='</tr>';
+    });
+    var me=null;                                                  // ช่องแรกของแถว "ของคุณ" ไว้ยกเป็นตัวอย่างใน tooltip
+    if(v.spend>0){
+      h+='<tr class="me'+(sel==="me"?" sel":"")+'" data-mxrow="me"><td>ของคุณ<small>'+fBtc(v.btc)+' ₿</small><small>'+fB(v.spend)+' <span class="nw">ต่อเดือน</span></small></td>';
+      cols.forEach(function(col){var cc=makeCtx(v,L.Fs,col.k/WPY), rr=runSell(cc.P,cc,false), dead=deplOf(rr,H), left=rr.bH/(v.btc||1);
+        if(!me)me={k:col.k,cc:cc,rr:rr,dead:dead,left:left};
+        h+=cell({dead:dead,t:rr.depl,low:!dead&&left<0.25},"เหลือ "+fLeft(left),fBtc(rr.bH)+" ₿");});
+      h+='</tr>';
+    }
+    $("mx").innerHTML=h+'</tbody>';
+    // กราฟ: ใช้กฎถอนของแถวที่เลือก (ถอนปีละ x% หรือ "ของคุณ") · เทียบได้ 2 แบบ
+    //  sell  = ทุกเส้นเริ่มวันเดียวกัน (ต้นช่วง) ต่างกันแค่จังหวะขาย: ขายทุกสัปดาห์ / ขายตอนราคาสูงสุดของแต่ละรอบ / ขายตอนราคาต่ำสุดของแต่ละรอบ
+    //  start = ขายทุกสัปดาห์เหมือนกัน ต่างกันแค่วันเริ่ม: ต้นช่วง · วันราคาสูงสุด · วันราคาต่ำสุด (นับปีที่ 0 จากวันเริ่มของตัวเอง)
+    var mode=st.mxMode==="start"?"start":"sell";
+    function spend0(k0){                                         // ค่าใช้จ่ายสัปดาห์แรก ต่อ BTC ตอนเริ่ม 1 หน่วย
+      return sel==="me"?makeCtx(v,L.Fs,k0/WPY).wk0/(v.btc||1):(+sel/100)*P[k0]/WPY;}
+    // จำลองจากวันเริ่ม k0 (หน่วย = สัดส่วนของ BTC ตอนเริ่ม) · ev = สัปดาห์ที่ขายครั้งใหญ่พอใช้ถึงจังหวะถัดไปแล้วเก็บเป็นเงินสด
+    // ก่อนถึงจังหวะแรก (หรือถ้าไม่มี ev) ขายทุกสัปดาห์เท่าที่ต้องใช้
+    function runLine(k0,sp,ev){
+      var ser=new Float64Array(KH+1), b=1, cash=0, dep=null, ei=0, n=0, gb=0, gt=0, marks=[]; ev=ev||[];
+      for(var j=0;j<KH;j++){
+        var p=P[k0+j]; ser[j]=b;
+        if(ei<ev.length&&ev[ei]===j){
+          var jn=ei+1<ev.length?ev[ei+1]:KH, need=-cash, s=sp;
+          for(var q=j;q<jn;q++){need+=s; s*=iw;}
+          var cn=Math.min(b,Math.max(0,need)/p);
+          if(cn>0){b-=cn; cash+=cn*p; gb+=cn; gt+=cn*p; n++; marks.push({j:j,b:b});}
+          ei++;
+        }
+        if(ei===0){var c=sp/p; if(c>b){dep=(j+b/c)/WPY; gb+=b; gt+=b*p; break;} b-=c; gb+=c; gt+=sp;}
+        else{
+          if(cash<sp&&b>0){var c2=Math.min(b,(sp-cash)/p); b-=c2; cash+=c2*p; gb+=c2; gt+=c2*p;}   // กันเศษทศนิยมปลายช่วง
+          if(cash<sp*(1-1e-9)){dep=(j+cash/sp)/WPY; break;}
+          cash=Math.max(0,cash-sp);
+        }
+        sp*=iw;
+      }
+      if(dep===null)ser[KH]=b;
+      return {ser:ser,depl:dep,left:dep===null?b:0,avg:gb>0?gt/gb:null,n:n,marks:marks};
+    }
+    // ราคาสูงสุด / ต่ำสุดของแต่ละรอบ = จุดที่สูง / ต่ำที่สุดในช่วง ±40% ของความยาวรอบ (สัปดาห์ที่ 1 ถึง KH−1 นับจาก k0)
+    // ต้องมีราคาครบทั้งช่วงนั้น — เส้นราคาเริ่มที่วันนี้ ช่วงต้นจึงไม่นับ (ไม่งั้น "วันนี้" จะกลายเป็นราคาต่ำสุดทันที)
+    function turns(k0,hi){
+      var W=Math.round(0.4*(L.Fs.L||1428)/7), out=[], N=P.length-1;
+      for(var j=1;j<KH;j++){var k=k0+j, p=P[k];
+        if(k<W||k+W>N)continue;
+        if(hi?(P[k-1]>p||P[k+1]>=p):(P[k-1]<p||P[k+1]<=p))continue;
+        var ok=true;
+        for(var q=k-W;q<=k+W;q++){if(q!==k&&(hi?P[q]>p:P[q]<p)){ok=false; break;}}
+        if(ok)out.push(j);}
+      return out;}
+    var lines;
+    if(mode==="sell"){var sp0=spend0(a);
+      lines=[{k:a,lab:"ขายเรื่อยๆ ทุกสัปดาห์",col:"--ink-2",r:runLine(a,sp0)},
+        {k:a,lab:"ขายตอนราคาสูงสุด",col:"--s1",big:true,r:runLine(a,sp0,turns(a,true))},
+        {k:a,lab:"ขายตอนราคาต่ำสุด",col:"--s2",big:true,r:runLine(a,sp0,turns(a,false))}];
+    }else lines=[{k:a,lab:d0?"เริ่มต้นช่วง":"เริ่มตอนนี้",col:"--ink-2"},
+      {k:hi,lab:"เริ่มตอนราคาสูงสุด",col:"--s1"},{k:lo,lab:"เริ่มตอนราคาต่ำสุด",col:"--s2"}].map(function(ln){ln.r=runLine(ln.k,spend0(ln.k)); return ln;});
+    lines.forEach(function(ln){var r=ln.r; ln.ser=r.ser; ln.scale=1; ln.depl=r.depl; ln.left=r.left; ln.marks=r.marks;});
+    L.mxc={mode:mode,lines:lines,H:H,KH:KH,a:a,P:P};
+    $("mxcTitle").textContent=(sel==="me"?"ถ้าถอนเดือนละ "+fB(v.spend)+" (ของคุณ)":"ถ้าถอนปีละ "+sel+"% ของมูลค่าตอนเริ่ม")+
+      (mode==="sell"?" เริ่มวันเดียวกัน แต่ขายคนละจังหวะ":" เท่ากัน แต่เริ่มคนละวัน")+" — Bitcoin ที่มีเหลือต่างกันแค่ไหน";
+    document.querySelectorAll("#mxcMode [data-mxmode]").forEach(function(bt){var on=bt.getAttribute("data-mxmode")===mode;
+      bt.classList.toggle("on",on); bt.setAttribute("aria-pressed",on?"true":"false");});
+    $("mxcRates").innerHTML='<span class="cl">ถอนปีละ</span>'+MX_WR.map(function(w){var on=sel===String(w);
+      return '<button type="button" data-mxrow="'+w+'" aria-pressed="'+on+'"'+(on?' class="on"':'')+'>'+w+'%</button>';}).join("")+
+      (v.spend>0?'<button type="button" data-mxrow="me" aria-pressed="'+(sel==="me")+'"'+(sel==="me"?' class="on"':'')+'>ของคุณ</button>':'');
+    // ผลของแต่ละเส้น (ใช้แทนคำอธิบายสี): เส้นนั้นคืออะไร → หมดปีที่เท่าไหร่ / ครบ H ปีเหลือกี่ %
+    $("mxcLegend").innerHTML=lines.map(function(ln){var dead=ln.depl!==null, r=ln.r,
+        sub=mode==="sell"?(ln.big?(r.n?"ขายครั้งใหญ่ "+r.n+" ครั้ง":dead?"หมดก่อนถึงจังหวะขาย":"ไม่ถึงจังหวะขายในช่วงนี้")+" · ":"")+"ได้ราคาเฉลี่ย "+fMs(r.avg)+"/₿"
+          :when(ln.k)+" · ราคา "+fMs(P[ln.k]);
+      return '<div class="mr"><i class="swatch" style="background:var('+ln.col+')"></i><span class="nm">'+ln.lab+'<small>'+sub+'</small></span>'+
+        '<b'+(dead?' class="x"':ln.left<0.25?' class="lo"':'')+'>'+(dead?"✕ หมดปีที่ "+ln.depl.toFixed(1):"ครบ "+H+" ปี เหลือ "+fLeft(ln.left))+'</b></div>';}).join("");
+    var rule=sel==="me"?"ทุกเส้นถอนเดือนละ "+fB(v.spend)+" (ค่าเงินวันนี้ ขึ้นตามเงินเฟ้อ)":"ทุกเส้นถอนปีละ "+sel+"% ของมูลค่า Bitcoin ที่มีตอนเริ่ม (ขึ้นตามเงินเฟ้อ)";
+    $("mxcNote").textContent=(mode==="sell"
+      ?rule+" เริ่ม "+when(a)+" วันเดียวกัน · ก่อนถึงจังหวะแรกทุกเส้นขายทุกสัปดาห์เหมือนกัน พอถึงราคาสูงสุด (หรือต่ำสุด) ของรอบ ก็ขายครั้งเดียวพอใช้ถึงรอบหน้าแล้วเก็บเป็นเงินสด (จุดบนเส้น = ครั้งที่ขาย) · ขายได้ตอนราคาสูงสุดทุกรอบทำจริงได้ยาก ให้ดูเป็นกรณีดีที่สุด ส่วนต่ำสุดคือกรณีแย่ที่สุด"
+      :rule+(sel==="me"?" ต่างกันแค่วันเริ่มถอน":" — เริ่มตอนราคาสูง ยอดถอนเป็นบาทก็สูงตาม แล้วต้องขายต่อตอนราคาร่วง")+" · ทุกเส้นนับปีที่ 0 จากวันเริ่มถอนของตัวเอง (วันที่ในรายการด้านบน) จะได้เทียบกันตรง ๆ ว่าอยู่ได้กี่ปี")+
+      " · กดปุ่ม % หรือแถวในตารางเพื่อเปลี่ยน";
+    $("mxLead").innerHTML="<div>เลือกช่วงที่จะเริ่มถอน (ปุ่มเดียวกับ &ldquo;เริ่มถอนเมื่อไหร่&rdquo;) แล้วดูว่าถ้าเริ่มวันที่ราคาสูงสุดหรือต่ำสุดในช่วง 5 ปีนั้น ผลต่างกันแค่ไหน</div>"+
+      "<div><b>ตัวเลขในช่อง</b> = หมดในกี่ปี หรือเหลือกี่ % ของ Bitcoin ที่มีตอนครบ "+H+" ปี</div>"+
+      "<div><b>แถว %</b> = ถอนปีละกี่ % ของมูลค่า Bitcoin ที่มีตอนเริ่ม (ขึ้นตามเงินเฟ้อ "+trim(v.infl,1)+"%/ปี)</div>"+
+      (me?"<div><b>แถว &ldquo;ของคุณ&rdquo;</b> = ใช้ค่าที่ตั้งไว้ด้านซ้าย ("+fBtc(v.btc)+" ₿ · ถอนเดือนละ "+fB(v.spend)+" ค่าเงินวันนี้ ขึ้นตามเงินเฟ้อ) แต่เริ่มถอนวันที่บนหัวคอลัมน์ แล้วนับต่อ "+H+" ปี · ตัวเลขใหญ่ด้านบนเริ่มถอน"+(d0?"อีก "+d0+" ปี":"ตอนนี้")+" ผลจึงไม่เท่ากัน</div>"+
+        "<div>เช่น เริ่ม "+when(me.k)+" ราคา "+fMs(P[me.k])+"/₿ · ถอนเดือนละ "+fB(Math.round(me.cc.spendStartMo))+" (บวกเงินเฟ้อถึงวันนั้นแล้ว) · เดือนแรกขายราว "+fBtc(me.cc.spendStartMo/P[me.k])+" ₿ &rarr; "+
+        (me.dead?"Bitcoin หมดในปีที่ "+me.rr.depl.toFixed(1):"ครบ "+H+" ปี เหลือ "+fBtc(me.rr.bH)+" ₿ = "+fLeft(me.left)+" ของ "+fBtc(v.btc)+" ₿")+"</div>":"")+
+      "<div class=\"eh\">ราคา"+L.tpl.lab+(L.tpl.pl?"":" (BTC โตเฉลี่ยปีละ "+fPct(L.tpl.cagr,0)+")")+"</div>";
+  }
+
+  function renderTable(){
+    var L=last,c=L.c,r=L.r,P=c.P,H=c.H,dead=deplOf(r,H),out=[],ys=[];
+    var yEnd=dead?Math.ceil(r.depl-1e-9):H;
+    for(var y=1;y<=yEnd;y++){
+      var k0=Math.round((y-1)*WPY), k1=Math.min(Math.round(y*WPY),c.KH), sold=0, spent=0, need=0;
+      for(var k=k0;k<k1;k++){sold+=r.sold[k]; spent+=r.sold[k]*P[k]; need+=c.wk0*Math.pow(c.iw,k);}
+      var avg=sold>0?spent/sold:P[k0], isDead=dead&&r.depl<=y, bEnd=isDead?0:r.series[k1], mo=c.wk0*Math.pow(c.iw,k0)*WPY/12;
+      ys.push({y:y,mo:mo,need:need,sold:sold,avg:avg,b0:r.series[k0],bEnd:bEnd,dead:isDead});
+      var cls=isDead?"dead":avg<c.P0?"below":"";
+      out.push('<tr'+(cls?' class="'+cls+'"':'')+'><td>'+y+'</td><td>'+fMonYr(c.startMs+y*365.25*DAY)+'</td><td>'+fB(mo)+
+        '</td><td>'+fMs(avg)+'</td><td>'+fX(avg/c.P0)+'</td><td>'+fBtc(sold)+'</td><td>'+(isDead?"หมด (ปีที่ "+r.depl.toFixed(1)+")":fBtc(bEnd))+
+        '</td><td>'+(isDead?"฿0":fMs(bEnd*P[k1]))+'</td></tr>');
+    }
+    if(dead)out.push('<tr class="gap"><td colspan="8">ปีที่ '+(Math.floor(r.depl)+1)+'–'+H+' · ไม่มี BTC เหลือให้ขาย ต้องหาเงินจากทางอื่นอีก '+(H-r.depl).toFixed(1)+' ปี</td></tr>');
+    $("rows").innerHTML=out.join("");
+
+    // คำอธิบายพร้อมตัวอย่างจากตัวเลขในตารางจริง — อยู่ในแถบพับ แตะแล้วค่อยเปิดอ่าน
+    $("ybyCtx").textContent="ตารางนี้คือกรณีที่เลือกอยู่: เริ่มถอน"+whereTxt(L.start,c)+" · มี "+fBtc(c.btc0)+" ₿ · ถอนเดือนละ "+fB(L.v.spend)+" · ราคา"+L.tpl.lab;
+    var y1=ys[0], hasEx=L.v.spend>0&&!!y1;
+    $("ybyEx").hidden=!hasEx;
+    if(hasEx){
+      var ex=['<div class="eh">แต่ละแถวคือ 1 ปี: ต้องใช้เงินเท่าไหร่ &rarr; ขาย BTC ที่ราคาปีนั้น &rarr; เหลือ BTC เท่าไหร่</div>'];
+      if(!y1.dead)ex.push('<div><b>ปีที่ 1</b> ถอนเดือนละ '+fB(y1.mo)+' ทั้งปีต้องใช้ราว '+fB(y1.need)+' (รวมเงินเฟ้อระหว่างปี) &middot; ขายทุกสัปดาห์ได้ราคาเฉลี่ย '+fMs(y1.avg)+' ต่อ 1 ₿ &rarr; ต้องขาย '+
+        fB(y1.need)+' &divide; '+fMs(y1.avg)+' = <b>'+fBtc(y1.sold)+' ₿</b> &rarr; เหลือ '+fBtc(y1.b0)+' &minus; '+fBtc(y1.sold)+' = <b>'+fBtc(y1.bEnd)+' ₿</b></div>');
+      else ex.push('<div><b>ปีที่ 1</b> ทั้งปีต้องใช้ราว '+fB(y1.need)+' &middot; ขายได้ราคาเฉลี่ย '+fMs(y1.avg)+' ต่อ 1 ₿ &rarr; ต้องขาย '+fBtc(y1.need/y1.avg)+' ₿ แต่มีแค่ '+
+        fBtc(c.btc0)+' ₿ &rarr; <b>หมดตั้งแต่ปีแรก</b> (ราวเดือนที่ '+Math.max(1,Math.ceil(r.depl*12))+')</div>');
+      // ครั้งแรกที่ราคาเฉลี่ยตกจากปีก่อนหน้าเกิน 15% (ทั้งสองปีต้องยังไม่หมด)
+      var dn=null; for(var q=1;q<ys.length&&!dn;q++){var a=ys[q-1],b=ys[q];
+        if(!a.dead&&!b.dead&&b.avg/a.avg<=0.85)dn={a:a,b:b};}
+      if(dn){
+        var A=dn.a,B=dn.b;
+        ex.push('<div><b>ปีที่ '+A.y+' &rarr; ปีที่ '+B.y+'</b> ราคาเฉลี่ยตกจาก '+fMs(A.avg)+' เหลือ '+fMs(B.avg)+' (ถูกลง '+fPct(1-B.avg/A.avg,0)+') &middot; ค่าใช้จ่ายขึ้นแค่ '+
+          fPct(B.mo/A.mo-1,0)+' (เดือนละ '+fB(A.mo)+' &rarr; '+fB(B.mo)+') แต่ต้องขาย BTC จาก '+fBtc(A.sold)+' เป็น <b>'+fBtc(B.sold)+' ₿</b> = '+(B.sold/A.sold).toFixed(1)+' เท่า</div>');
+      }
+      if(!y1.dead)ex.push('<div>ทำแบบนี้ทุกปี ปีที่ราคาตกต้องขาย BTC มากขึ้น ปีที่ราคาขึ้นขายน้อยลง '+
+        (dead?'จน BTC หมดในปีที่ '+r.depl.toFixed(1)+' (แถวสีแดง)':'จนครบ '+H+' ปี')+'</div>');
+      $("ybyExBody").innerHTML=ex.join("");
+    }
+  }
+
+  function syncUI(){
+    var L=last,v=L.v,c=L.c;
+    document.querySelectorAll("#starts [data-start],#mxTabs [data-start]").forEach(function(b){var on=+b.getAttribute("data-start")===st.start;
+      b.classList.toggle("on",on); b.setAttribute("aria-pressed",on?"true":"false");});
+    $("tpls").querySelectorAll("[data-tpl]").forEach(function(b){var on=+b.getAttribute("data-tpl")===st.tpl;
+      b.classList.toggle("on",on); b.setAttribute("aria-pressed",on?"true":"false");});
+    $("btcChips").querySelectorAll("button").forEach(function(b){b.classList.toggle("on",Math.abs(+b.getAttribute("data-btc")-v.btc)<1e-9);});
+    $("wrChips").querySelectorAll("button").forEach(function(b){b.classList.toggle("on",v.spend>0&&Math.abs(+b.getAttribute("data-wr")-c.wr*100)<0.15);});
+    $("legend").innerHTML=STARTS.map(function(s,i){
+      return '<span'+(i===st.start?'':' class="dim"')+'><i class="swatch sw'+(i+1)+'"></i>เริ่ม'+s.name+' ('+yearOf(L.runs[i].c.startMs)+')'+(i===st.start?' · ที่เลือก':'')+'</span>';}).join("")+
+      '<span><i class="swatch swp"></i>ราคา BTC (กราฟล่าง)</span>'+(L.tpl.pl?'<span><i class="swatch swl"></i>เส้น Power Law</span>':'');
+    $("chNote").textContent=(L.tpl.pl?"ราคาแบบ Power Law: ราคาสูงสุดแตะเส้นประ ราคาต่ำสุดราว "+L.tpl.mBot.toFixed(2)+" เท่าของเส้น (เส้น Power Law: ราคา $ = 10^-17.016 × จำนวนวันนับจาก 3 ม.ค. 2009 ยกกำลัง 5.845)"
+      :"ราคา"+L.tpl.lab+": ร่วง "+fPct(1-L.tpl.dec,0)+" จากราคาสูงสุดตามของจริง แล้วฟื้นไปทำราคาสูงสุดใหม่ ที่โตเฉลี่ยปีละ "+fPct(L.tpl.cagr,0))+
+      " · ถอนเดือนละ "+fB(v.spend)+" (ค่าเงินวันนี้ ขึ้นตามเงินเฟ้อ) · ขายทุกสัปดาห์ · กราฟล่างเป็นสเกล log";
+  }
+
+  // ================= กราฟไทม์ไลน์ (บน: BTC คงเหลือของ 3 จุดเริ่ม · ล่าง: ราคา BTC สเกล log) =================
+  var cv=$("chart"), ctx=cv.getContext("2d"), hoverK=null, geo=null;
+  function css(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim();}
+  function niceStep(span,count){var raw=span/count, mag=Math.pow(10,Math.floor(Math.log10(raw))), f=raw/mag;
+    return (f<1.5?1:f<3?2:f<7?5:10)*mag;}
+  function fAxis(v){
+    if(v>=1e9)return "฿"+trim(v/1e9,1)+"พันล";
+    if(v>=1e6)return "฿"+trim(v/1e6,1)+"ล";
+    if(v>=1e5)return "฿"+trim(v/1e5,1)+"แสน";
+    return "฿"+grp(v);
+  }
+  function dot(x,y,col,r){ctx.beginPath(); ctx.arc(x,y,r||4.5,0,Math.PI*2); ctx.fillStyle=col; ctx.fill();
+    ctx.lineWidth=2; ctx.strokeStyle=css("--surface"); ctx.stroke();}
+
+  function drawChart(){
+    var L=last; if(!L)return;
+    var box=$("cbox").getBoundingClientRect(), W=box.width, H=box.height; if(W<50||H<50)return;
+    var dpr=window.devicePixelRatio||1;
+    cv.width=Math.round(W*dpr); cv.height=Math.round(H*dpr); ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,W,H);
+    var Hz=L.c.H, Tend=STARTS[STARTS.length-1].d+Hz, KT=Math.min(L.Fs.P.length-1,Math.round(Tend*WPY)), PF=L.Fs.P, btc0=L.v.btc||1;
+    var narrow=W<520, padL=narrow?46:58, padR=narrow?8:14, pw=W-padL-padR;
+    var t1=12, gapH=38, axisH=24, avail=H-t1-gapH-axisH, h1=Math.round(avail*0.58), h2=avail-h1, t2=t1+h1+gapH;
+    function xOf(t){return padL+t/Tend*pw;}
+    var st1=niceStep(btc0,4), ymax=btc0*1.08;
+    function y1(b){return t1+h1-(b/ymax)*h1;}
+    var pmin=Infinity,pmax=0, LN=L.Fs.line; for(var k=0;k<=KT;k++){if(PF[k]<pmin)pmin=PF[k]; if(PF[k]>pmax)pmax=PF[k]; if(LN&&LN[k]>pmax)pmax=LN[k];}
+    var lmin=Math.log10(pmin), lmax=Math.log10(pmax), pad=Math.max(0.05,(lmax-lmin)*0.08); lmin-=pad; lmax+=pad;
+    lmin-=(lmax-lmin)*20/Math.max(40,h2-20);                        // เผื่อที่ใต้จุดต่ำสุดให้ป้าย "ราคาต่ำสุด" ไม่ทับปีบนแกน
+    function y2(p){return t2+h2-(Math.log10(p)-lmin)/(lmax-lmin)*h2;}
+    geo={padL:padL,pw:pw,Tend:Tend,KT:KT,t1:t1,W:W};
+
+    var cInk=css("--ink"),cInk2=css("--ink-2"),cInk3=css("--ink-3"),cGrid=css("--grid"),cSurf=css("--surface"),sans=css("--sans");
+    var col=SKEY.map(function(k){return css("--"+k);});
+    ctx.font="11px "+sans; ctx.lineWidth=1;
+
+    // กริด + แกนบน (BTC)
+    ctx.textAlign="right"; ctx.textBaseline="middle";
+    for(var i=0;i*st1<=ymax+1e-9;i++){
+      var gv=i*st1, yy=Math.round(y1(gv))+.5;
+      ctx.strokeStyle=cGrid; ctx.beginPath(); ctx.moveTo(padL,yy); ctx.lineTo(padL+pw,yy); ctx.stroke();
+      ctx.fillStyle=cInk3; ctx.fillText(String(+gv.toFixed(4))+(i?" ₿":""),padL-6,yy);
+    }
+    // กริด + แกนล่าง (ราคาเป็นบาท, log)
+    var span=lmax-lmin, mults=span<=1.3?[1,2,5]:span<=2.6?[1,3]:[1];
+    for(var d=Math.floor(lmin)-1;d<=Math.ceil(lmax);d++)mults.forEach(function(m){
+      var val=m*Math.pow(10,d),lv=Math.log10(val); if(lv<lmin||lv>lmax)return;
+      var yy=Math.round(y2(val))+.5;
+      ctx.strokeStyle=cGrid; ctx.beginPath(); ctx.moveTo(padL,yy); ctx.lineTo(padL+pw,yy); ctx.stroke();
+      ctx.fillStyle=cInk3; ctx.textAlign="right"; ctx.textBaseline="middle"; ctx.fillText(fAxis(val),padL-6,yy);});
+    ctx.fillStyle=cInk2; ctx.font="600 11.5px "+sans; ctx.textAlign="left"; ctx.textBaseline="bottom";
+    var ttl="ราคา BTC ต่อ 1 ₿ (บาท · สเกล log) — ขึ้นลงเป็นรอบ";
+    if(ctx.measureText(ttl).width>pw)ttl="ราคา BTC (บาท · สเกล log)";             // จอแคบใช้หัวสั้น
+    ctx.fillText(ttl,padL,t2-8);
+    ctx.font="11px "+sans;
+
+    // แกน x = ปี ค.ศ. ทุก 5 ปี
+    ctx.fillStyle=cInk3; ctx.textBaseline="top"; ctx.textAlign="center";
+    var stepX=Tend<=25?5:10;
+    for(var tx=0;tx<=Tend+1e-9;tx+=stepX){var tl=String(yearOf(NOW+tx*365.25*DAY)); ctx.textAlign=tx===0?"left":tx+stepX>Tend+1e-9?"right":"center";
+      ctx.fillText(tl,tx===0?padL:xOf(tx),t2+h2+7);}
+
+    // เส้นแบ่งจุดเริ่มถอน
+    STARTS.forEach(function(s,i){var x=Math.round(xOf(s.d))+.5;
+      ctx.strokeStyle=cInk3; ctx.globalAlpha=i===st.start?0.8:0.25; ctx.beginPath(); ctx.moveTo(x,t1); ctx.lineTo(x,t2+h2); ctx.stroke(); ctx.globalAlpha=1;});
+
+    // เส้นราคา
+    var stride=Math.max(1,Math.floor(KT/(pw*1.5)));
+    if(LN){ctx.save(); ctx.setLineDash([5,4]); ctx.beginPath();          // เส้น Power Law (ประ) ใต้เส้นราคา
+      for(k=0;k<=KT;k+=stride){var XL=xOf(k/WPY),YL=y2(LN[k]); k?ctx.lineTo(XL,YL):ctx.moveTo(XL,YL);}
+      ctx.strokeStyle=cInk3; ctx.lineWidth=1.25; ctx.stroke(); ctx.restore();}
+    ctx.beginPath(); for(k=0;k<=KT;k+=stride){var X=xOf(k/WPY),Y=y2(PF[k]); k?ctx.lineTo(X,Y):ctx.moveTo(X,Y);}
+    ctx.strokeStyle=cInk2; ctx.lineWidth=1.75; ctx.lineJoin="round"; ctx.lineCap="round"; ctx.stroke();
+    // ป้ายราคาสูงสุด / ต่ำสุด ในช่วง 5 ปีของจุดเริ่มที่เลือก — จุดเดียวกับตาราง "ถ้าเริ่มถอนตอนราคาสูงสุด / ต่ำสุด"
+    var wa=Math.round(L.start.d*WPY), wb=Math.min(KT,Math.round((L.start.d+5)*WPY)), kHi=wa, kLo=wa;
+    for(k=wa;k<=wb;k++){if(PF[k]>PF[kHi])kHi=k; if(PF[k]<PF[kLo])kLo=k;}
+    function tag(k,txt,above){
+      ctx.font="600 11px "+sans; var tw=ctx.measureText(txt).width, X=xOf(k/WPY), Y=y2(PF[k]);
+      if(above&&Y-20<t2)above=false; else if(!above&&Y+20>t2+h2+4)above=true;   // ชนหัวกราฟ/แกนล่างก็สลับข้าง
+      // ป้ายอยู่ติดจุดเสมอ: ใกล้ขอบซ้าย/ขวาก็ชิดซ้าย/ขวาของจุดแทน (เดิมเลื่อนหนีจนป้ายไปอยู่คนละปีบนจอแคบ)
+      var al=X-tw/2<padL+2?"left":X+tw/2>padL+pw-2?"right":"center", tx=al==="left"?Math.max(padL+2,X-6):al==="right"?Math.min(padL+pw-2,X+6):X, ty=above?Y-7:Y+7;
+      ctx.textAlign=al; ctx.textBaseline=above?"bottom":"top"; ctx.lineWidth=4; ctx.lineJoin="round";
+      ctx.strokeStyle=cSurf; ctx.strokeText(txt,tx,ty); ctx.fillStyle=cInk2; ctx.fillText(txt,tx,ty);
+      if(k!==wa){ctx.beginPath(); ctx.arc(X,Y,3,0,Math.PI*2); ctx.fillStyle=cInk2; ctx.fill();}}   // จุดเริ่มมีจุดสีอยู่แล้ว
+
+    // เส้น BTC คงเหลือของแต่ละจุดเริ่ม — ที่เลือกเข้มและหนา วาดทับทีหลัง · ที่เหลือจางลง
+    var R=L.runs;
+    [2,1,0].filter(function(i){return i!==st.start;}).concat([st.start]).forEach(function(i){
+      var x=R[i].r, s=STARTS[i], ser=x.series, KH=R[i].c.KH, dep=x.depl!==null&&x.depl<=Hz, kEnd=dep?Math.min(KH,Math.floor(x.depl*WPY)):KH;
+      ctx.globalAlpha=i===st.start?1:0.4; ctx.beginPath();
+      for(var k=0;k<=kEnd;k+=stride){var X=xOf(s.d+k/WPY),Y=y1(ser[k]); k?ctx.lineTo(X,Y):ctx.moveTo(X,Y);}
+      if(kEnd%stride)ctx.lineTo(xOf(s.d+kEnd/WPY),y1(ser[kEnd]));
+      if(dep)ctx.lineTo(xOf(s.d+x.depl),y1(0));
+      ctx.strokeStyle=col[i]; ctx.lineWidth=i===st.start?2.75:1.75; ctx.lineJoin="round"; ctx.lineCap="round"; ctx.stroke();
+      dot(xOf(s.d),y2(PF[R[i].c.k0]),col[i],4);                 // จุดเริ่มบนเส้นราคา
+      ctx.globalAlpha=1;
+    });
+
+    tag(kHi,"ราคาสูงสุด "+fMonYr(NOW+kHi*7*DAY),true); tag(kLo,"ราคาต่ำสุด "+fMonYr(NOW+kLo*7*DAY),false);   // วาดทีหลังให้ป้ายอยู่บนจุด
+    ctx.font="11px "+sans;
+
+    // ป้ายปลายเส้น: หมดปีไหน / เหลือเท่าไหร่ (ชนกันก็ข้าม)
+    var placed=[];
+    function place(txt,x,y,align){
+      ctx.font="600 11.5px "+sans; var tw=ctx.measureText(txt).width, lx=align==="center"?x-tw/2:x-tw;
+      lx=Math.max(padL+2,Math.min(padL+pw-tw-2,lx));
+      for(var j=0;j<placed.length;j++){var p=placed[j]; if(lx<p.x+p.w+6&&lx+tw+6>p.x&&Math.abs(p.y-y)<15)return false;}
+      placed.push({x:lx,y:y,w:tw}); ctx.textAlign="left"; ctx.textBaseline="bottom";
+      ctx.lineWidth=4; ctx.lineJoin="round"; ctx.strokeStyle=cSurf; ctx.strokeText(txt,lx,y);
+      ctx.fillStyle=cInk; ctx.fillText(txt,lx,y); return true;
+    }
+    var order=[st.start].concat([0,1,2].filter(function(i){return i!==st.start;}));
+    order.forEach(function(i){
+      var x=R[i].r, s=STARTS[i], c=R[i].c;
+      ctx.globalAlpha=i===st.start?1:0.55;
+      if(x.depl!==null&&x.depl<=Hz){
+        var X=xOf(s.d+x.depl),Y=y1(0); dot(X,Y,col[i]);
+        var txt="หมด "+yearOf(c.startMs+x.depl*365.25*DAY);
+        if(!place(txt,X,Y-9,"center"))place(txt,X,Y-25,"center");
+      }else{
+        var Xe=xOf(s.d+Hz),Ye=y1(x.series[c.KH]); dot(Xe,Ye,col[i]);
+        if(!place(fBtc(x.series[c.KH])+" ₿",Xe-8,Ye-7,"right"))place(fBtc(x.series[c.KH])+" ₿",Xe-8,Ye+18,"right");
+      }
+      ctx.globalAlpha=1;
+    });
+    ctx.font="11px "+sans;
+
+    // crosshair
+    if(hoverK!==null){
+      var kk=Math.max(0,Math.min(KT,hoverK)), Xh=xOf(kk/WPY);
+      ctx.strokeStyle=cInk3; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(Math.round(Xh)+.5,t1); ctx.lineTo(Math.round(Xh)+.5,t2+h2); ctx.stroke();
+      dot(Xh,y2(PF[kk]),cInk2,3.5);
+      R.forEach(function(run,i){var j=kk-run.c.k0; if(j<0||j>run.c.KH)return; var x=run.r; if(x.depl!==null&&x.depl*WPY<=j)return;
+        dot(Xh,y1(x.series[j]),col[i],4);});
+      showTip(kk,Xh);
+    }else $("tip").hidden=true;
+
+    cv.setAttribute("aria-label","กราฟ BTC คงเหลือ ถอนเดือนละ "+fB(L.v.spend)+" ราคา"+L.tpl.lab+": "+R.map(function(run,i){
+      var x=run.r; return "เริ่ม"+STARTS[i].name+" "+(x.depl===null||x.depl>=Hz?"พอ "+Hz+" ปี":"หมดปีที่ "+x.depl.toFixed(1));}).join(", ")+" · ใช้ลูกศรซ้ายขวาเลื่อนดูค่า");
+  }
+
+  function showTip(k,X){
+    var L=last,tip=$("tip"); tip.hidden=false; tip.textContent="";
+    var hd=document.createElement("div"); hd.className="th"; hd.textContent=fMonYr(NOW+k*7*DAY)+" · ราคา "+fMs(L.Fs.P[k])+"/₿"; tip.appendChild(hd);
+    L.runs.forEach(function(run,i){
+      var j=k-run.c.k0, x=run.r, txt;
+      if(j<0)txt="ยังไม่เริ่มถอน"; else if(x.depl!==null&&x.depl*WPY<=j)txt="หมดแล้ว"; else if(j>run.c.KH)txt="ครบ "+run.c.H+" ปีแล้ว"; else txt=fBtc(x.series[j])+" ₿";
+      var row=document.createElement("div"); row.className="tr";
+      var ic=document.createElement("i"); ic.style.background="var(--"+SKEY[i]+")";
+      var b=document.createElement("b"); b.textContent=txt;
+      var s=document.createElement("span"); s.textContent="เริ่ม"+STARTS[i].name;
+      row.appendChild(ic); row.appendChild(b); row.appendChild(s); tip.appendChild(row);
+    });
+    var g=geo, tw=tip.offsetWidth, left=X+14; if(left+tw>g.W-4)left=X-14-tw; if(left<0)left=4;
+    tip.style.left=left+"px"; tip.style.top=(g.t1+4)+"px";
+  }
+  function kFromX(clientX){var r=cv.getBoundingClientRect(), g=geo; if(!g)return null;
+    var t=(clientX-r.left-g.padL)/g.pw*g.Tend; return Math.max(0,Math.min(g.KT,Math.round(t*WPY)));}
+  cv.addEventListener("pointermove",function(e){hoverK=kFromX(e.clientX); drawChart();});
+  cv.addEventListener("pointerleave",function(){if(document.activeElement!==cv){hoverK=null; drawChart();}});
+  cv.addEventListener("focus",function(){if(hoverK===null){hoverK=0; drawChart();}});
+  cv.addEventListener("blur",function(){hoverK=null; drawChart();});
+  cv.addEventListener("keydown",function(e){
+    if(!geo)return; var step=e.shiftKey?Math.round(WPY):4, cur=hoverK===null?0:hoverK;
+    if(e.key==="ArrowRight")hoverK=Math.min(geo.KT,cur+step);
+    else if(e.key==="ArrowLeft")hoverK=Math.max(0,cur-step);
+    else if(e.key==="Home")hoverK=0;
+    else if(e.key==="End")hoverK=geo.KT;
+    else if(e.key==="Escape")hoverK=null;
+    else return;
+    e.preventDefault(); drawChart();
+  });
+
+  // ================= กราฟเทียบในส่วนราคาสูงสุด / ต่ำสุด: ทุกเส้นเริ่มที่ปีที่ 0 (แบบ sell = วันเดียวกัน · แบบ start = วันเริ่มของตัวเอง) · แกนตั้ง = % ของ BTC ตอนเริ่ม =================
+  var cvM=$("mxChart"), cM=cvM.getContext("2d"), hovM=null, geoM=null;
+  function dotM(x,y,col,r){cM.beginPath(); cM.arc(x,y,r||4.5,0,Math.PI*2); cM.fillStyle=col; cM.fill(); cM.lineWidth=2; cM.strokeStyle=css("--surface"); cM.stroke();}
+  // สถานะของเส้น ณ สัปดาห์ที่ j นับจากวันเริ่มถอนของเส้นนั้น: หมดแล้ว / ยังเหลือ
+  function stateAt(ln,j){if(ln.depl!==null&&j>=ln.depl*WPY)return {dead:true,v:0}; return {v:ln.ser[j]*ln.scale};}
+  function drawMx(){
+    var L=last; if(!L||!L.mxc)return;
+    var M=L.mxc, box=$("mxcBox").getBoundingClientRect(), W=box.width, Hc=box.height; if(W<50||Hc<50)return;
+    var dpr=window.devicePixelRatio||1;
+    cvM.width=Math.round(W*dpr); cvM.height=Math.round(Hc*dpr); cM.setTransform(dpr,0,0,dpr,0,0); cM.clearRect(0,0,W,Hc);
+    var KH=M.KH, Hz=M.H, sellM=M.mode==="sell", narrow=W<520, padL=narrow?40:46, padR=narrow?12:18, padT=18, padB=28, pw=W-padL-padR, ph=Hc-padT-padB;
+    function X(j){return padL+j/KH*pw;}                                    // j = สัปดาห์นับจากวันเริ่มถอน
+    function Xt(t){return padL+t/Hz*pw;}                                   // t = ปีนับจากวันเริ่มถอน
+    function Y(f){return padT+(1-f)*ph;}
+    geoM={padL:padL,pw:pw,KH:KH};
+    var cInk=css("--ink"),cInk3=css("--ink-3"),cGrid=css("--grid"),cSurf=css("--surface"),sans=css("--sans");
+    cM.font="11px "+sans; cM.lineWidth=1; cM.textAlign="right"; cM.textBaseline="middle";
+    [0,0.25,0.5,0.75,1].forEach(function(f){var yy=Math.round(Y(f))+.5;
+      cM.strokeStyle=cGrid; cM.beginPath(); cM.moveTo(padL,yy); cM.lineTo(padL+pw,yy); cM.stroke();
+      cM.fillStyle=cInk3; cM.fillText(Math.round(f*100)+"%",padL-6,yy);});
+    // แกนนอน: แบบ sell = ปี ค.ศ. (ทุกเส้นเริ่มวันเดียวกัน) · แบบ start = ปีที่นับจากวันเริ่มถอน (ป้ายแรก/สุดท้ายได้ก่อน ที่เหลือชนก็ข้าม · จอแคบใช้ตัวเลขสั้น)
+    var stepX=Hz<=40?5:10, ticks=[], drawn=[]; cM.textBaseline="top"; cM.textAlign="left";
+    for(var t=0;t<=Hz+1e-9;t+=stepX)ticks.push(t); if(ticks[ticks.length-1]<Hz-1e-9)ticks.push(Hz);
+    var labs=ticks.map(function(t,i){var end=i===ticks.length-1,
+      txt=sellM?String(yearOf(NOW+(M.a+t*WPY)*7*DAY)):t===0?(narrow?"0":"เริ่มถอน"):end?(narrow?t+" ปี":"ครบ "+t+" ปี"):(narrow?String(t):"ปีที่ "+t), tw=cM.measureText(txt).width;
+      return {txt:txt,tw:tw,lx:sellM?Math.max(2,Math.min(W-tw-2,Xt(t)-tw/2)):t===0?padL:end?Xt(t)-tw:Xt(t)-tw/2};});   // ปี ค.ศ. สั้น — วางกึ่งกลางขีดได้ทุกป้าย
+    [labs[0],labs[labs.length-1]].concat(labs.slice(1,-1)).forEach(function(l){
+      if(drawn.some(function(d){return l.lx<d.lx+d.tw+8&&l.lx+l.tw+8>d.lx;}))return;
+      drawn.push(l); cM.fillText(l.txt,l.lx,padT+ph+7);});
+    var stride=Math.max(1,Math.floor(KH/(pw*1.5)));
+    (sellM?[1,2,0]:[0,1,2]).map(function(i){return M.lines[i];}).forEach(function(ln){   // แบบ sell: เส้นขายทุกสัปดาห์อยู่บนสุด (ช่วงที่ทุกเส้นเหมือนกัน)
+      var kEnd=ln.depl!==null?Math.min(KH,Math.floor(ln.depl*WPY)):KH;
+      cM.beginPath();
+      for(var j=0;j<=kEnd;j+=stride){var xx=X(j),yy=Y(ln.ser[j]*ln.scale); j?cM.lineTo(xx,yy):cM.moveTo(xx,yy);}
+      if(kEnd%stride)cM.lineTo(X(kEnd),Y(ln.ser[kEnd]*ln.scale));
+      if(ln.depl!==null)cM.lineTo(X(ln.depl*WPY),Y(0));
+      cM.strokeStyle=css(ln.col); cM.lineWidth=2.25; cM.lineJoin="round"; cM.lineCap="round"; cM.stroke();
+    });
+    M.lines.forEach(function(ln){(ln.marks||[]).forEach(function(m){dotM(X(m.j),Y(m.b),css(ln.col),3.5);});});   // ครั้งที่ขายครั้งใหญ่
+    dotM(X(0),Y(1),css("--ink-2"),4);                                      // จุดเริ่มถอน (ทุกเส้นเริ่มที่จุดเดียวกัน)
+    // ป้ายปลายเส้น: หมดปีที่เท่าไหร่ / เหลือกี่ % (ชนกันก็ขยับ)
+    var placed=[];
+    function place(txt,x,y,align){
+      cM.font="600 11.5px "+sans; var tw=cM.measureText(txt).width, lx=align==="center"?x-tw/2:x-tw;
+      lx=Math.max(padL+2,Math.min(padL+pw-tw-2,lx));
+      for(var j=0;j<placed.length;j++){var p=placed[j]; if(lx<p.x+p.w+6&&lx+tw+6>p.x&&Math.abs(p.y-y)<15)return false;}
+      placed.push({x:lx,y:y,w:tw}); cM.textAlign="left"; cM.textBaseline="bottom";
+      cM.lineWidth=4; cM.lineJoin="round"; cM.strokeStyle=cSurf; cM.strokeText(txt,lx,y); cM.fillStyle=cInk; cM.fillText(txt,lx,y); return true;}
+    M.lines.forEach(function(ln){var col=css(ln.col);
+      if(ln.depl!==null){var xd=X(ln.depl*WPY),yd=Y(0),td="✕ หมดปีที่ "+ln.depl.toFixed(1); dotM(xd,yd,col);
+        if(!narrow&&!place(td,xd,yd-9,"center")&&!place(td,xd,yd-25,"center"))place(td,xd,yd-41,"center");}   // จอแคบ: ป้ายซ้อนกันจนบังเส้น — ดูตัวเลขในรายการเหนือกราฟแทน
+      else{var xe=X(KH),ye=Y(ln.left),te="เหลือ "+fLeft(ln.left); dotM(xe,ye,col);
+        if(!place(te,xe-8,ye-7,"right")&&!place(te,xe-8,ye+18,"right"))place(te,xe-8,ye-23,"right");}
+    });
+    cM.font="11px "+sans;
+    // ชี้ / แตะ / ลูกศร ดูค่าในแต่ละปี (แบบ start บอกวันที่จริงของแต่ละเส้น · แบบ sell บอกราคาตอนนั้น)
+    var tip=$("mxTip");
+    if(hovM!==null){
+      var jj=Math.max(0,Math.min(KH,hovM)), Xh=X(jj);
+      cM.strokeStyle=cInk3; cM.lineWidth=1; cM.beginPath(); cM.moveTo(Math.round(Xh)+.5,padT); cM.lineTo(Math.round(Xh)+.5,padT+ph); cM.stroke();
+      M.lines.forEach(function(ln){var s=stateAt(ln,jj); if(!s.dead)dotM(Xh,Y(s.v),css(ln.col));});
+      tip.hidden=false; tip.textContent="";
+      var hd=document.createElement("div"); hd.className="th"; hd.textContent=sellM?fMonYr(NOW+(M.a+jj)*7*DAY)+" · ปีที่ "+(jj/WPY).toFixed(1)+" · ราคา "+fMs(M.P[M.a+jj])+"/₿"
+        :jj===0?"วันเริ่มถอน":"ปีที่ "+(jj/WPY).toFixed(1)+" นับจากวันเริ่มถอน"; tip.appendChild(hd);
+      M.lines.forEach(function(ln){var s=stateAt(ln,jj);
+        var row=document.createElement("div"); row.className="tr";
+        var ic=document.createElement("i"); ic.style.background="var("+ln.col+")";
+        var b=document.createElement("b"); b.textContent=s.dead?"หมดแล้ว":s.v===0?"0%":fLeft(s.v);
+        var sp=document.createElement("span"); sp.textContent=ln.lab+(sellM?(!s.dead&&s.v===0?" · เหลือแต่เงินสด":""):" · "+fMonYr(NOW+(ln.k+jj)*7*DAY));
+        row.appendChild(ic); row.appendChild(b); row.appendChild(sp); tip.appendChild(row);});
+      var tw=tip.offsetWidth, left=Xh+14; if(left+tw>W-4)left=Xh-14-tw; if(left<0)left=4;
+      tip.style.left=left+"px"; tip.style.top=(padT+4)+"px";
+    }else tip.hidden=true;
+    cvM.setAttribute("aria-label",(sellM?"กราฟ Bitcoin ที่มีเหลือกี่ % เริ่ม "+fMonYr(NOW+M.a*7*DAY)+" วันเดียวกัน เทียบ 3 จังหวะขาย: ":"กราฟ Bitcoin ที่มีเหลือกี่ % นับจากวันเริ่มถอน เทียบ 3 จังหวะเริ่ม: ")+M.lines.map(function(ln){
+      return ln.lab+(sellM?"":" ("+fMonYr(NOW+ln.k*7*DAY)+")")+" "+(ln.depl!==null?"หมดปีที่ "+ln.depl.toFixed(1):"ครบ "+M.H+" ปี เหลือ "+fLeft(ln.left));}).join(" · ")+" · ใช้ลูกศรซ้ายขวาเลื่อนดูทีละปี");
+  }
+  function kFromXM(clientX){var r=cvM.getBoundingClientRect(), g=geoM; if(!g)return null;
+    return Math.max(0,Math.min(g.KH,Math.round((clientX-r.left-g.padL)/g.pw*g.KH)));}
+  cvM.addEventListener("pointermove",function(e){hovM=kFromXM(e.clientX); drawMx();});
+  cvM.addEventListener("pointerleave",function(){if(document.activeElement!==cvM){hovM=null; drawMx();}});
+  cvM.addEventListener("focus",function(){if(hovM===null&&geoM){hovM=0; drawMx();}});
+  cvM.addEventListener("blur",function(){hovM=null; drawMx();});
+  cvM.addEventListener("keydown",function(e){
+    if(!geoM)return; var yr=Math.round((hovM===null?0:hovM)/WPY);           // เลื่อนทีละปีเต็ม (ไม่สะสมเศษสัปดาห์)
+    if(e.key==="ArrowRight")hovM=Math.min(geoM.KH,Math.round((yr+1)*WPY));
+    else if(e.key==="ArrowLeft")hovM=Math.max(0,Math.round((yr-1)*WPY));
+    else if(e.key==="Home")hovM=0;
+    else if(e.key==="End")hovM=geoM.KH;
+    else if(e.key==="Escape")hovM=null;
+    else return;
+    e.preventDefault(); drawMx();
+  });
+  function redrawAll(){drawChart(); drawMx();}
+
+  // ================= events =================
+  Object.keys(CFG).forEach(function(id){
+    var el=$(id), rng=$(id+"R"), cfg=CFG[id];
+    el.addEventListener("input",function(){if(cfg.comma)commafy(el); if(rng)rng.value=num(id); if(id==="price")priceTouched=true; render();});
+    el.addEventListener("blur",function(){showVal(id,num(id)); render();});
+    if(rng)rng.addEventListener("input",function(){showVal(id,+rng.value); render();});
+  });
+  document.addEventListener("click",function(e){
+    var t=e.target; if(!t||!t.closest)return;
+    var mm=t.closest("[data-mxmode]"); if(mm){st.mxMode=mm.getAttribute("data-mxmode"); hovM=null; render(); return;}
+    var mr=t.closest("[data-mxrow]"); if(mr){st.mxRow=mr.getAttribute("data-mxrow"); render(); return;}
+    var sb=t.closest("[data-start]"); if(sb){st.start=+sb.getAttribute("data-start"); render(); return;}
+    var tb=t.closest("[data-tpl]"); if(tb){st.tpl=+tb.getAttribute("data-tpl"); render(); return;}
+    var cell=t.closest("[data-cell]");
+    if(cell){var p=cell.getAttribute("data-cell").split(","); st.start=+p[0]; st.tpl=+p[1]; render(); return;}
+    var cb=t.closest("[data-btc]");
+    if(cb){showVal("btc",+cb.getAttribute("data-btc")); render(); return;}
+    var cw=t.closest("[data-wr]");
+    if(cw&&last){var c=last.c, wr=+cw.getAttribute("data-wr")/100;
+      var up=c.wkUnit*WPY/12;                                 // เงินเฟ้อสะสมถึงปีเริ่มถอน
+      showVal("spend",Math.round(wr*c.stack0/12/up/100)*100); render();}
+  });
+
+  // คำอธิบายแบบ tooltip (ตารางรายปี · ตารางราคาสูงสุด/ต่ำสุด): ชี้เมาส์แล้วขึ้น · แตะ/คลิกเพื่อเปิดค้าง · แตะที่อื่นหรือกด Esc เพื่อปิด
+  document.querySelectorAll(".tipwrap").forEach(function(w){
+    var b=w.querySelector(".tipbtn");
+    function setOpen(o){w.classList.toggle("open",o); b.setAttribute("aria-expanded",o?"true":"false");}
+    b.addEventListener("click",function(){setOpen(!w.classList.contains("open"));});
+    document.addEventListener("click",function(e){if(w.classList.contains("open")&&!w.contains(e.target))setOpen(false);});
+    document.addEventListener("keydown",function(e){if(e.key==="Escape"&&w.classList.contains("open")){setOpen(false); b.focus();}});
+  });
+
+  // ส่วน "ทำไมถึงไม่พอใช้เกษียณ" พับไว้ — กดลิงก์ในแถบบนก็เปิดให้เลย
+  document.querySelectorAll('a[href="#why"]').forEach(function(a){a.addEventListener("click",function(){$("whyFold").open=true;});});
+  if(location.hash==="#why")$("whyFold").open=true;
+
+  function buildControls(){
+    $("mxTabs").innerHTML=STARTS.map(function(s,i){
+      return '<button type="button" data-start="'+i+'" aria-pressed="false"><b>'+s.name+'</b><small>'+yearOf(NOW+s.d*365.25*DAY)+'–'+yearOf(NOW+(s.d+5)*365.25*DAY)+'</small></button>';}).join("");
+    $("starts").innerHTML=STARTS.map(function(s,i){
+      return '<button type="button" data-start="'+i+'" aria-pressed="false"><b>'+s.name+'</b><small>'+yearOf(NOW+s.d*365.25*DAY)+'</small></button>';}).join("");
+    $("tpls").innerHTML=TPL.map(function(t,i){
+      return '<button type="button" data-tpl="'+i+'" aria-pressed="false"><b>'+t.lab+(i===0?" (ล่าสุด)":"")+'</b><small>'+(t.pl?'ราคาสูงสุดตามเส้นแนวโน้ม · ร่วงราว '+fPct(1-t.dec,0)+' · โตปีละ '+fPct(t.cagr,0)+' แล้วช้าลง'
+        :'ร่วงจากราคาสูงสุด '+fPct(1-t.dec,0)+' ใน '+(t.b/365.25).toFixed(1)+' ปี · โตเฉลี่ยปีละ '+fPct(t.cagr,0))+'</small></button>';}).join("");
+  }
+
+  // ธีม: เริ่มจากค่าที่หน้าเว็บถูกตั้งมาแล้ว (เช่น claude.ai ใส่ data-theme ตามที่ผู้ชมเลือก) ไม่ลบทิ้ง
+  var themes=["auto","light","dark"], tlabel={auto:"อัตโนมัติ",light:"สว่าง",dark:"มืด"};
+  function themeIdx(){var a=document.documentElement.getAttribute("data-theme"); return a==="light"?1:a==="dark"?2:0;}
+  var ti=themeIdx();
+  function applyTheme(){var t=themes[ti],r=document.documentElement;
+    if(t==="auto")r.removeAttribute("data-theme"); else r.setAttribute("data-theme",t);
+    $("theme").innerHTML="&#9680; "+tlabel[t];}
+  $("theme").addEventListener("click",function(){ti=(ti+1)%3; applyTheme(); redrawAll();});
+  if(window.MutationObserver)new MutationObserver(function(){ti=themeIdx(); $("theme").innerHTML="&#9680; "+tlabel[themes[ti]]; redrawAll();})
+    .observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
+
+  // ลิงก์ไปหน้ากู้ค้ำ BTC โชว์เฉพาะเมื่อไฟล์นั้นอยู่ข้าง ๆ หน้านี้จริง — ที่อื่น (เช่นหน้า Artifact) ซ่อนไว้ ไม่ให้เป็นลิงก์เสีย
+  var retireOK=false;
+  function syncRetire(){document.querySelectorAll(".retire-link").forEach(function(el){el.hidden=!retireOK;});}
+  try{fetch("retire-off-bitcoin-th.html",{method:"HEAD",cache:"no-store"}).then(function(r){retireOK=r.ok; syncRetire();}).catch(function(){});}catch(e){}
+  $("reset").addEventListener("click",function(){
+    setVals(DEF); priceTouched=false; if(livePrice)showVal("price",livePrice);
+    st.start=DEF_ST.start; st.tpl=DEF_ST.tpl; st.mxRow=DEF_ST.mxRow; st.mxMode=DEF_ST.mxMode; render();
+  });
+  var rt; window.addEventListener("resize",function(){clearTimeout(rt); rt=setTimeout(redrawAll,80);});
+  if(window.matchMedia){var mq=window.matchMedia("(prefers-color-scheme:dark)");
+    if(mq.addEventListener)mq.addEventListener("change",redrawAll); else if(mq.addListener)mq.addListener(redrawAll);}
+
+  // ราคาสด BTC/THB + USD จาก CoinGecko (ดึงไม่ได้ก็ใช้ค่าตั้งต้น แก้เองได้)
+  function fetchLive(){
+    var note=$("priceNote"); note.textContent="กำลังดึงราคาสดจาก CoinGecko…";
+    var ctrl=window.AbortController?new AbortController():null, to=setTimeout(function(){if(ctrl)ctrl.abort();},8000);
+    fetch("https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=thb,usd",{signal:ctrl?ctrl.signal:undefined,cache:"no-store"})
+      .then(function(r){if(!r.ok)throw 0; return r.json();})
+      .then(function(d){
+        clearTimeout(to);
+        var thb=d&&d.bitcoin&&d.bitcoin.thb, usd=d&&d.bitcoin&&d.bitcoin.usd;
+        if(!(thb>0))throw 0;
+        livePrice=Math.round(thb); if(usd>0)fx=thb/usd;
+        if(!priceTouched)showVal("price",livePrice);
+        render();
+        var t=new Date().toLocaleTimeString("th-TH",{hour:"2-digit",minute:"2-digit"});
+        note.innerHTML="ราคาสด CoinGecko · "+t+" น."+(usd>0?" · ≈ $"+grp(usd):"")+" (แก้เองได้)";
+      })
+      .catch(function(){
+        clearTimeout(to);
+        note.innerHTML="ใช้ราคา 19 ก.ย. 2026 (ดึงราคาสดไม่ได้ในหน้านี้ · พิมพ์ราคาวันนี้แทนได้) · <a href=\"#\" id=\"retryPrice\">ลองดึงใหม่</a>";
+        var rp=$("retryPrice"); if(rp)rp.addEventListener("click",function(e){e.preventDefault(); fetchLive();});
+      });
+  }
+
+  // ---------- เริ่ม ----------
+  buildControls(); applyTheme(); setVals(DEF); render(); fetchLive();
+})();
+</script>
+<footer class="fyt-foot"><div>
+  <p>เครื่องมือนี้ทำขึ้นเพื่อการศึกษา ไม่ใช่คำแนะนำการลงทุน ตัวเลขทุกตัวเป็นการจำลองจากสมมติฐานที่คุณปรับเองได้ ไม่ใช่การทำนายราคา</p>
+  <p style="margin-top:8px"><a href="index.html">← กลับหน้าแรก</a> · © 2026 FreeyourtimeBitcoin</p>
+</div></footer>
+<script>
+(function(){
+  var nav=document.querySelector('.fyt-nav'), btn=nav&&nav.querySelector('.menu-btn');
+  if(!btn) return;
+  btn.addEventListener('click',function(){ btn.setAttribute('aria-expanded',String(nav.classList.toggle('open'))); });
+  nav.querySelectorAll('.links a').forEach(function(a){ a.addEventListener('click',function(){ nav.classList.remove('open'); btn.setAttribute('aria-expanded','false'); }); });
+})();
+</script>
+</body>
+</html>
