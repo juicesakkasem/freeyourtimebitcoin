@@ -1,0 +1,763 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>แผนเกษียณด้วย Bitcoin | FreeyourtimeBitcoin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: one column that moves through four stages: intro, chat, review table, plan. Brand follows FreeyourtimeBitcoin (warm black + bitcoin orange) */
+:root{
+  --bg:#0b0a09; --surface:#141210; --surface-2:#1b1916; --line:#2a2622; --text:#d9d3cb; --bright:#f4f0ea; --dim:#a0978f;
+  --orange:#f7931a; --orange-soft:rgba(247,147,26,.12); --on-orange:#1a1206;
+  --good:#6cc49a; --good-soft:rgba(108,196,154,.12); --warn:#e8c25a; --warn-soft:rgba(232,194,90,.12); --bad:#ef7d6f; --bad-soft:rgba(239,125,111,.12);
+  --s1:#8fa3b8; --s2:#f7931a; --s3:#d7b98c;
+  --f-body:"Noto Sans Thai",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,monospace;
+  color-scheme:dark;
+}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]){
+  --bg:#f7f5f2; --surface:#ffffff; --surface-2:#f1ede8; --line:#e2dcd4; --text:#3a342e; --bright:#17130f; --dim:#6f665d;
+  --orange:#c46d06; --orange-soft:rgba(196,109,6,.10); --on-orange:#ffffff;
+  --good:#1f7a52; --good-soft:rgba(31,122,82,.10); --warn:#8a6508; --warn-soft:rgba(138,101,8,.10); --bad:#b23b2c; --bad-soft:rgba(178,59,44,.09);
+  --s1:#55697e; --s2:#c46d06; --s3:#8f6b36; color-scheme:light}}
+:root[data-theme="light"]{
+  --bg:#f7f5f2; --surface:#ffffff; --surface-2:#f1ede8; --line:#e2dcd4; --text:#3a342e; --bright:#17130f; --dim:#6f665d;
+  --orange:#c46d06; --orange-soft:rgba(196,109,6,.10); --on-orange:#ffffff;
+  --good:#1f7a52; --good-soft:rgba(31,122,82,.10); --warn:#8a6508; --warn-soft:rgba(138,101,8,.10); --bad:#b23b2c; --bad-soft:rgba(178,59,44,.09);
+  --s1:#55697e; --s2:#c46d06; --s3:#8f6b36; color-scheme:light}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:var(--f-body);font-size:16px;line-height:1.75}
+.wrap{max-width:780px;margin:0 auto;padding-block:24px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:28px}
+h1,h2,h3{color:var(--bright);text-wrap:balance;line-height:1.35;margin:0}
+h1{font-size:clamp(26px,4.4vw,34px);font-weight:700}
+h2{font-size:20px;font-weight:600}
+h3{font-size:16px;font-weight:600}
+p{margin:0;max-width:65ch}
+.num{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.label{font-size:12.5px;letter-spacing:.06em;color:var(--dim);font-weight:500}
+section{display:flex;flex-direction:column;gap:14px}
+.sec-head{display:flex;flex-direction:column;gap:4px}
+.sec-head p{color:var(--dim);font-size:15px}
+button{font:inherit;cursor:pointer}
+.btn{padding:9px 20px;border-radius:999px;font-weight:600;font-size:15px;border:1px solid var(--orange);color:var(--orange);background:transparent}
+.btn.solid{background:var(--orange);color:var(--on-orange)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn:focus-visible,.chip-btn:focus-visible,textarea:focus-visible,input:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;color:var(--bright)}
+.brand .mk{width:28px;height:28px;border-radius:50%;background:var(--orange);color:var(--on-orange);display:grid;place-items:center;font-size:16px;line-height:1}
+.brand b{color:var(--orange)}
+.testtag{font-size:12.5px;font-weight:600;color:var(--orange);background:var(--orange-soft);padding:3px 12px;border-radius:999px}
+.notice{border-radius:12px;padding:14px 16px;font-size:15px;background:var(--surface-2)}
+.notice.err{background:var(--bad-soft);color:var(--bad)}
+
+/* intro */
+.intro{display:flex;flex-direction:column;gap:16px}
+.intro ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
+.consent{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:10px;font-size:15px}
+
+/* progress */
+.steps{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.steps div{display:flex;flex-direction:column;gap:4px;font-size:11.5px;color:var(--dim);min-width:0}
+.steps i{display:block;height:4px;border-radius:2px;background:var(--line)}
+.steps .on i{background:var(--orange)} .steps .on{color:var(--text)}
+.steps span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:520px){.steps span{display:none}}
+
+/* chat */
+/* chat view fills the screen: messages scroll inside, the answer box stays visible at the bottom */
+body.chatting .wrap{height:100vh;height:100dvh;padding-block-end:8px;gap:16px}
+body.chatting footer{display:none}
+#v-chat{display:flex;flex-direction:column;gap:10px;flex:1;min-height:360px}
+.chat{display:flex;flex-direction:column;gap:12px;flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding-right:4px}
+.msg{max-width:88%;padding:10px 14px;border-radius:14px;white-space:pre-wrap;overflow-wrap:anywhere;font-size:15.5px}
+.msg.ai{background:var(--surface);border:1px solid var(--line);align-self:flex-start;border-top-left-radius:4px}
+.msg.me{background:var(--orange-soft);color:var(--bright);align-self:flex-end;border-top-right-radius:4px}
+.msg.thinking{color:var(--dim)}
+.composer{flex:none;background:var(--bg);padding-block:10px calc(10px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--line)}
+.row{display:flex;gap:8px;align-items:flex-end}
+textarea{flex:1;min-width:0;resize:none;font:inherit;font-size:15.5px;color:var(--bright);background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px;min-height:46px;max-height:140px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip-btn{font-size:13.5px;border:1px solid var(--line);border-radius:999px;padding:3px 12px;color:var(--text);background:transparent}
+.chip-btn:hover{border-color:var(--orange);color:var(--orange)}
+
+/* review */
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:15px}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:middle}
+th{font-size:12.5px;color:var(--dim);font-weight:500;letter-spacing:.04em}
+td.r,th.r{text-align:right}
+tr:last-child td{border-bottom:0}
+.review-tbl{min-width:0}
+.review-tbl td:first-child{width:52%}
+.review-tbl input{width:100%;max-width:170px;font:inherit;font-family:var(--f-mono);font-size:15px;text-align:right;color:var(--bright);background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:5px 8px}
+.review-tbl input.missing{border-color:var(--bad)}
+.cell-in{display:flex;align-items:center;justify-content:flex-end;gap:6px}
+.unit{font-size:13px;color:var(--dim);white-space:nowrap}
+.group td{background:var(--surface-2);font-size:12.5px;color:var(--dim);letter-spacing:.05em;font-weight:600}
+.tag{font-size:12px;font-weight:600;padding:1px 9px;border-radius:999px;white-space:nowrap}
+.t-good{background:var(--good-soft);color:var(--good)} .t-warn{background:var(--warn-soft);color:var(--warn)} .t-bad{background:var(--bad-soft);color:var(--bad)} .t-def{background:var(--surface-2);color:var(--dim)}
+.list-rows{display:flex;flex-direction:column;gap:6px}
+.list-row{display:flex;justify-content:space-between;gap:8px;align-items:center;font-size:14.5px}
+.x{border:0;background:transparent;color:var(--dim);font-size:18px;line-height:1;padding:2px 6px}
+.actions{display:flex;flex-wrap:wrap;gap:10px}
+
+/* plan */
+.verdict{border-radius:14px;padding:18px 20px;display:flex;flex-direction:column;gap:6px}
+.verdict.good{background:var(--good-soft)} .verdict.warn{background:var(--warn-soft)} .verdict.bad{background:var(--bad-soft)}
+.verdict .v-title{font-size:clamp(19px,3.2vw,24px);font-weight:700;line-height:1.35}
+.verdict.good .v-title{color:var(--good)} .verdict.warn .v-title{color:var(--warn)} .verdict.bad .v-title{color:var(--bad)}
+.verdict p{font-size:15px}
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.tile{background:var(--surface);padding:14px 16px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.tile b{font-family:var(--f-mono);font-size:19px;font-weight:500;color:var(--bright);overflow-wrap:anywhere}
+.tile span:last-child{font-size:12.5px;color:var(--dim)}
+@media (max-width:680px){.tiles{grid-template-columns:1fr 1fr}}
+.chart-box{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 12px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13.5px;color:var(--dim);padding:0 4px 8px}
+.legend i{display:inline-block;width:18px;height:3px;border-radius:2px;vertical-align:middle;margin-right:6px}
+svg text{font-family:var(--f-body)}
+tr.main td{background:var(--orange-soft)}
+.health,.options{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.card p{font-size:14px;color:var(--dim)}
+.card .big{font-family:var(--f-mono);font-size:21px;font-weight:500;color:var(--orange)}
+.meter-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.track{height:8px;border-radius:99px;background:var(--surface-2);overflow:hidden}
+.fill{height:100%;border-radius:99px}
+@media (max-width:680px){.health,.options{grid-template-columns:1fr}}
+.ai-sum{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 20px;display:flex;flex-direction:column;gap:10px}
+.ai-sum .who{display:flex;align-items:center;gap:8px;font-size:13.5px;color:var(--dim)}
+.ai-sum .dot{width:8px;height:8px;border-radius:50%;background:var(--orange)}
+.ai-sum .body{white-space:pre-wrap}
+ul.todo{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+ul.todo li{display:grid;grid-template-columns:22px 1fr;gap:10px}
+ul.todo li::before{content:"";width:16px;height:16px;border:1.5px solid var(--orange);border-radius:4px;margin-top:5px}
+ul.todo b{color:var(--bright);font-weight:600}
+.foot-note{font-size:13px;color:var(--dim)}
+.btc-pick-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
+.btc-pick[aria-pressed="true"]{border-color:var(--orange);background:var(--orange-soft);color:var(--orange);font-weight:600}
+.cf-bar{display:flex;height:14px;border-radius:7px;overflow:hidden;background:var(--surface-2)}
+.cf-bar i{display:block;height:100%}
+.cf-dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:8px;vertical-align:middle}
+.cf-in{background:var(--line)} .cf-exp{background:var(--s1)} .cf-debt{background:var(--bad)} .cf-ev{background:var(--warn)} .cf-dca{background:var(--orange)} .cf-save{background:var(--good)}
+tr.cf-total td{background:var(--surface-2)}
+.cmp-tbl td:first-child{white-space:nowrap}
+footer{font-size:13px;color:var(--dim);border-top:1px solid var(--line);padding-top:14px}
+@media (prefers-reduced-motion: reduce){*{scroll-behavior:auto!important}}
+@media print{
+  :root,:root[data-theme]{--bg:#fff;--surface:#fff;--surface-2:#f3f0eb;--line:#ddd6cc;--text:#2b2620;--bright:#000;--dim:#5f574e;--orange:#b86400;--orange-soft:rgba(184,100,0,.08);--on-orange:#fff;--good:#1f7a52;--good-soft:rgba(31,122,82,.08);--warn:#8a6508;--warn-soft:rgba(138,101,8,.08);--bad:#b23b2c;--bad-soft:rgba(178,59,44,.08);--s1:#55697e;--s2:#b86400;--s3:#8f6b36;color-scheme:light}
+  body{background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .wrap{max-width:none;padding:0}
+  .testtag,.actions,#dl-msg,#plan-link,.btc-pick-row .foot-note{display:none!important}
+  .tbl{overflow:visible}
+  section,.verdict,.card,.chart-box,.tile,tr{break-inside:avoid}
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="top">
+    <div class="brand"><span class="mk">₿</span><span>Freeyourtime<b>Bitcoin</b></span></div>
+    <span class="testtag">ช่วงทดลอง</span>
+  </div>
+
+  <!-- 1. intro -->
+  <section id="v-intro" class="intro">
+    <div>
+      <div class="label">แผนเกษียณด้วย Bitcoin</div>
+      <h1>คุยกับ AI 10 นาที ได้แผนเกษียณของคุณกลับไปทันที</h1>
+    </div>
+    <p>AI จะถามประมาณ 15–18 ข้อ เรื่องอายุ รายรับ รายจ่าย เงินที่มี และ Bitcoin ตอบคร่าว ๆ ได้ ข้อไหนไม่รู้ตอบว่า "ไม่แน่ใจ" ระบบจะใช้ค่ากลางให้</p>
+    <ul>
+      <li>ได้ตัวเลขว่าเงินพอใช้ถึงอายุเท่าไร เทียบ 3 สมมติฐาน</li>
+      <li>ได้ทางเลือกปิดช่องว่าง ถ้าเงินยังไม่พอ</li>
+      <li>ได้สรุปและสิ่งที่ทำได้ใน 30 วันแรก</li>
+    </ul>
+    <div class="consent">
+      <p>ตัวเลขทั้งหมดเป็นการจำลองจากข้อมูลและสมมติฐานที่คุณให้ เพื่อการศึกษา <b>ไม่ใช่คำแนะนำการลงทุน</b></p>
+      <p>คำตอบและแผนของคุณจะถูกเก็บไว้ เพื่อให้คุณกลับมาเปิดดูแผนได้ด้วยลิงก์ส่วนตัว ใครไม่มีลิงก์ก็เปิดไม่ได้</p>
+      <label for="code" class="label">รหัสเข้าใช้งาน</label><div class="row"><input id="code" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="เช่น ABC123" style="flex:1;min-width:0;font:inherit;font-size:15.5px;color:var(--bright);background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:9px 12px"><button class="btn solid" id="start">เริ่มเลย</button></div>
+    </div>
+    <div class="notice err" id="no-ai" hidden></div>
+  </section>
+  <div class="notice" id="loading" hidden>กำลังเปิดแผนของคุณ…</div>
+
+  <!-- 2. chat -->
+  <section id="v-chat" hidden>
+    <div class="steps" id="steps"></div>
+    <div class="chat" id="chat" aria-live="polite"></div>
+    <div class="notice err" id="chat-err" hidden></div>
+    <div class="composer">
+      <div class="chips" id="quick"></div>
+      <div class="row">
+        <textarea id="box" rows="1" placeholder="พิมพ์คำตอบ แล้วกด Enter"></textarea>
+        <button class="btn solid" id="send">ส่ง</button>
+        <button class="btn" id="stop" hidden>หยุด</button>
+      </div>
+      <div class="actions"><button class="btn" id="skip-review" hidden>ไปตรวจตัวเลข</button></div>
+    </div>
+  </section>
+
+  <!-- 3. review -->
+  <section id="v-review" hidden>
+    <div class="sec-head"><h2>ตรวจตัวเลขก่อนสร้างแผน</h2><p>แก้ตรงไหนก็ได้ ช่องที่ติดป้าย "ค่ากลาง" คือคุณไม่ได้ระบุ ระบบเติมค่ามาตรฐานให้ ช่องขอบแดงต้องกรอก</p></div>
+    <div class="notice" id="extracting">กำลังอ่านคำตอบจากบทสนทนา…</div>
+    <div id="review-body" hidden>
+      <div class="tbl"><table class="review-tbl"><tbody id="review-rows"></tbody></table></div>
+    </div>
+    <div class="notice err" id="review-err" hidden></div>
+    <div class="actions">
+      <button class="btn solid" id="build" disabled>สร้างแผน</button>
+      <button class="btn" id="back-chat">กลับไปคุยต่อ</button>
+    </div>
+  </section>
+
+  <!-- 4. plan -->
+  <div id="v-plan" hidden style="display:flex;flex-direction:column;gap:36px"></div>
+
+  <footer>เครื่องมือเพื่อการศึกษา ไม่ใช่คำแนะนำการลงทุน ไม่ได้บอกว่าควรซื้อหรือขายสินทรัพย์ใด · © 2569 FreeyourtimeBitcoin</footer>
+</div>
+
+<script>
+(function(){
+"use strict";
+var $=function(id){return document.getElementById(id)};
+var esc=function(s){return String(s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})};
+var fmt=function(n){return Math.round(n).toLocaleString("th-TH")};
+var fmtM=function(n){var a=Math.abs(n);return a>=1e6?(n/1e6).toFixed(1)+" ล้าน":fmt(n)};
+
+// ---------- interview prompt ----------
+var STEP_NAMES=["ชีวิตและเป้าหมาย","รายรับ","รายจ่าย","เงินที่มี","Bitcoin","เหตุการณ์","ความรู้สึก"];
+var FIRST="สวัสดีครับ เริ่มจากข้อง่าย ๆ ก่อนนะครับ\n\nตอนนี้อายุเท่าไรครับ [[step:1]]";
+
+var sample=null, turns=[], ctl=null, busy=false, step=1, done=false;
+var clean=function(t){return t.replace(/\[\[[^\]]*\]\]/g,"").replace(/\[\[[^\]]*$/,"").trim()};
+
+function show(v){["v-intro","v-chat","v-review","v-plan"].forEach(function(id){$(id).hidden=id!==v});document.body.classList.toggle("chatting",v==="v-chat");window.scrollTo(0,0);if(v==="v-chat")toBottom();}
+function renderSteps(){$("steps").innerHTML=STEP_NAMES.map(function(n,i){return'<div class="'+(i<step||done?"on":"")+'"><i></i><span>'+n+"</span></div>"}).join("");}
+// keep the newest message in view; while a reply streams, follow it unless the reader scrolled up
+function nearBottom(){var c=$("chat");return c.scrollHeight-c.scrollTop-c.clientHeight<120;}
+function toBottom(){var c=$("chat");c.scrollTop=c.scrollHeight;}
+window.addEventListener("resize",function(){if(document.body.classList.contains("chatting"))toBottom();});
+function addMsg(role,text){var d=document.createElement("div");d.className="msg "+(role==="assistant"?"ai":"me");d.textContent=text;$("chat").appendChild(d);toBottom();return d;}
+function setQuick(){var q=done?[]:["ไม่แน่ใจ","ไม่มี","ใช้ค่ากลางได้"];$("quick").innerHTML=q.map(function(t){return'<button class="chip-btn" data-q="'+esc(t)+'">'+esc(t)+"</button>"}).join("");}
+function setBusy(b){busy=b;$("send").hidden=b;$("stop").hidden=!b;$("box").disabled=b;}
+
+var ERR={"bad_code": "รหัสนี้ใช้ไม่ได้ ตรวจตัวสะกดอีกครั้ง", "code_used": "รหัสนี้ใช้ครบจำนวนแผนแล้ว", "no_plan": "ไม่พบแผนนี้ ลิงก์อาจไม่ถูกต้อง", "msg_limit": "คุยครบจำนวนข้อความของแผนนี้แล้ว กด \"ไปตรวจตัวเลข\" เพื่อสร้างแผนได้เลย", "extract_limit": "อ่านคำตอบครบจำนวนครั้งของแผนนี้แล้ว", "summary_limit": "เขียนสรุปครบจำนวนครั้งของแผนนี้แล้ว", "save_limit": "บันทึกแผนครบจำนวนครั้งแล้ว", "busy": "ระบบมีคนใช้เยอะ รอสักครู่แล้วลองใหม่", "refused": "AI ตอบข้อความนี้ไม่ได้ ลองพิมพ์ใหม่อีกแบบ", "bad_input": "ข้อความยาวเกินไป ลองพิมพ์ให้สั้นลง", "network": "เชื่อมต่อไม่ได้ ตรวจอินเทอร์เน็ตแล้วลองใหม่"};
+var errText=function(e){return ERR[e&&e.code]||"เชื่อมต่อ AI ไม่สำเร็จ ลองส่งใหม่อีกครั้ง"};
+
+async function ask(){
+  setBusy(true);$("chat-err").hidden=true;
+  var bubble=addMsg("assistant","กำลังคิด…");bubble.classList.add("thinking");
+  ctl=new AbortController();
+  try{
+    var res=await api.stream("chat",{planId:planId,turns:turns},{signal:ctl.signal,onText:function(u){var stick=nearBottom();bubble.classList.remove("thinking");bubble.textContent=clean(u.text);if(stick)toBottom();}});
+    var raw=res.text;turns.push({role:"assistant",content:raw});
+    var m=raw.match(/\[\[step:(\d)\]\]/);if(m)step=Math.min(7,Math.max(step,+m[1]));
+    if(/\[\[done\]\]/.test(raw)){done=true;}
+    bubble.textContent=clean(raw)||"…";toBottom();
+  }catch(e){
+    if(e&&e.code==="cancelled"){bubble.remove();}
+    else{bubble.remove();$("chat-err").textContent=errText(e);$("chat-err").hidden=false;}
+  }finally{setBusy(false);renderSteps();setQuick();$("skip-review").hidden=!(done||step>=5);$("skip-review").textContent=done?"ตรวจตัวเลขก่อนสร้างแผน":"ไปตรวจตัวเลขเลย (ข้ามข้อที่เหลือ)";if(done)$("skip-review").classList.add("solid");$("box").focus();}
+}
+function send(text){
+  text=(text||$("box").value).trim();if(!text||busy)return;
+  // a failed or stopped reply leaves the last turn as the customer's: join the new text onto it
+  if(turns.length&&turns[turns.length-1].role==="user"){turns[turns.length-1].content+="\n"+text;}else turns.push({role:"user",content:text});
+  if(turns.length>90)turns=turns.slice(turns.length-90);
+  if(turns[0].role!=="user")turns.shift();
+  addMsg("user",text);$("box").value="";autosize();ask();
+}
+function autosize(){var b=$("box");b.style.height="auto";b.style.height=Math.min(140,b.scrollHeight)+"px";}
+
+$("start").onclick=function(){
+  var code=$("code").value.trim(),btn=$("start");
+  if(!code){$("no-ai").textContent="กรอกรหัสเข้าใช้งานก่อน";$("no-ai").hidden=false;return;}
+  btn.disabled=true;$("no-ai").hidden=true;
+  api.post("start",{code:code}).then(function(r){return r.json();}).then(function(j){planId=j.planId;history.replaceState(null,"","?id="+planId);beginChat();})
+    .catch(function(e){$("no-ai").textContent=errText(e);$("no-ai").hidden=false;}).then(function(){btn.disabled=false;});
+};
+$("code").addEventListener("keydown",function(e){if(e.key==="Enter")$("start").click();});
+function beginChat(){
+  turns=[{role:"user",content:"(ลูกค้ากดเริ่มคุย)"},{role:"assistant",content:FIRST}];step=1;done=false;$("chat").innerHTML="";
+  addMsg("assistant",clean(FIRST));renderSteps();setQuick();show("v-chat");$("box").focus();
+}
+// reopened link before the plan was built: show the conversation so far and carry on
+function resumeChat(saved){
+  turns=saved;step=1;done=false;$("chat").innerHTML="";
+  turns.slice(1).forEach(function(x){addMsg(x.role,clean(x.content));if(x.role==="assistant"){var m=x.content.match(/\[\[step:(\d)\]\]/);if(m)step=Math.min(7,Math.max(step,+m[1]));if(/\[\[done\]\]/.test(x.content))done=true;}});
+  renderSteps();setQuick();show("v-chat");
+  $("skip-review").hidden=!(done||step>=5);$("skip-review").textContent=done?"ตรวจตัวเลขก่อนสร้างแผน":"ไปตรวจตัวเลขเลย (ข้ามข้อที่เหลือ)";if(done)$("skip-review").classList.add("solid");
+}
+$("send").onclick=function(){send()};
+$("stop").onclick=function(){if(ctl)ctl.abort()};
+$("box").addEventListener("keydown",function(e){if(e.key==="Enter"&&!e.shiftKey&&!e.isComposing){e.preventDefault();send();}});
+$("box").addEventListener("input",autosize);
+$("quick").addEventListener("click",function(e){var b=e.target.closest("[data-q]");if(b)send(b.getAttribute("data-q"));});
+$("skip-review").onclick=function(){startReview()};
+$("back-chat").onclick=function(){show("v-chat");$("box").focus();};
+
+// ---------- review ----------
+var DEF={retireAge:55,lifeExpect:85,sideIncome:0,pension:0,cash:0,stocks:0,fund:0,gold:0,other:0,btcValue:0,dca:0,inflation:7};
+var SALARY_G_DEFAULT=3; // income growth when the customer does not know
+var LEVELS=[{g:12,l:"ระมัดระวัง",c:"var(--s1)"},{g:15,l:"กลาง",c:"var(--s2)"},{g:20,l:"สูง",c:"var(--s3)"}];
+var vsInf=function(g,inf){var d=Math.round((g-inf)*10)/10;return d>=0?"สูงกว่าเงินเฟ้อ "+d+"%":"ต่ำกว่าเงินเฟ้อ "+(-d)+"%"};
+var FIELDS=[
+ ["ชีวิตและเป้าหมาย"],["age","อายุตอนนี้","ปี",1],["retireAge","อายุที่อยากเกษียณ","ปี"],["lifeExpect","วางแผนถึงอายุ","ปี"],["retireIncome","อยากใช้ต่อเดือนตอนเกษียณ (ค่าเงินวันนี้)","บาท"],
+ ["รายรับ"],["salary","รายได้หลักต่อเดือน (ก่อนหักภาษี)","บาท",1],["salaryG","รายได้โตต่อปี","%"],["sideIncome","รายได้เสริมต่อเดือน","บาท"],["pension","บำนาญหลังเกษียณต่อเดือน","บาท"],
+ ["รายจ่าย"],["exp","รายจ่ายต่อเดือน รวมภาษีและประกันสังคม (ไม่รวมหนี้)","บาท",1],
+ ["เงินที่มี"],["cash","เงินสดและเงินฝาก","บาท"],["stocks","หุ้น","บาท"],["fund","กองทุน (รวม SSF RMF สำรองเลี้ยงชีพ)","บาท"],["gold","ทองคำ","บาท"],["other","ลงทุนอื่น ๆ (ตราสารหนี้ หุ้นกู้ ฯลฯ)","บาท"],
+ ["Bitcoin"],["btcValue","มูลค่า Bitcoin ที่มีตอนนี้","บาท"],["dca","DCA ต่อเดือน","บาท"],["dcaToAge","DCA ถึงอายุ","ปี"],["btcLevel","สมมติฐานหลัก Bitcoin","select"],
+ ["สมมติฐาน"],["inflation","เงินเฟ้อต่อปี","%"]
+];
+var data=null, defaultsUsed=[];
+
+async function startReview(){
+  show("v-review");$("extracting").hidden=false;$("review-body").hidden=true;$("review-err").hidden=true;$("build").disabled=true;
+  try{
+    var j=await api.json("extract",{planId:planId,turns:turns});
+    data=normalize(j||{});renderReview();
+  }catch(e){
+    $("extracting").hidden=true;$("review-err").textContent=(e&&e.code==="invalid_json")?"อ่านคำตอบไม่สำเร็จ ลองกด \"กลับไปคุยต่อ\" แล้วกดตรวจตัวเลขอีกครั้ง":errText(e);$("review-err").hidden=false;
+  }
+}
+var numOrNull=function(v){if(v===null||v===undefined||v==="")return null;var n=Number(String(v).replace(/[^0-9.\-]/g,""));return isFinite(n)?n:null};
+function normalize(j){
+  var d={};defaultsUsed=[];
+  ["age","retireAge","lifeExpect","salary","salaryG","sideIncome","pension","exp","cash","stocks","fund","gold","other","btcValue","dca","dcaToAge","retireIncome","inflation"].forEach(function(k){d[k]=numOrNull(j[k]);});
+  Object.keys(DEF).forEach(function(k){if(d[k]===null){d[k]=DEF[k];defaultsUsed.push(k);}});
+  if(d.salaryG===null){d.salaryG=SALARY_G_DEFAULT;defaultsUsed.push("salaryG");}
+  var lv={cautious:0,mid:1,high:2}[j.btcLevel],cu=numOrNull(j.btcCustom);
+  if(lv===undefined&&cu!==null){lv=0;LEVELS.forEach(function(L,i){if(Math.abs(L.g-cu)<Math.abs(LEVELS[lv].g-cu))lv=i;});}
+  if(lv===undefined){lv=1;} // the interview no longer asks; the plan uses the middle case (15%) and still shows all three
+  d.btcLevel=lv;
+  if(d.dcaToAge===null){d.dcaToAge=d.retireAge;if(d.dca)defaultsUsed.push("dcaToAge");}
+  if(d.retireIncome===null&&d.exp!==null){d.retireIncome=Math.round(d.exp*0.7/100)*100;defaultsUsed.push("retireIncome");}
+  d.debts=(Array.isArray(j.debts)?j.debts:[]).map(function(x){return{label:String(x&&x.label||"หนี้"),monthly:numOrNull(x&&x.monthly)||0,toAge:numOrNull(x&&x.toAge)||d.retireAge}}).filter(function(x){return x.monthly>0});
+  d.events=(Array.isArray(j.events)?j.events:[]).map(function(x){return{label:String(x&&x.label||"เหตุการณ์"),type:x&&x.type==="income"?"income":"expIncrease",monthly:numOrNull(x&&x.monthly)||0,fromAge:numOrNull(x&&x.fromAge)||d.age,toAge:numOrNull(x&&x.toAge)||((numOrNull(x&&x.fromAge)||d.age)+1)}}).filter(function(x){return x.monthly>0});
+  var as=j.assetSale;d.assetSale=as&&numOrNull(as.amount)>0?{amount:numOrNull(as.amount),age:numOrNull(as.age)||d.retireAge}:null;
+  d.custody=["exchange","mobile","hardware","none"].indexOf(j.custody)>=0?j.custody:null;
+  d.reaction=["sell","hold","buy","unsure"].indexOf(j.reaction)>=0?j.reaction:null;
+  d.worry=j.worry?String(j.worry).slice(0,200):null;
+  return d;
+}
+function renderReview(){
+  var h="";
+  FIELDS.forEach(function(f){
+    if(f.length===1){h+='<tr class="group"><td colspan="2">'+f[0]+"</td></tr>";return;}
+    var v=data[f[0]],miss=f[3]&&(v===null||v<=0),def=defaultsUsed.indexOf(f[0])>=0;
+    if(f[2]==="select"){h+='<tr><td>'+f[1]+(def?' <span class="tag t-def">ค่ากลาง</span>':"")+'</td><td><div class="cell-in"><select id="f-'+f[0]+'" aria-label="'+esc(f[1])+'" style="font:inherit;font-size:14.5px;color:var(--bright);background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:5px 8px">'+LEVELS.map(function(L,i){return'<option value="'+i+'"'+(i===v?" selected":"")+">"+L.l+" "+L.g+"% ต่อปี</option>"}).join("")+"</select></div></td></tr>";return;}
+    h+='<tr><td>'+f[1]+(def?' <span class="tag t-def">ค่ากลาง</span>':"")+'</td><td><div class="cell-in"><input id="f-'+f[0]+'" inputmode="decimal" value="'+(v===null?"":v.toLocaleString("th-TH",{maximumFractionDigits:2}))+'" class="'+(miss?"missing":"")+'" aria-label="'+esc(f[1])+'"><span class="unit">'+f[2]+"</span></div></td></tr>";
+  });
+  var list=function(title,items,kind){
+    h+='<tr class="group"><td colspan="2">'+title+"</td></tr>";
+    if(!items.length){h+='<tr><td colspan="2" style="color:var(--dim)">ไม่มี</td></tr>';return;}
+    items.forEach(function(x,i){h+='<tr><td colspan="2"><div class="list-row"><span>'+esc(x)+'</span><button class="x" data-del="'+kind+":"+i+'" aria-label="ลบรายการนี้">×</button></div></td></tr>';});
+  };
+  list("หนี้ที่ผ่อนอยู่",data.debts.map(function(x){return x.label+" · "+fmt(x.monthly)+" บาท/เดือน ถึงอายุ "+x.toAge}),"debt");
+  list("เหตุการณ์ในอนาคต",data.events.map(function(x){return x.label+" · "+(x.type==="income"?"+":"−")+fmt(x.monthly)+" บาท/เดือน อายุ "+x.fromAge+"–"+x.toAge}),"event");
+  list("อสังหาฯ ที่จะขาย",data.assetSale?["ได้ "+fmt(data.assetSale.amount)+" บาท ตอนอายุ "+data.assetSale.age]:[],"asset");
+  $("review-rows").innerHTML=h;$("extracting").hidden=true;$("review-body").hidden=false;$("build").disabled=false;
+}
+$("review-rows").addEventListener("click",function(e){var b=e.target.closest("[data-del]");if(!b)return;readReview();var p=b.getAttribute("data-del").split(":");if(p[0]==="debt")data.debts.splice(+p[1],1);if(p[0]==="event")data.events.splice(+p[1],1);if(p[0]==="asset")data.assetSale=null;renderReview();});
+function readReview(){FIELDS.forEach(function(f){if(f.length===1)return;var el=$("f-"+f[0]);if(!el)return;var n=f[2]==="select"?+el.value:numOrNull(el.value);var old=data[f[0]];data[f[0]]=n;if(n!==old){var i=defaultsUsed.indexOf(f[0]);if(i>=0)defaultsUsed.splice(i,1);}});}
+$("build").onclick=function(){
+  readReview();var errs=[];
+  if(!(data.age>=18&&data.age<=80))errs.push("อายุตอนนี้ต้องอยู่ระหว่าง 18–80");
+  if(!(data.salary>0))errs.push("กรอกรายได้หลักต่อเดือน");
+  if(!(data.exp>0))errs.push("กรอกรายจ่ายต่อเดือน");
+  if(!(data.retireAge>data.age))errs.push("อายุเกษียณต้องมากกว่าอายุตอนนี้");
+  if(!(data.lifeExpect>data.retireAge))errs.push("อายุที่วางแผนถึงต้องมากกว่าอายุเกษียณ");
+  ["retireIncome","sideIncome","pension","cash","stocks","fund","gold","other","btcValue","dca","inflation"].forEach(function(k){if(data[k]===null)data[k]=k==="retireIncome"?Math.round((data.exp||0)*0.7):(DEF[k]||0);});
+  if(data.salaryG===null)data.salaryG=SALARY_G_DEFAULT;
+  if(!(data.btcLevel>=0&&data.btcLevel<=2))data.btcLevel=1;
+  if(data.dcaToAge===null)data.dcaToAge=data.retireAge;
+  if(errs.length){$("review-err").textContent=errs.join(" · ");$("review-err").hidden=false;renderReview();return;}
+  $("review-err").hidden=true;renderPlan();
+};
+
+// ---------- plan engine (same idea as retirement plan.html, DCA taken from savings) ----------
+// returns follow inflation (money-supply view); cash stays low, so it loses value over time
+function rates(p){var i=p.inflation;return{cash:1.5,stocks:i+5,fund:i+3,gold:i+1,other:i+2,disc:i+4};}
+function sim(p,bgr,o){
+  o=o||{};
+  var inf=p.inflation/100,T=p.lifeExpect-p.age,ra=p.retireAge+(o.later||0);
+  var RATE=rates(p),c=p.cash,s=p.stocks,f=p.fund,g=p.gold,ot=p.other||0,b=p.btcValue,ports=[],shortAge=null,shortAtEnd=false,nw=0,NEW=o.newRate!=null;
+  // newRate: existing portfolio keeps growing as it is; every new baht saved from now on (leftover + DCA) goes into one asset at this rate
+  // flatRate: what-if the whole portfolio earned one rate (comparison chart)
+  if(o.flatRate!=null){var fr=o.flatRate;RATE={cash:fr,stocks:fr,fund:fr,gold:fr,other:fr,disc:RATE.disc};bgr=fr;}
+  var act=function(x,age){return age>=x.fromAge&&age<x.toAge};
+  for(var y=0;y<=T;y++){
+    var age=p.age+y;
+    // scaleRet: what-if the portfolio on retirement day were k times bigger (used to find "money needed")
+    if(o.scaleRet!=null&&age===ra){var k=o.scaleRet;c*=k;s*=k;f*=k;g*=k;ot*=k;b*=k;nw*=k;}
+    if(p.assetSale&&age===p.assetSale.age)c+=p.assetSale.amount;
+    ports.push(Math.max(0,c+s+f+g+ot+b+nw));
+    c*=1+RATE.cash/100;s*=1+RATE.stocks/100;f*=1+RATE.fund/100;g*=1+RATE.gold/100;ot*=1+RATE.other/100;b*=1+bgr/100;if(NEW)nw*=1+o.newRate/100;
+    var debt=p.debts.reduce(function(t,d){return t+(age<d.toAge?d.monthly:0)},0);
+    var evIn=p.events.reduce(function(t,x){return t+(x.type==="income"&&act(x,age)?x.monthly:0)},0);
+    var evOut=p.events.reduce(function(t,x){return t+(x.type!=="income"&&act(x,age)?x.monthly:0)},0);
+    if(age<ra){
+      var inc=p.salary*Math.pow(1+p.salaryG/100,y)+p.sideIncome+evIn;
+      var out=p.exp*Math.pow(1+inf,y)+debt+evOut;
+      var dcaM=age<p.dcaToAge?p.dca:0;
+      var net=(inc-out-dcaM)*12;
+      if(inc-out<0&&shortAge===null)shortAge=age;
+      if(age===ra-1)shortAtEnd=inc-out<0;
+      if(net>=0){if(NEW)nw+=net;else{var nb=c+s+f+g+ot;if(nb>0){c+=net*c/nb;s+=net*s/nb;f+=net*f/nb;g+=net*g/nb;ot+=net*ot/nb;}else c+=net;}}
+      else{var all=c+s+f+g+ot+b+nw,r=all>0?Math.max(0,all+net)/all:0;c*=r;s*=r;f*=r;g*=r;ot*=r;b*=r;nw*=r;}
+      if(NEW)nw+=dcaM*12;else b+=dcaM*12;
+      b+=(o.xDca||0)*12;f+=(o.xSave||0)*12;
+    }else{
+      var need=p.retireIncome*Math.pow(1+inf,y)+debt+evOut-p.pension-p.sideIncome-evIn;
+      var wd=Math.max(0,need)*12,all2=c+s+f+g+ot+b+nw,r2=all2>0?Math.max(0,all2-wd)/all2:0;c*=r2;s*=r2;f*=r2;g*=r2;ot*=r2;b*=r2;nw*=r2;
+    }
+  }
+  var runOut=null;ports.forEach(function(v,i){if(runOut===null&&v<=0&&p.age+i>ra)runOut=p.age+i;});
+  return{ports:ports,runOut:runOut,retV:ports[ra-p.age]||0,final:c+s+f+g+ot+b+nw,shortAge:shortAge,shortAtEnd:shortAtEnd};
+}
+// money needed on retirement day = the portfolio size (same mix) that lasts exactly to the planned age
+function neededBySim(p,bgr,r){
+  var lasts=function(k){var x=sim(p,bgr,{scaleRet:k});return x.runOut===null&&x.final>=0};
+  // almost nothing left on retirement day: scaling that leftover mix says little, so fall back to the plain formula
+  var formula=needed(p);
+  if(!(r.retV>formula*0.1))return{need:formula,pct:formula>0?Math.floor(r.retV/formula*100):0};
+  var hi=1;while(!lasts(hi)&&hi<1e4)hi*=2;
+  if(!lasts(hi))return{need:needed(p),pct:0};
+  var lo=hi>1?hi/2:0;for(var i=0;i<40;i++){var m=(lo+hi)/2;lasts(m)?hi=m:lo=m;}
+  return{need:r.retV*hi,pct:Math.floor(100/hi+1e-9)};
+}
+function needed(p){var inf=p.inflation/100,d=rates(p).disc/100,yrs=p.retireAge-p.age,rY=p.lifeExpect-p.retireAge,fm=Math.max(0,p.retireIncome-p.pension-p.sideIncome)*Math.pow(1+inf,yrs);return Math.abs(d-inf)<1e-3?fm*12*rY/(1+d):fm*12*(1-Math.pow((1+inf)/(1+d),rY))/(d-inf);}
+
+// the AI summary is written once per plan; switching the Bitcoin rate reuses it instead of asking Claude again
+var lastSummary=null,lastSummaryG=null,summaryPending=false,summarySoFar="";
+function renderPlan(opt){
+  opt=opt||{};
+  var P=data,el=$("v-plan");
+  var ok=function(g,o){var r=sim(P,g,o);return r.runOut===null&&r.final>=0};
+  var solve=function(g,key){var hi=300000;var o={};o[key]=hi;if(!ok(g,o))return null;var lo=0;for(var i=0;i<50;i++){var m=(lo+hi)/2;o={};o[key]=m;ok(g,o)?hi=m:lo=m;}return Math.ceil(hi/100)*100;};
+  var later=function(g){for(var x=1;x<=20;x++)if(ok(g,{later:x}))return x;return null;};
+  var tone=function(s){return s>=70?["good","ดี"]:s>=40?["warn","พอรับได้"]:["bad","ควรแก้ก่อน"]};
+
+  var RATE=rates(P),infl=P.inflation/100,yrsToRet=P.retireAge-P.age;
+  var today=function(v,yrs){return v/Math.pow(1+infl,yrs)};
+  // no Bitcoin and no DCA: the three growth scenarios would be identical, so show one plan
+  var noBtc=!(P.btcValue>0)&&!(P.dca>0);
+  var scn=noBtc?[{g:LEVELS[1].g,l:"แผนของคุณ",c:"var(--s2)"}]:LEVELS.map(function(L){return{g:L.g,l:L.l,c:L.c}}),main=noBtc?0:P.btcLevel;
+  var res=scn.map(function(x){return sim(P,x.g)}),M=res[main],cons=res[0];
+  var needs=scn.map(function(x,i){return neededBySim(P,x.g,res[i])}),need=needs[main].need;
+  var debtNow=P.debts.reduce(function(t,d){return t+(P.age<d.toAge?d.monthly:0)},0);
+  var evAt=function(type,age){return P.events.reduce(function(t,x){return t+((type==="income")===(x.type==="income")&&age>=x.fromAge&&age<x.toAge?x.monthly:0)},0)};
+  var evInNow=evAt("income",P.age),evOutNow=evAt("out",P.age);
+  var outNow=P.exp+debtNow,dcaNow=P.age<P.dcaToAge?P.dca:0,incNow=P.salary+P.sideIncome+evInNow,saveNow=incNow-outNow-evOutNow-dcaNow;
+
+  // current cash flow, per month and per year: income, minus spending, then what is saved (DCA counts as saving, not spending)
+  var cfRows=[["รายได้หลัก (ก่อนหักภาษี)",P.salary,"in"]];
+  if(P.sideIncome+evInNow>0)cfRows.push(["รายได้เสริม",P.sideIncome+evInNow,"in"]);
+  cfRows.push(["รายจ่ายประจำ (รวมภาษีและประกันสังคม)",-P.exp,"exp"]);
+  if(debtNow>0)cfRows.push(["ผ่อนหนี้",-debtNow,"debt"]);
+  if(evOutNow>0)cfRows.push(["ค่าใช้จ่ายพิเศษตอนนี้ ("+P.events.filter(function(x){return x.type!=="income"&&P.age>=x.fromAge&&P.age<x.toAge}).map(function(x){return x.label}).join(", ")+")",-evOutNow,"ev"]);
+  var canSave=incNow-outNow-evOutNow; // left after spending = DCA + other saving
+  var saveRate=incNow>0?Math.round(canSave/incNow*100):0;
+  var seg=function(v,cls){return v>0&&incNow>0?'<i class="cf-'+cls+'" style="width:'+Math.min(100,v/incNow*100).toFixed(2)+'%"></i>':""};
+  var money=function(v){return(v<0?"−":"")+fmt(Math.abs(v))};
+  var row=function(label,v,cls,extra){return'<tr'+(extra||"")+'><td><span class="cf-dot cf-'+cls+'"></span>'+label+'</td><td class="r num">'+money(v)+'</td><td class="r num">'+money(v*12)+"</td></tr>"};
+  // DCA is shown at its real amount; if it is more than what is left, the gap is a red row (it comes out of savings)
+  var shortRow=function(v){return'<tr><td><span class="cf-dot cf-debt"></span><span style="padding-left:14px;color:var(--bad)">DCA เกินเงินที่เหลือ ต้องดึงจากเงินเก็บ</span></td><td class="r num" style="color:var(--bad)">−'+fmt(v)+'</td><td class="r num" style="color:var(--bad)">−'+fmt(v*12)+"</td></tr>"};
+  var saveRows=canSave>0?(dcaNow>0?row('<span style="padding-left:14px">DCA Bitcoin</span>',dcaNow,"dca"):"")+(saveNow>=0?row('<span style="padding-left:14px">เงินเก็บอื่น (เงินฝาก กองทุน ฯลฯ)</span>',saveNow,"save"):shortRow(-saveNow)):"";
+  var cfHTML='<section><div class="sec-head"><h2>เงินเข้าออกตอนนี้</h2><p>จากข้อมูลที่คุณให้ ก่อนเริ่มคิดเรื่องเกษียณ</p></div>'
+   +'<div class="cf-bar" aria-hidden="true">'+seg(P.exp,"exp")+seg(debtNow,"debt")+seg(evOutNow,"ev")+seg(Math.min(dcaNow,Math.max(0,canSave)),"dca")+seg(Math.max(0,saveNow),"save")+'</div>'
+   +'<div class="tbl"><table><thead><tr><th></th><th class="r">ต่อเดือน</th><th class="r">ต่อปี</th></tr></thead><tbody>'
+   +cfRows.map(function(r){return row(esc(r[0]),r[1],r[2])}).join("")
+   +'<tr class="cf-total"><td><b>'+(canSave>=0?"เหลือเพื่อออมและลงทุน":"ใช้เกินรายได้")+'</b></td><td class="r num"><b style="color:var(--'+(canSave>=0?"good":"bad")+')">'+money(canSave)+'</b></td><td class="r num"><b style="color:var(--'+(canSave>=0?"good":"bad")+')">'+money(canSave*12)+"</b></td></tr>"
+   +saveRows
+   +'</tbody></table></div><p class="foot-note">ออมและลงทุน (รวม DCA) คิดเป็น '+saveRate+'% ของรายได้</p></section>';
+
+  // "keep going like this": peak of the main path
+  // peak measured in today's money, matching the chart's default view
+  var realPorts=M.ports.map(function(v,k){return today(v,k)}),peakReal=Math.max.apply(null,realPorts),peakAge=P.age+realPorts.indexOf(peakReal);
+  var pathText="ถ้ารายได้ รายจ่าย และการออมเป็นแบบนี้ต่อไป"+(noBtc?"":" (สมมติฐานหลัก Bitcoin "+scn[main].g+"% ต่อปี)")+" เงินจะสูงสุดราว "+fmtM(peakReal)+" บาทในค่าเงินวันนี้ ตอนอายุ "+peakAge+" "+(M.runOut===null?"และยังเหลือถึงอายุ "+P.lifeExpect:"แล้วหมดตอนอายุ "+M.runOut);
+
+  // comparison: existing portfolio keeps growing as it is; only new money saved from now on (leftover + DCA) goes into the compared asset
+  var SP500=10,btcRate=noBtc?LEVELS[1].g:scn[main].g,baseG=btcRate;
+  var newMoney=Math.max(0,saveNow)+dcaNow;
+  var flat=function(r){return sim(P,baseG,{newRate:r})};
+  var lastsAt=function(r){var x=flat(r);return x.runOut===null&&x.final>=0};
+  var reqRate=null,reqEnough=false;
+  if(lastsAt(0)){reqEnough=true;}
+  else if(lastsAt(100)){var lo2=0,hi2=100;for(var i2=0;i2<40;i2++){var m2=(lo2+hi2)/2;lastsAt(m2)?hi2=m2:lo2=m2;}reqRate=Math.round(hi2*10)/10;var reqExact=hi2;}
+  var curRate=null;
+  // the "exactly enough" line: use the unrounded rate and show the end-of-plan balance (about zero) at the planned age
+  var endsAtZero=function(r){var x=flat(r),pts=x.ports.slice();pts[pts.length-1]=Math.max(0,x.final);return{ports:pts,retV:x.retV,runOut:x.runOut,final:x.final};};
+  var cmp=[{label:"แบบที่ทำอยู่ตอนนี้",rateTxt:"ตามสินทรัพย์ที่มี",r:M,color:"var(--s3)",w:3},
+    {label:"ถ้าเงินออมใหม่ลง Bitcoin",rateTxt:btcRate+"%",r:flat(btcRate),color:"var(--s2)",w:2},
+    {label:"ถ้าเงินออมใหม่ลง S&P 500",rateTxt:SP500+"%",r:flat(SP500),color:"var(--s1)",w:2}];
+  if(reqRate!==null)cmp.push({label:"ผลตอบแทนที่เงินออมใหม่ต้องได้",rateTxt:reqRate+"%",r:endsAtZero(reqExact),color:"var(--good)",w:2,dash:"6 5",endsExact:true});
+  else if(reqEnough)cmp.push({label:"ถ้าเงินออมใหม่เก็บเป็นเงินสดเฉย ๆ",rateTxt:"0%",r:flat(0),color:"var(--good)",w:2,dash:"6 5"});
+  // where new savings go in the current plan: DCA to Bitcoin, the rest into the existing non-Bitcoin mix
+  var mixParts=[["เงินฝาก",P.cash,RATE.cash],["หุ้น",P.stocks,RATE.stocks],["กองทุน",P.fund,RATE.fund],["ทอง",P.gold,RATE.gold],["ลงทุนอื่น",P.other,RATE.other]].filter(function(m){return m[1]>0});
+  var mixTot=mixParts.reduce(function(s,m){return s+m[1]},0);
+  var mixRate=mixTot>0?mixParts.reduce(function(s,m){return s+m[1]*m[2]},0)/mixTot:RATE.cash;
+  var mixTxt=mixTot>0?mixParts.sort(function(a,b){return b[1]-a[1]}).map(function(m){return m[0]+" "+Math.round(m[1]/mixTot*100)+"%"}).join(" · "):"เงินฝาก";
+  var dcaPart=Math.min(dcaNow,newMoney),restPart=Math.max(0,newMoney-dcaPart);
+  var nowTxt=newMoney<=0?"":"<b>ตอนนี้</b> เงินออมใหม่เดือนละ "+fmt(newMoney)+" บาท "+(dcaPart>0?"มีแค่ DCA "+fmt(dcaPart)+" บาทที่ไปลง Bitcoin ("+btcRate+"% ต่อปี) ส่วนอีก "+fmt(restPart)+" บาทไปเติม":"ทั้งหมดไปเติม")+"สินทรัพย์เดิมตามสัดส่วนที่มี ("+mixTxt+") ซึ่งได้เฉลี่ยราว "+mixRate.toFixed(1)+"% ต่อปี ผลคือ"+(M.runOut===null?"เงินพอถึงอายุ "+P.lifeExpect:"เงินหมดตอนอายุ "+M.runOut);
+  var P2='</p><p style="color:var(--text);font-size:15px">';
+  var reqText=newMoney<=0?"ตอนนี้ยังไม่มีเงินออมใหม่ในแต่ละเดือน เส้นเทียบจึงแทบไม่ต่างจากแบบที่ทำอยู่ ต้องเริ่มจากทำให้มีเงินเหลือเก็บก่อน"
+    :reqEnough?nowTxt+P2+"<b>ถ้าจะให้พอดี</b> ต่อให้เงินออมใหม่เก็บเป็นเงินสดเฉย ๆ ไม่ได้ผลตอบแทนเลย เงินก็พอถึงอายุ "+P.lifeExpect
+    :reqRate===null?nowTxt+P2+"<b>ถ้าจะให้พอดี</b> ต่อให้เงินออมใหม่ทั้งก้อนได้ผลตอบแทน 100% ต่อปี เงินก็ยังไม่พอ ต้องแก้ที่เงินเข้าออกก่อน"
+    :nowTxt+P2+"<b>ถ้าจะให้พอดี</b> เงินออมใหม่<u>ทั้งก้อน</u> "+fmt(newMoney)+" บาท ต้องได้ผลตอบแทนเฉลี่ย <b>"+reqRate+"% ต่อปี</b> (พอร์ตเดิมไม่เปลี่ยน) ตัวเลขนี้คือผลตอบแทนที่เงินออมใหม่ต้องได้ ไม่ใช่การเติบโตของ Bitcoin";
+  // reference table: the required rate next to the plan's own assumed return for common assets (no Bitcoin here, no allocation advice)
+  // history column: real figures only, each with its period and source; "—" where no reliable group average exists
+  var refRows=[["เงินฝาก",RATE.cash,"ต่ำมาก","เงินต้นไม่ลด",null,"0.75–1.5%","ฝากประจำ 12 เดือน ปี 2569"],["ทองคำ",RATE.gold,"กลาง","ราคาขึ้นลงตามตลาดโลก",8.8,"8.8%","ทองแท่งไทย 2540–2568"],["กองทุนอสังหาฯ / REIT",P.inflation+2,"กลาง","ได้ปันผลสม่ำเสมอ แต่ราคาหน่วยขึ้นลงได้",null,"—","ยังไม่มีตัวเลขเฉลี่ยที่ยืนยันได้"],["กองทุนรวม (ผสม)",RATE.fund,"กลาง","ขึ้นกับว่ากองทุนลงอะไร",null,"—","แต่ละกองต่างกันมาก"],["หุ้น",RATE.stocks,"สูง","บางปีลดลงมาก",10.8,"10.8%","หุ้นไทยรวมปันผล 2545–2569"]];
+  var overHist=refRows.filter(function(a){return a[4]!==null&&a[1]>a[4]}).map(function(a){return a[0]});
+  var refHTML=reqRate===null?"":'<h3 style="margin-top:6px">ผลตอบแทน '+reqRate+'% เทียบกับสินทรัพย์ทั่วไป</h3>'
+   +'<div class="tbl"><table style="min-width:640px"><thead><tr><th>สินทรัพย์</th><th class="r">แผนสมมติ</th><th>เทียบกับ '+reqRate+'%</th><th class="r">เคยได้จริง</th><th>ความผันผวน</th></tr></thead><tbody>'
+   +refRows.map(function(a){var d=a[1]-reqRate,tag=Math.abs(d)<0.5?'<span class="tag t-warn">ใกล้เคียง</span>':d>0?'<span class="tag t-good">สูงกว่า</span>':'<span class="tag t-bad">ต่ำกว่า</span>';return"<tr><td>"+a[0]+'</td><td class="r num">'+(+a[1].toFixed(1))+"%</td><td>"+tag+'</td><td class="r"><span class="num">'+a[5]+'</span><br><span style="color:var(--dim);font-size:12.5px">'+a[6]+"</span></td><td>"+a[2]+' <span style="color:var(--dim)">· '+a[3]+"</span></td></tr>"}).join("")
+   +'</tbody></table></div><p class="foot-note">"แผนสมมติ" คือตัวเลขที่ใช้คำนวณทั้งแผน (ผูกกับเงินเฟ้อ '+P.inflation+'%) "เทียบกับ '+reqRate+'%" เทียบจากตัวเลขนี้ '
+   +(overHist.length?"ตัวเลขที่แผนสมมติของ"+overHist.join(" และ")+"สูงกว่าที่เคยเกิดขึ้นจริง เพราะแผนคิดเงินเฟ้อสูงกว่าเงินเฟ้อทางการ ":"")
+   +'"เคยได้จริง" คือผลตอบแทนเฉลี่ยต่อปีแบบทบต้นในช่วงเวลาที่ระบุ ผลตอบแทนที่สูงขึ้นมักแลกกับการขึ้นลงที่แรงขึ้น ผลตอบแทนในอดีตไม่ได้รับประกันอนาคต และตารางนี้ไม่ใช่คำแนะนำให้ซื้อ ขาย หรือจัดสัดส่วนสินทรัพย์ใด</p>'
+   +'<p class="foot-note">ที่มา: หุ้น = ดัชนี SET TRI จาก 1,000 จุด (วันฐาน 2 ม.ค. 2545) ถึง 12,830.70 จุด (28 ต.ค. 2569) ข้อมูลจาก<a href="https://www.set.or.th/th/market/index/tri/overview" target="_blank" rel="noopener">ตลาดหลักทรัพย์ฯ</a> และ<a href="https://www.bualuang.co.th/article/set-tri-index" target="_blank" rel="noopener">หลักทรัพย์บัวหลวง</a> · ทองคำ = ราคาทองแท่งในประเทศ 6,200 บาท (31 ธ.ค. 2540) ถึง 64,950 บาท (31 ธ.ค. 2568) จาก<a href="https://www.bualuang.co.th/article/goldprice" target="_blank" rel="noopener">หลักทรัพย์บัวหลวง</a> อ้างอิง Bloomberg · เงินฝาก = ดอกเบี้ยฝากประจำ 12 เดือนของธนาคารไทยช่วงปี 2569 ตามที่ธนาคารประกาศ · กองทุนอสังหาฯ และกองทุนรวมผสม ยังไม่พบตัวเลขเฉลี่ยทั้งกลุ่มจากแหล่งที่ยืนยันได้</p>';
+  var cmpHTML='<section><div class="sec-head"><h2>เทียบผลตอบแทน</h2><p>พอร์ตที่มีอยู่แล้วโตตามเดิม เปลี่ยนแค่ว่าเงินที่ออมใหม่ทุกเดือนจากนี้ไปลงที่ไหน</p></div>'
+   +'<div class="card"><p style="color:var(--text);font-size:15px">'+reqText+'</p></div>'
+   +'<div class="chart-box"><div class="legend" id="legend2"></div><div style="overflow-x:auto"><svg id="chart2" viewBox="0 0 760 320" width="100%" role="img" aria-label="กราฟเทียบผลตอบแทน"></svg></div></div>'
+   +'<div class="tbl"><table class="cmp-tbl" style="min-width:520px"><thead><tr><th>เส้น</th><th class="r">ผลตอบแทนต่อปี</th><th class="r">เงินวันเกษียณ</th><th class="r">ค่าเงินวันนี้</th><th>เงินพอถึงอายุ</th></tr></thead><tbody>'
+   +cmp.map(function(c){return'<tr><td><span class="cf-dot" style="background:'+c.color+'"></span>'+c.label+'</td><td class="r num">'+c.rateTxt+'</td><td class="r num">'+fmtM(c.r.retV)+'</td><td class="r num">'+fmtM(today(c.r.retV,yrsToRet))+"</td><td>"+(c.endsExact?'<span class="tag t-warn">หมดพอดีอายุ '+P.lifeExpect+"</span>":c.r.runOut===null?'<span class="tag t-good">'+P.lifeExpect+"+ อยู่รอด</span>":'<span class="tag t-bad">หมดตอน '+c.r.runOut+"</span>")+"</td></tr>"}).join("")
+   +'</tbody></table></div><p class="foot-note">เส้นเทียบสมมติว่าเงินออมใหม่ทุกบาท (เงินเหลือเก็บและ DCA) ได้ผลตอบแทนอัตราเดียวทุกปี ส่วนพอร์ตเดิมไม่เปลี่ยน เพื่อให้เห็นว่าเงินออมใหม่ต้องได้ผลตอบแทนเท่าไรถึงพอ ไม่ใช่คำแนะนำให้ลงทุนในสินทรัพย์ใด S&P 500 ใช้ค่าเฉลี่ยในอดีตราว 10% ต่อปี (สกุลดอลลาร์ ไม่รวมผลของค่าเงิน) ผลตอบแทนในอนาคตอาจต่างจากนี้มาก</p>'+refHTML+'</section>';
+  var pct=needs[main].pct,mOk=M.runOut===null;
+  var shortHTML=M.shortAge===null?"":'<div class="notice err"><b>รายจ่ายจะเริ่มมากกว่ารายได้ตั้งแต่อายุ '+M.shortAge+'</b> ทั้งที่ยังไม่เกษียณ'+(M.shortAtEnd?' และเป็นแบบนี้ต่อเนื่องจนถึงวันเกษียณ ช่วงนั้นต้องดึงเงินเก็บออกมาใช้ทุกปี':' ช่วงนั้นต้องดึงเงินเก็บออกมาใช้')+(P.salaryG<P.inflation?' สาเหตุหลักคือรายจ่ายโตตามเงินเฟ้อ '+P.inflation+'% ต่อปี แต่รายได้โตแค่ '+P.salaryG+'% ต่อปี':'')+"</div>";
+  var vClass=mOk&&pct>=100?"good":mOk?"warn":"bad";
+  var vTitle=mOk?(pct>=100?"ตามสมมติฐานหลัก เงินพอใช้ถึงอายุ "+P.lifeExpect:"เงินพอถึงอายุ "+P.lifeExpect+" แต่เหลือเผื่อน้อย"):(M.retV<P.retireIncome*12*Math.pow(1+infl,yrsToRet)?"ตามสมมติฐานหลัก แทบไม่มีเงินเหลือในวันเกษียณ":"ตามสมมติฐานหลัก เงินจะหมดตอนอายุ "+M.runOut);
+  var vText="วันเกษียณคาดว่าจะมีเงิน "+fmtM(M.retV)+" บาท (เท่ากับราว "+fmtM(today(M.retV,yrsToRet))+" บาทในค่าเงินวันนี้) จากที่ควรมี "+fmtM(need)+" บาท ("+pct+"%)"+(main!==0&&cons.runOut!==null&&cons.runOut!==M.runOut?" · ถ้าใช้สมมติฐานแบบระมัดระวัง เงินจะหมดตอนอายุ "+cons.runOut:"")+" · คิดด้วยเงินเฟ้อ "+P.inflation+"% ต่อปี"+(defaultsUsed.indexOf("inflation")>=0||P.inflation===DEF.inflation?" (ค่ากลางของแผนนี้)":" (ตามที่คุณเลือก)");
+
+  var months=outNow>0?P.cash/outNow:0,ls=Math.min(100,Math.round(months/6*100));
+  var rs=mOk?Math.min(100,pct):Math.min(65,Math.round((M.runOut-P.retireAge)/(P.lifeExpect-P.retireAge)*100));
+  var tot=P.cash+P.stocks+P.fund+P.gold+P.other+P.btcValue,share=tot>0?P.btcValue/tot*100:0,cs=Math.max(0,Math.round(100-Math.max(0,share-20)*1.5));
+
+  var target=!mOk?main:(cons.runOut!==null&&main!==0?0:-1),optHTML="",optNote="";
+  if(target>=0){
+    var g=scn[target].g,xs=solve(g,"xSave"),xd=solve(g,"xDca"),lt=later(g);
+    optNote=target===main?"ทำอย่างใดอย่างหนึ่งต่อไปนี้ แล้วเงินจะพอถึงอายุ "+P.lifeExpect+" ตามสมมติฐานหลัก":"สมมติฐานหลักผ่านแล้ว ถ้าอยากให้แผนรอดแม้ในแบบระมัดระวัง ("+g+"%/ปี) ทำอย่างใดอย่างหนึ่งต่อไปนี้";
+    optHTML=[["ออมเพิ่ม",xs===null?"มากกว่า 300,000 ฿":fmt(xs)+" ฿","ต่อเดือน ลงกองทุน (สมมติ "+RATE.fund+"%/ปี) จากรายได้เพิ่มหรือรายจ่ายที่ลดลง"],["เกษียณช้าลง",lt?lt+" ปี":"มากกว่า 20 ปี",lt?"เลื่อนจากอายุ "+P.retireAge+" เป็น "+(P.retireAge+lt):"ทางนี้อย่างเดียวไม่พอ"],[noBtc?"ถ้าเริ่ม DCA Bitcoin":"DCA เพิ่ม",xd===null?"มากกว่า 300,000 ฿":fmt(xd)+" ฿","ต่อเดือน ตามสมมติฐาน "+g+"%/ปี ผลขึ้นกับสมมติฐานมากที่สุด"]]
+      .map(function(o){return'<div class="card"><span class="label">'+o[0]+'</span><span class="big">'+o[1]+"</span><p>"+o[2]+"</p></div>"}).join("");
+  }
+
+  // why not 3%: compare a plan made with official-style 3% inflation against this plan's inflation
+  var infHTML="";
+  if(P.inflation>3){
+    var p3={};for(var k in P)p3[k]=P[k];p3.inflation=3;
+    var need3=needed(p3),r3=rates(p3).disc/100,X=P.inflation/100;
+    var spend=function(inf,yrs){return P.retireIncome*Math.pow(1+inf,yrs)};
+    // if only the 3% target were saved, run this plan's own math (same portfolio mix, same returns) from that smaller amount
+    var outAge=null,lastsTo=null;
+    if(M.retV>need3*0.1){var sc=sim(P,scn[main].g,{scaleRet:need3/M.retV});outAge=sc.runOut;}
+    else{var bal=need3;for(var a=P.retireAge;a<P.lifeExpect;a++){bal=bal*(1+r3)-Math.max(0,spend(X,a-P.age)-P.pension-P.sideIncome)*12;if(bal<=0){outAge=a;break;}}}
+    infHTML='<section><div class="sec-head"><h2>ทำไมแผนนี้ไม่ใช้เงินเฟ้อ 3%</h2></div>'
+    +'<div class="card" style="gap:10px"><p style="color:var(--text);font-size:15px">เงินเฟ้อ 1–3% ที่เห็นในข่าว วัดจากราคาสินค้าในตะกร้าที่ทางการเลือกไว้ ไม่ได้รวมราคาบ้าน ที่ดิน หรือสินทรัพย์ และค่าใช้จ่ายบางอย่างที่คนใกล้เกษียณเจอจริง เช่น ค่ารักษาพยาบาล มักขึ้นเร็วกว่านั้น</p>'
+    +'<p style="color:var(--text);font-size:15px">แผนนี้จึงใช้เงินเฟ้อ '+P.inflation+'% ต่อปี โดยคิดจากการเพิ่มขึ้นของปริมาณเงิน (money supply) เงินที่ถือไว้เฉย ๆ จะเสียอำนาจซื้อเร็วกว่าที่ตัวเลขทางการบอก</p></div>'
+    +'<div class="tbl"><table style="min-width:460px"><thead><tr><th></th><th class="r">ถ้าคิดด้วย 3%</th><th class="r">แผนนี้ ('+P.inflation+'%)</th></tr></thead><tbody>'
+    +'<tr><td>เงินที่ต้องใช้ต่อเดือน ตอนอายุ '+P.retireAge+'</td><td class="r num">'+fmt(spend(0.03,yrsToRet))+' ฿</td><td class="r num">'+fmt(spend(X,yrsToRet))+' ฿</td></tr>'
+    +'<tr><td>เงินที่ต้องใช้ต่อเดือน ตอนอายุ '+(P.lifeExpect-1)+'</td><td class="r num">'+fmt(spend(0.03,P.lifeExpect-1-P.age))+' ฿</td><td class="r num">'+fmt(spend(X,P.lifeExpect-1-P.age))+' ฿</td></tr>'
+    +'<tr><td>เงินที่ควรมีวันเกษียณ</td><td class="r num">'+fmtM(need3)+'</td><td class="r num">'+fmtM(need)+'</td></tr>'
+    +'</tbody></table></div>'
+    +'<div class="verdict '+(outAge?"bad":"warn")+'" style="gap:4px"><div class="label">ถ้าวางแผนผิดตัวเลข</div><p style="font-size:15px;color:var(--text)">ถ้าตั้งเป้าด้วยเงินเฟ้อ 3% แล้วเก็บเงินได้แค่ '+fmtM(need3)+' บาท แต่ของแพงขึ้นจริงปีละ '+P.inflation+'% ตามสมมติฐานของแผนนี้ '
+    +(outAge?'<b style="color:var(--bad)">เงินก้อนนี้จะหมดตอนอายุ '+outAge+'</b> ทั้งที่ตั้งใจให้พอถึงอายุ '+P.lifeExpect:'เงินจะเหลือเผื่อน้อยมากเมื่อถึงอายุ '+P.lifeExpect)+'</p></div>'
+    +'<p class="foot-note">ฝั่ง 3% คือตัวเลขที่ได้ถ้าวางแผนแบบทั่วไป (เงินเฟ้อ 3% ผลตอบแทน 7% ต่อปี) ฝั่งขวาคือตัวเลขของแผนนี้ ซึ่งเป็นตัวเดียวกับ "เงินที่ควรมีวันเกษียณ" ด้านบน</p></section>';
+  }
+
+  var todo=[
+    months<6?["เติมเงินสำรองฉุกเฉิน","ให้ถึง "+fmt(outNow*6)+" บาท (6 เดือนของรายจ่าย) ก่อนเพิ่มเงินลงทุน"]:["เงินสำรองฉุกเฉินครบแล้ว","แยกบัญชีไว้ ไม่ปนกับเงินลงทุน"],
+    P.dca>0?["ตั้ง DCA อัตโนมัติ","ให้ตัดเงินวันเดียวกับเงินเดือนออก จะได้ไม่ต้องตัดสินใจใหม่ทุกเดือน"]:["ทำความเข้าใจ DCA","ศึกษาการออมแบบสม่ำเสมอก่อนตัดสินใจ ไม่ต้องรีบ"],
+    P.custody==="exchange"?["เรียนรู้การเก็บเหรียญเอง","เหรียญยังอยู่ใน exchange ลองศึกษาฮาร์ดแวร์วอลเล็ตและการเก็บ seed phrase อย่างปลอดภัย"]:P.custody==="hardware"?["ทดสอบการกู้คืนวอลเล็ต","ลองกู้คืนด้วย seed phrase ในเครื่องสำรอง ให้มั่นใจว่าทำได้จริง"]:["ศึกษาการเก็บรักษา","รู้ก่อนว่าจะเก็บ Bitcoin ไว้ที่ไหน ปลอดภัยแค่ไหน"],
+    ["เขียนบันทึกส่งต่อ","บอกคนที่ไว้ใจว่ามีสินทรัพย์อยู่ที่ไหน และต้องทำอย่างไรถ้าคุณไม่อยู่ โดยไม่ต้องบอกรหัส"],
+    ["นัดทบทวนแผนอีกครั้ง","อีก 12 เดือน หรือเมื่อรายได้ รายจ่าย หรือครอบครัวเปลี่ยน"]
+  ];
+
+  var assume=[["อายุตอนนี้ / เกษียณ / วางแผนถึง",P.age+" / "+P.retireAge+" / "+P.lifeExpect],["รายได้ต่อเดือน (ก่อนหักภาษี)",fmt(P.salary)+" ฿ · โต "+P.salaryG+"%/ปี"],["รายได้เสริม / บำนาญ",fmt(P.sideIncome)+" / "+fmt(P.pension)+" ฿"],["รายจ่ายต่อเดือน รวมภาษีและประกันสังคม",fmt(P.exp)+" ฿"]]
+    .concat(P.debts.map(function(x){return[x.label,fmt(x.monthly)+" ฿/เดือน ถึงอายุ "+x.toAge]}))
+    .concat([["เงินสด / หุ้น / กองทุน / ทอง / อื่น ๆ",fmt(P.cash)+" / "+fmt(P.stocks)+" / "+fmt(P.fund)+" / "+fmt(P.gold)+" / "+fmt(P.other)+" ฿"],["ผลตอบแทนที่สมมติ (ผูกกับเงินเฟ้อ)","เงินสด "+RATE.cash+"% · หุ้น "+RATE.stocks+"% · กองทุน "+RATE.fund+"% · ทอง "+RATE.gold+"% · อื่น ๆ "+RATE.other+"%"],["Bitcoin 3 แบบ",scn.map(function(x){return x.l+" "+x.g+"%"}).join(" · ")],["Bitcoin ที่มี",fmt(P.btcValue)+" ฿"],["DCA",fmt(P.dca)+" ฿/เดือน ถึงอายุ "+P.dcaToAge+" (หักจากเงินออม)"],["อยากใช้ตอนเกษียณ",fmt(P.retireIncome)+" ฿/เดือน (ค่าเงินวันนี้)"],["เงินเฟ้อ",P.inflation+"%/ปี"],["กองทุนอสังหาฯ / REIT (ใช้ในตารางเทียบเท่านั้น)",(P.inflation+2)+"%/ปี (เงินเฟ้อ +2)"],["อัตราคิดลดของ \"เงินที่ควรมี\"",RATE.disc+"%/ปี (เงินเฟ้อ +4)"]])
+    .concat(P.events.map(function(x){return[x.label,(x.type==="income"?"+":"−")+fmt(x.monthly)+" ฿/เดือน อายุ "+x.fromAge+"–"+x.toAge]}))
+    .concat(P.assetSale?[["ขายอสังหาฯ",fmt(P.assetSale.amount)+" ฿ ตอนอายุ "+P.assetSale.age]]:[]);
+
+  el.innerHTML=
+   '<header style="display:flex;flex-direction:column;gap:10px"><div class="label">แผนเกษียณด้วย Bitcoin · สร้างเมื่อ '+new Date().toLocaleDateString("th-TH",{day:"numeric",month:"short",year:"numeric"})+'</div><h1>แผนของคุณ</h1></header><div class="notice" id="plan-link" hidden></div>'
+  +cfHTML
+  +(noBtc?"":'<div class="btc-pick-row"><span class="label">ให้ Bitcoin โตปีละ</span><div class="chips" role="group" aria-label="เลือกการเติบโตของ Bitcoin">'+LEVELS.map(function(L,i){return'<button class="chip-btn btc-pick" data-i="'+i+'" aria-pressed="'+(i===main)+'">'+L.g+'%</button>'}).join("")+'</div><span class="foot-note">กดเปลี่ยนแล้วทั้งแผนคำนวณใหม่</span></div>')
+  +'<div class="verdict '+vClass+'"><div class="label">ผลสรุป</div><div class="v-title">'+vTitle+"</div><p>"+vText+"</p></div>"+shortHTML
+  +'<section><div class="sec-head"><h2>ตัวเลขสำคัญ</h2><p>'+(noBtc?"แผนนี้ไม่มี Bitcoin · เงินเฟ้อ "+P.inflation+"% ต่อปี":'ตามสมมติฐานหลัก Bitcoin แบบ'+scn[main].l+' ('+scn[main].g+'% ต่อปี · '+vsInf(scn[main].g,P.inflation)+')')+'</p></div><div class="tiles">'
+  +[["เงินที่คาดว่าจะมีวันเกษียณ",fmtM(M.retV),"≈ "+fmtM(today(M.retV,yrsToRet))+" ค่าเงินวันนี้"],["เงินที่ควรมีวันเกษียณ",fmtM(need),"≈ "+fmtM(today(need,yrsToRet))+" ค่าเงินวันนี้"],["ออมและลงทุนต่อเดือน",fmt(Math.max(0,canSave)),dcaNow>0?(saveNow>=0?"DCA "+fmt(dcaNow)+" + เก็บอื่น "+fmt(saveNow):"DCA "+fmt(dcaNow)+" เกินเงินที่เหลือ "+fmt(-saveNow)):"บาท ต่อเดือน"],["เงินพอใช้ถึงอายุ",M.runOut===null?P.lifeExpect+"+":String(M.runOut),M.runOut===null?"อยู่รอดตลอดแผน":"ก่อนอายุ "+P.lifeExpect]].map(function(t){return'<div class="tile"><span class="label">'+t[0]+"</span><b>"+t[1]+"</b><span>"+t[2]+"</span></div>"}).join("")
+  +'</div></section>'
+  +'<section><div class="sec-head"><h2>ถ้ายังเป็นแบบนี้ไปเรื่อย ๆ</h2><p>'+pathText+'</p></div><div class="chips" role="group" aria-label="หน่วยเงินของกราฟ"><button class="chip-btn" id="m-today" aria-pressed="true">ค่าเงินวันนี้</button><button class="chip-btn" id="m-future" aria-pressed="false">ค่าเงินในอนาคต</button></div><div class="chart-box"><div class="legend" id="legend"></div><div style="overflow-x:auto"><svg id="chart" viewBox="0 0 760 320" width="100%" role="img" aria-label="กราฟเงินตลอดชีวิตถ้ายังทำแบบเดิม"></svg></div></div>'
+  +(noBtc?"":'<h3 style="margin-top:6px">ถ้า Bitcoin โตต่างจากนี้</h3>')
+  +'<div class="tbl"><table style="min-width:500px"><thead><tr><th>สมมติฐาน Bitcoin</th><th class="r">เงินวันเกษียณ</th><th class="r">ค่าเงินวันนี้</th><th class="r">เทียบกับที่ควรมี</th><th>เงินพอถึงอายุ</th></tr></thead><tbody>'
+  +res.map(function(r,i){var p=needs[i].pct;return'<tr class="'+(i===main?"main":"")+'"><td>'+(noBtc?"ไม่มี Bitcoin ในแผน":scn[i].l+" "+scn[i].g+"%/ปี"+(i===main?" · หลัก":""))+'</td><td class="r num">'+fmtM(r.retV)+'</td><td class="r num">'+fmtM(today(r.retV,yrsToRet))+'</td><td class="r num">'+p+"%</td><td>"+(r.runOut===null?'<span class="tag t-good">'+P.lifeExpect+"+ อยู่รอด</span>":'<span class="tag t-bad">หมดตอน '+r.runOut+"</span>")+"</td></tr>"}).join("")
+  +"</tbody></table></div></section>"
+  +cmpHTML
+  +'<section><div class="sec-head"><h2>สุขภาพการเงิน 3 ด้าน</h2><p>70 ขึ้นไปถือว่าดี 40–69 พอรับได้ ต่ำกว่า 40 ควรแก้ก่อน</p></div><div class="health">'
+  +[["ความพร้อมเกษียณ",rs,"มีเงินวันเกษียณ "+pct+"% ของที่ควรมี"],["เงินสำรองฉุกเฉิน",ls,"เงินสดพอใช้ "+months.toFixed(1)+" เดือน (เป้า 6 เดือน)"],["การกระจุกตัวใน Bitcoin",cs,"Bitcoin เป็น "+share.toFixed(0)+"% ของสินทรัพย์ทางการเงิน"]].map(function(h){var t=tone(h[1]);return'<div class="card"><div class="meter-top"><h3>'+h[0]+'</h3><span class="tag t-'+t[0]+'">'+t[1]+'</span></div><div class="meter-top"><b class="num" style="font-size:21px;color:var(--bright);font-weight:500">'+h[1]+'</b><span class="label">/ 100</span></div><div class="track"><div class="fill" style="width:'+h[1]+"%;background:var(--"+t[0]+')"></div></div><p>'+h[2]+"</p></div>"}).join("")
+  +"</div></section>"
+  +(target>=0?'<section><div class="sec-head"><h2>ทางเลือกปิดช่องว่าง</h2><p>'+optNote+'</p></div><div class="options">'+optHTML+'</div><p class="foot-note">แต่ละทางเลือกคำนวณแยกกัน ทำทางใดทางหนึ่งก็พอ หรือผสมกันโดยลดสัดส่วนลง</p></section>':"")
+  +infHTML
+  +'<section><div class="sec-head"><h2>สรุปแผนของคุณ</h2></div><div class="ai-sum"><div class="who"><span class="dot"></span>สรุปโดย AI จากตัวเลขในแผนนี้</div><div class="body" id="ai-body">กำลังเขียนสรุป…</div></div></section>'
+  +'<section><div class="sec-head"><h2>สิ่งที่ทำได้ใน 30 วันแรก</h2></div><ul class="todo">'+todo.map(function(t){return"<li><span><b>"+t[0]+"</b> — "+t[1]+"</span></li>"}).join("")+"</ul></section>"
+  +'<section><div class="sec-head"><h2>ข้อมูลและสมมติฐานที่ใช้</h2></div><div class="tbl"><table><tbody>'+assume.map(function(r){return"<tr><td>"+esc(r[0])+'</td><td class="r num">'+esc(r[1])+"</td></tr>"}).join("")+"</tbody></table></div></section>"
+  +'<div class="actions"><button class="btn solid" id="pdf-plan">บันทึกเป็น PDF</button><button class="btn dl-plan" id="dl-plan">ดาวน์โหลดไฟล์แผน</button><button class="btn" id="edit-again">แก้ตัวเลขแล้วคำนวณใหม่</button><button class="btn" id="restart">เริ่มแผนใหม่ด้วยรหัสอื่น</button></div><p class="foot-note" id="dl-msg" hidden></p>';
+  if(opt.keepScroll!=null){window.scrollTo(0,opt.keepScroll);}else{show("v-plan");}el.style.display="flex";showPlanLink();
+  document.querySelectorAll(".btc-pick").forEach(function(b){b.onclick=function(){var i=+b.getAttribute("data-i");if(i===P.btcLevel)return;data.btcLevel=i;renderPlan({keepScroll:window.scrollY,reuseSummary:true});};});
+  var mode="today";var redraw=function(){
+    drawLines("chart","legend",P,[{label:"ถ้ายังทำแบบเดิม",r:M,color:"var(--s2)",w:3}],need,mode);
+    drawLines("chart2","legend2",P,cmp,need,mode);$("m-today").setAttribute("aria-pressed",String(mode==="today"));$("m-future").setAttribute("aria-pressed",String(mode!=="today"));$("m-today").style.borderColor=mode==="today"?"var(--orange)":"";$("m-future").style.borderColor=mode!=="today"?"var(--orange)":"";};
+  $("m-today").onclick=function(){mode="today";redraw();};$("m-future").onclick=function(){mode="future";redraw();};redraw();
+  $("dl-plan").onclick=function(){downloadPlan(this)};
+  $("pdf-plan").onclick=function(){window.print();};
+  $("edit-again").onclick=function(){el.style.display="none";show("v-review");renderReview();};
+  $("restart").onclick=function(){el.style.display="none";el.innerHTML="";data=null;turns=[];planId=null;lastSummary=null;history.replaceState(null,"",location.pathname);$("code").value="";show("v-intro");};
+
+  // raw numbers of the plan on screen, read by the recheck script (recheck_plan.py)
+  window.__lastPlan={inputs:JSON.parse(JSON.stringify(P)),btcG:scn[main].g,noBtc:noBtc,
+    scenarios:scn.map(function(x,i){return{g:x.g,retV:res[i].retV,runOut:res[i].runOut,final:res[i].final,need:needs[i].need,pct:needs[i].pct}}),
+    retV:M.retV,runOut:M.runOut,need:need,pct:pct,shortAge:M.shortAge,shortAtEnd:M.shortAtEnd,ports:M.ports.slice(),
+    cash:{inc:incNow,exp:P.exp,debt:debtNow,evOut:evOutNow,dca:dcaNow,canSave:canSave,saveNow:saveNow,saveRate:saveRate},
+    peakReal:peakReal,peakAge:peakAge,
+    cmp:{newMoney:newMoney,reqRate:reqRate,reqExact:typeof reqExact==="number"?reqExact:null,reqEnough:reqEnough,mixRate:mixRate,lines:cmp.map(function(c){return{label:c.label,retV:c.r.retV,runOut:c.r.runOut,final:c.r.final,lastPort:c.r.ports[c.r.ports.length-1]}})},
+    options:target>=0?{target:target,g:scn[target].g,xSave:xs,xDca:xd,later:lt}:null,
+    inf3:P.inflation>3?{need3:need3,outAge:outAge}:null};
+  // AI summary from the computed numbers
+  var facts={age:P.age,retireAge:P.retireAge,lifeExpect:P.lifeExpect,inflation:P.inflation,mainScenario:scn[main].l+" "+scn[main].g+"%/ปี",moneyAtRetire:Math.round(M.retV),moneyAtRetireInTodayMoney:Math.round(today(M.retV,yrsToRet)),moneyNeeded:Math.round(need),moneyNeededInTodayMoney:Math.round(today(need,yrsToRet)),percent:pct,runOutAgeMain:M.runOut,runOutAgeCautious:cons.runOut,saveNowPerMonth:Math.round(saveNow),dcaPerMonth:dcaNow,emergencyMonths:+months.toFixed(1),btcSharePercent:Math.round(share),custody:P.custody,reactionToHalfDrop:P.reaction,biggestWorry:P.worry,options:target>=0?optNote:null,hasNoBitcoin:noBtc,expensesExceedIncomeFromAge:M.shortAge,salaryGrowth:P.salaryG,incomePerMonthNow:incNow,savingsRatePercent:saveRate,portfolioReturnNowPercent:curRate===null?null:+curRate.toFixed(1),newSavingsPerMonth:newMoney,dcaToBitcoinPerMonth:dcaPart,otherNewSavingsPerMonth:restPart,otherNewSavingsAverageReturnPercent:+mixRate.toFixed(1),returnNeededOnAllNewSavingsPercent:reqRate};
+  // one summary per plan: switching the Bitcoin rate never asks Claude again, even while the first summary is still being written
+  var noteFor=function(g){var cur=data&&LEVELS[data.btcLevel]?LEVELS[data.btcLevel].g:g;return cur!==g&&!noBtc?"\n\n(สรุปนี้เขียนจากสมมติฐาน Bitcoin "+g+"% ต่อปี ตัวเลขด้านบนเปลี่ยนตามที่คุณเลือกแล้ว)":"";};
+  if(opt.reuseSummary&&lastSummary){$("ai-body").textContent=lastSummary+noteFor(lastSummaryG);return;}
+  if(opt.reuseSummary&&summaryPending){$("ai-body").textContent=summarySoFar||"กำลังเขียนสรุป…";return;}
+  if(opt.reuseSummary){$("ai-body").textContent="สรุปจาก AI ไม่สำเร็จในรอบนี้ กด \"แก้ตัวเลขแล้วคำนวณใหม่\" เพื่อสร้างแผนอีกครั้ง";return;}
+  var gNow=scn[main].g;summaryPending=true;summarySoFar="";lastSummary=null;
+  savePlanRemote({inputs:JSON.parse(JSON.stringify(P)),defaultsUsed:defaultsUsed.slice(),summary:null,summaryG:null});
+  api.stream("summary",{planId:planId,facts:facts},{onText:function(u){summarySoFar=u.text;var el=$("ai-body");if(el)el.textContent=u.text;}})
+    .then(function(r){summaryPending=false;lastSummary=r.text;lastSummaryG=gNow;var el=$("ai-body");if(el)el.textContent=r.text+noteFor(gNow);savePlanRemote({summary:r.text,summaryG:gNow});})
+    .catch(function(e){summaryPending=false;var el=$("ai-body");if(el)el.textContent=(e&&e.text)||("เขียนสรุปไม่สำเร็จ: "+errText(e));});
+}
+
+// generic line chart: series = [{label, r:{ports,retV}, color, w, dash}]; the first series and any dashed one set the scale, others may run off the top
+function drawLines(svgId,legendId,P,series,needIn,mode){
+  var W=760,H=320,L=64,R=16,T=16,B=36,ages=series[0].r.ports.map(function(_,i){return P.age+i});
+  var dfl=function(k){return mode==="today"?Math.pow(1+P.inflation/100,k):1};
+  var res=series.map(function(sr){return{ports:sr.r.ports.map(function(v,k){return v/dfl(k)}),retV:sr.r.retV/dfl(P.retireAge-P.age)}}),need=needIn/dfl(P.retireAge-P.age);
+  var maxV=Math.max.apply(null,res.filter(function(_,i){return i===0||series[i].dash}).map(function(r){return Math.max.apply(null,r.ports)}).concat([need*1.4,1]));
+  var step=Math.pow(10,Math.floor(Math.log10(maxV/4))),nice=[1,2,5,10].map(function(k){return k*step}).find(function(s){return maxV/s<=5})||step*10,top=Math.ceil(maxV/nice)*nice;
+  var x=function(a){return L+(a-P.age)/(P.lifeExpect-P.age)*(W-L-R)},y=function(v){return T+(1-Math.min(v,top*1.05)/top)*(H-T-B)};
+  var cid="clip-"+svgId;
+  var s='<defs><clipPath id="'+cid+'"><rect x="'+L+'" y="'+(T-4)+'" width="'+(W-L-R)+'" height="'+(H-T-B+4)+'"/></clipPath></defs>';
+  for(var g=0;g<=top+1;g+=nice){s+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+y(g)+'" y2="'+y(g)+'" stroke="var(--line)"/><text x="'+(L-8)+'" y="'+(y(g)+4)+'" text-anchor="end" font-size="12" fill="var(--dim)">'+(g/1e6).toFixed(nice<1e6?1:0)+" ล.</text>";}
+  var span=P.lifeExpect-P.age,tick=span>40?10:5;
+  for(var a=Math.ceil(P.age/tick)*tick;a<=P.lifeExpect;a+=tick){s+='<text x="'+x(a)+'" y="'+(H-12)+'" text-anchor="middle" font-size="12" fill="var(--dim)">'+a+"</text>";}
+  s+='<line x1="'+x(P.retireAge)+'" x2="'+x(P.retireAge)+'" y1="'+T+'" y2="'+(H-B)+'" stroke="var(--dim)" stroke-dasharray="4 4"/><text x="'+(x(P.retireAge)+6)+'" y="'+(T+12)+'" font-size="12" fill="var(--dim)">เกษียณ '+P.retireAge+"</text>";
+  if(need<=top){s+='<circle cx="'+x(P.retireAge)+'" cy="'+y(need)+'" r="5" fill="none" stroke="var(--bright)" stroke-width="2"/><text x="'+(x(P.retireAge)-8)+'" y="'+(y(need)-9)+'" text-anchor="end" font-size="12" fill="var(--bright)">ควรมี '+fmtM(need)+"</text>";}
+  var offN=0;
+  res.forEach(function(r,i){
+    var sr=series[i];
+    var d=r.ports.map(function(v,k){return(k?"L":"M")+x(ages[k]).toFixed(1)+" "+y(v).toFixed(1)}).join(" ");
+    s+='<path d="'+d+'" clip-path="url(#'+cid+')" fill="none" stroke="'+sr.color+'" stroke-width="'+(sr.w||2)+'"'+(sr.dash?' stroke-dasharray="'+sr.dash+'"':"")+' stroke-linejoin="round"/>';
+    if(r.retV<=top)s+='<circle cx="'+x(P.retireAge)+'" cy="'+y(r.retV)+'" r="'+((sr.w||2)>2?4.5:3)+'" fill="'+sr.color+'"/>';
+    var off=r.ports.findIndex(function(v){return v>top});
+    if(off>0){s+='<text x="'+(W-R-4)+'" y="'+(T+14+offN*14)+'" text-anchor="end" font-size="12" fill="'+sr.color+'">'+esc(sr.label)+" เกินกรอบ ↑ (สูงสุด "+fmtM(Math.max.apply(null,r.ports))+")</text>";offN++;}
+  });
+  $(svgId).innerHTML=s;
+  $(legendId).innerHTML=series.map(function(sr){return'<span><i style="background:'+(sr.dash?"transparent;border-top:2px dashed "+sr.color+";height:0":sr.color)+'"></i>'+esc(sr.label)+"</span>"}).join("")+'<span><i style="background:transparent;border:2px solid var(--bright);width:10px;height:10px;border-radius:50%"></i>เงินที่ควรมี</span>';
+}
+
+// ---------- download the finished plan as one HTML file ----------
+// the file keeps the plan's look (same styles and charts) and opens in any browser; printing it gives a PDF
+var downloads={save:function(r){
+  var url=URL.createObjectURL(new Blob([r.data],{type:"text/html;charset=utf-8"})),a=document.createElement("a");
+  a.href=url;a.download=r.filename;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url);},4000);
+  return Promise.resolve({status:"saved"});
+}};
+function downloadPlan(btn){
+  var msg=$("dl-msg"),say=function(s){if(msg){msg.textContent=s;msg.hidden=!s;}};
+  if(summaryPending){say("รอให้ AI เขียนสรุปเสร็จก่อน แล้วกดดาวน์โหลดอีกครั้ง");return;}
+  if(!downloads){say("หน้านี้ดาวน์โหลดไม่ได้");return;}
+  var c=$("v-plan").cloneNode(true);
+  c.querySelectorAll(".actions,#dl-msg").forEach(function(n){n.remove();});
+  // buttons do nothing in a saved file: keep the chosen values as plain text
+  var pick=c.querySelector(".btc-pick-row");
+  if(pick){var on=pick.querySelector('[aria-pressed="true"]');pick.innerHTML='<span class="label">คิดด้วย Bitcoin โตปีละ '+(on?on.textContent:"")+"</span>";}
+  var unit=c.querySelector('[aria-label="หน่วยเงินของกราฟ"]');
+  if(unit){var u=unit.querySelector('[aria-pressed="true"]');var note=document.createElement("p");note.className="foot-note";note.textContent="กราฟแสดงเป็น"+(u?u.textContent:"ค่าเงินวันนี้");unit.replaceWith(note);}
+  var css=[].map.call(document.querySelectorAll("style"),function(s){return s.textContent}).join("\n");
+  var fonts=[].map.call(document.querySelectorAll('link[rel="stylesheet"]'),function(l){return'<link rel="stylesheet" href="'+l.href+'">'}).join("");
+  var d=new Date(),ymd=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+  var html='<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>แผนเกษียณของคุณ '+ymd+"</title>"+fonts
+    +"<style>"+css+"\n.plan-file{display:flex;flex-direction:column;gap:36px}@media print{section,.verdict,.card,.chart-box,.tile{break-inside:avoid}}</style></head><body><div class=\"wrap\"><div class=\"plan-file\">"+c.innerHTML
+    +"</div><footer>เครื่องมือเพื่อการศึกษา ไม่ใช่คำแนะนำการลงทุน ไม่ได้บอกว่าควรซื้อหรือขายสินทรัพย์ใด · © 2569 FreeyourtimeBitcoin</footer></div></body></html>";
+  btn.disabled=true;say("");
+  downloads.save({filename:"retirement-plan-"+ymd+".html",data:html})
+    .then(function(){say("บันทึกไฟล์แล้ว เปิดด้วยเบราว์เซอร์ได้เลย ถ้าอยากได้ PDF ให้สั่งพิมพ์แล้วเลือก \"บันทึกเป็น PDF\"");})
+    .catch(function(e){var k=e&&e.code;say(k==="declined"?"":k==="rate_limited"?"มีหน้าต่างดาวน์โหลดเปิดค้างอยู่ ลองใหม่อีกครั้ง":"ดาวน์โหลดไม่สำเร็จในหน้านี้");})
+    .then(function(){btn.disabled=false;});
+}
+
+// ---------- server calls (Netlify functions at /api) ----------
+var planId=null;
+var api={
+  post:function(route,body,signal){
+    return fetch("/api/"+route,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(body),signal:signal})
+      .catch(function(e){throw{code:e&&e.name==="AbortError"?"cancelled":"network"};})
+      .then(function(r){if(r.ok)return r;return r.json().catch(function(){return{};}).then(function(j){throw{code:j.error||"server"};});});
+  },
+  // streamed text; the server ends with "\u0000ERR:code" when something went wrong
+  stream:function(route,body,opt){
+    opt=opt||{};
+    return api.post(route,body,opt.signal).then(function(r){
+      var rd=r.body.getReader(),dec=new TextDecoder(),text="";
+      var pump=function(){return rd.read().then(function(x){
+        if(x.done){var i=text.indexOf("\u0000ERR:");if(i>=0)throw{code:text.slice(i+5).trim(),text:text.slice(0,i)};return{text:text};}
+        text+=dec.decode(x.value,{stream:true});var k=text.indexOf("\u0000");
+        if(opt.onText)opt.onText({text:k>=0?text.slice(0,k):text});
+        return pump();
+      });};
+      return pump().catch(function(e){if(e&&e.name==="AbortError")throw{code:"cancelled"};throw e;});
+    });
+  },
+  json:function(route,body){return api.stream(route,body,{}).then(function(r){try{return JSON.parse(r.text.trim());}catch(e){throw{code:"invalid_json"};}});},
+  get:function(path){return fetch("/api/"+path,{cache:"no-store"}).then(function(r){return r.json().catch(function(){return{};}).then(function(j){if(!r.ok)throw{code:j.error||"server"};return j;});},function(){throw{code:"network"};});}
+};
+function savePlanRemote(rec){if(!planId)return;api.post("save",{planId:planId,record:rec}).catch(function(e){console.warn("save failed",e&&e.code);});}
+function showPlanLink(){
+  var b=$("plan-link");if(!b||!planId)return;
+  var url=location.origin+location.pathname+"?id="+planId;
+  b.hidden=false;
+  b.innerHTML='<b>ลิงก์แผนของคุณ</b> เก็บลิงก์นี้ไว้ เปิดดูแผนนี้ได้ตลอด ใครไม่มีลิงก์ก็เปิดไม่ได้'
+    +'<div class="row" style="margin-top:8px"><input id="plan-url" readonly value="'+esc(url)+'" aria-label="ลิงก์แผนของคุณ" style="flex:1;min-width:0;font:inherit;font-size:14px;color:var(--bright);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:6px 10px"><button class="btn" id="copy-link">คัดลอก</button></div>';
+  $("copy-link").onclick=function(){var i=$("plan-url"),done=function(){$("copy-link").textContent="คัดลอกแล้ว";};i.select();
+    if(navigator.clipboard)navigator.clipboard.writeText(i.value).then(done,function(){document.execCommand("copy");done();});else{document.execCommand("copy");done();}};
+}
+
+// ---------- boot ----------
+renderSteps();
+(function(){
+  var qid=new URLSearchParams(location.search).get("id");
+  if(!qid)return;
+  planId=qid;$("v-intro").hidden=true;$("loading").hidden=false;
+  api.get("plan?id="+encodeURIComponent(qid)).then(function(j){
+    $("loading").hidden=true;
+    var rec=j.record;
+    if(rec&&rec.inputs){
+      data=rec.inputs;defaultsUsed=rec.defaultsUsed||[];if(j.turns)turns=j.turns;
+      if(rec.summary){lastSummary=rec.summary;lastSummaryG=rec.summaryG;renderPlan({reuseSummary:true});}else renderPlan();
+    }else if(j.turns&&j.turns.length>2)resumeChat(j.turns);
+    else beginChat();
+  }).catch(function(e){
+    $("loading").hidden=true;planId=null;history.replaceState(null,"",location.pathname);
+    show("v-intro");$("no-ai").textContent=errText(e);$("no-ai").hidden=false;
+  });
+})();
+})();
+</script>
+</body>
+</html>
