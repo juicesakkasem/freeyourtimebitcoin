@@ -154,10 +154,10 @@ footer{font-size:13px;color:var(--dim);border-top:1px solid var(--line);padding-
 [hidden]{display:none!important}
 @media print{
   :root,:root[data-theme]{--bg:#fff;--surface:#fff;--surface-2:#f3f0eb;--line:#ddd6cc;--text:#2b2620;--bright:#000;--dim:#5f574e;--orange:#b86400;--orange-soft:rgba(184,100,0,.08);--on-orange:#fff;--good:#1f7a52;--good-soft:rgba(31,122,82,.08);--warn:#8a6508;--warn-soft:rgba(138,101,8,.08);--bad:#b23b2c;--bad-soft:rgba(178,59,44,.08);--s1:#55697e;--s2:#b86400;--s3:#8f6b36;color-scheme:light}
-  /* no browser header/footer (date, link with the plan id); the page margin comes from .wrap instead */
-  @page{size:A4;margin:0}
+  /* small top/bottom page margin: room on every page, too narrow for the browser's own header/footer (date, title, plan link) */
+  @page{size:A4;margin:7mm 0}
   body{background:#fff;font-size:12.5px;line-height:1.55;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  .wrap{max-width:none;padding:11mm 12mm;gap:12px}
+  .wrap{max-width:none;padding:3mm 12mm;gap:12px}
   #v-plan{gap:16px!important}
   section{gap:8px}
   h1{font-size:22px} h2{font-size:15.5px} h3{font-size:13.5px}
@@ -173,7 +173,8 @@ footer{font-size:13px;color:var(--dim);border-top:1px solid var(--line);padding-
   .tbl{overflow:visible}
   .testtag,.actions,#dl-msg,#plan-link,.btc-pick-row .foot-note,footer{display:none!important}
   .print-only{display:block!important}
-  section,.verdict,.card,.chart-box,.tile,tr{break-inside:avoid}
+  section,.verdict,.card,.chart-box,.tile,tr,p,li,.notice,.tbl{break-inside:avoid}
+  p{orphans:3;widows:3}
   h2,h3,.sec-head{break-after:avoid}
 }
 .print-only{display:none}
