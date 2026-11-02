@@ -141,7 +141,7 @@ ul.todo li::before{content:"";width:16px;height:16px;border:1.5px solid var(--or
 ul.todo b{color:var(--bright);font-weight:600}
 .foot-note{font-size:13px;color:var(--dim)}
 .btc-pick-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
-.btc-pick[aria-pressed="true"]{border-color:var(--orange);background:var(--orange-soft);color:var(--orange);font-weight:600}
+.btc-pick[aria-pressed="true"],.yr-pick[aria-pressed="true"]{border-color:var(--orange);background:var(--orange-soft);color:var(--orange);font-weight:600}
 .cf-bar{display:flex;height:14px;border-radius:7px;overflow:hidden;background:var(--surface-2)}
 .cf-bar i{display:block;height:100%}
 .cf-dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:8px;vertical-align:middle}
@@ -526,7 +526,7 @@ function renderPlan(opt){
   else if(lastsAt(100)){var lo2=0,hi2=100;for(var i2=0;i2<40;i2++){var m2=(lo2+hi2)/2;lastsAt(m2)?hi2=m2:lo2=m2;}reqRate=Math.round(hi2*10)/10;var reqExact=hi2;}
   var curRate=null;
   // the "exactly enough" line: use the unrounded rate and show the end-of-plan balance (about zero) at the planned age
-  var endsAtZero=function(r){var x=flat(r),pts=x.ports.slice();pts[pts.length-1]=Math.max(0,x.final);return{ports:pts,retV:x.retV,runOut:x.runOut,final:x.final};};
+  var endsAtZero=function(r){var x=flat(r),pts=x.ports.slice();pts[pts.length-1]=Math.max(0,x.final);return{ports:pts,rows:x.rows,retV:x.retV,runOut:x.runOut,final:x.final};};
   var cmp=[{label:"แบบที่ทำอยู่ตอนนี้",rateTxt:"ตามสินทรัพย์ที่มี",r:M,color:"var(--s3)",w:3},
     {label:"ถ้าเงินออมใหม่ลง Bitcoin",rateTxt:btcRate+"%",r:flat(btcRate),color:"var(--s2)",w:2},
     {label:"ถ้าเงินออมใหม่ลง S&P 500",rateTxt:SP500+"%",r:flat(SP500),color:"var(--s1)",w:2}];
@@ -561,20 +561,28 @@ function renderPlan(opt){
    +'<div class="tbl"><table class="cmp-tbl" style="min-width:520px"><thead><tr><th>เส้น</th><th class="r">ผลตอบแทนต่อปี</th><th class="r">เงินวันเกษียณ</th><th class="r">ค่าเงินวันนี้</th><th>เงินพอถึงอายุ</th></tr></thead><tbody>'
    +cmp.map(function(c){return'<tr><td><span class="cf-dot" style="background:'+c.color+'"></span>'+c.label+'</td><td class="r num">'+c.rateTxt+'</td><td class="r num">'+fmtM(c.r.retV)+'</td><td class="r num">'+fmtM(today(c.r.retV,yrsToRet))+"</td><td>"+(c.endsExact?'<span class="tag t-warn">หมดพอดีอายุ '+P.lifeExpect+"</span>":c.r.runOut===null?'<span class="tag t-good">'+P.lifeExpect+"+ อยู่รอด</span>":'<span class="tag t-bad">หมดตอน '+c.r.runOut+"</span>")+"</td></tr>"}).join("")
    +'</tbody></table></div><p class="foot-note">เส้นเทียบสมมติว่าเงินออมใหม่ทุกบาท (เงินเหลือเก็บและ DCA) ได้ผลตอบแทนอัตราเดียวทุกปี ส่วนพอร์ตเดิมไม่เปลี่ยน เพื่อให้เห็นว่าเงินออมใหม่ต้องได้ผลตอบแทนเท่าไรถึงพอ ไม่ใช่คำแนะนำให้ลงทุนในสินทรัพย์ใด S&P 500 ใช้ค่าเฉลี่ยในอดีตราว 10% ต่อปี (สกุลดอลลาร์ ไม่รวมผลของค่าเงิน) ผลตอบแทนในอนาคตอาจต่างจากนี้มาก</p>'+refHTML+'</section>';
-  // year-by-year after retirement on the main path, so the numbers can be checked by hand: start + return − withdrawal = end
-  var yrRows=M.rows.filter(function(r){return r.age<P.lifeExpect});
-  var hasInc=yrRows.some(function(r){return r.income>0});
-  var yrHTML=!yrRows.length?"":'<section><div class="sec-head"><h2>เงินแต่ละปีหลังเกษียณ</h2><p>'+(noBtc?"":"ตามสมมติฐานหลัก Bitcoin "+scn[main].g+"% ต่อปี · ")+'ค่าใช้จ่ายโตตามเงินเฟ้อ '+P.inflation+'% ต่อปี · ใช้ตรวจว่าตัวเลขไปทางเดียวกับกราฟ</p></div>'
-   +'<details class="yr"><summary>ดูตารางรายปี ('+yrRows.length+' ปี)</summary>'
-   +'<p class="foot-note" style="margin-top:10px">ตัวเลขเงินหน่วยล้านบาท</p>'
-   +'<div class="tbl" style="margin-top:6px"><table class="yr-tbl"><thead><tr><th>อายุ</th><th class="r">เงิน<br>ต้นปี</th><th class="r">ผลตอบแทน<br>ปีนี้</th><th class="r">ใช้จ่าย<br>ทั้งปี</th>'+(hasInc?'<th class="r">รายได้<br>ทั้งปี</th><th class="r">ถอนจาก<br>พอร์ต</th>':"")+'<th class="r">ถอน %<br>ของต้นปี</th><th class="r">เงิน<br>สิ้นปี</th><th class="r col-today">สิ้นปี<br>ค่าเงินวันนี้</th></tr></thead><tbody>'
-   +yrRows.map(function(r){
-      var out=r.short>0,gp=r.start>0?r.growth/r.start*100:0,wp=r.start>0?(r.wd+r.short)/r.start*100:null,hot=wp!==null&&wp>gp;
-      var mb=function(v){return(v/1e6).toFixed(2)},sub=function(s,c){return'<br><span class="sub"'+(c?' style="color:'+c+'"':"")+'>'+s+"</span>"};
-      return'<tr'+(out?' class="out"':"")+'><td class="num">'+r.age+'</td><td class="r num">'+mb(r.start)+'</td><td class="r num">'+mb(r.growth)+(r.start>0?sub(gp.toFixed(1)+"%"):"")+'</td><td class="r num">'+mb(r.spend)+sub(fmt(r.spend/12)+"/เดือน")+(!hasInc&&out?sub("ขาด "+mb(r.short),"var(--bad)"):"")+"</td>"
-        +(hasInc?'<td class="r num">'+mb(r.income)+'</td><td class="r num">'+mb(r.wd)+(out?sub("ขาด "+mb(r.short),"var(--bad)"):"")+"</td>":"")
-        +'<td class="r num"'+(hot?' style="color:var(--bad)"':"")+">"+(wp===null?"–":wp.toFixed(1)+"%")+'</td><td class="r num"'+(out?' style="color:var(--bad)"':"")+">"+mb(r.end)+'</td><td class="r num col-today">'+mb(today(r.end,r.age+1-P.age))+"</td></tr>"}).join("")
-   +'</tbody></table></div><p class="foot-note" style="margin-top:8px">'+(hasInc?"เงินสิ้นปี = เงินต้นปี + ผลตอบแทนปีนี้ − ถอนจากพอร์ต · ถอนจากพอร์ต = ใช้จ่ายทั้งปี − รายได้":"เงินสิ้นปี = เงินต้นปี + ผลตอบแทนปีนี้ − ใช้จ่ายทั้งปี (ไม่มีบำนาญหรือรายได้เสริม จึงถอนจากพอร์ตเท่ากับที่ใช้จ่าย)")+' · ผลตอบแทนคิดจากสัดส่วนสินทรัพย์ที่มีวันเกษียณ · ถ้า % ที่ถอนสูงกว่า % ผลตอบแทนใต้ช่องผลตอบแทน (ตัวเลขสีแดง) เงินจะเริ่มลดลง และลดเร็วขึ้นทุกปี · แถวสีแดงคือเงินไม่พอจ่าย · ตัวเลขปัดเป็นทศนิยม 2 ตำแหน่ง ผลบวกลบอาจคลาด 0.01</p></details></section>';
+  // year-by-year after retirement, so the numbers can be checked by hand: start + return − withdrawal = end
+  // the picker switches the table between the current path and the comparison lines (new savings into Bitcoin / S&P 500 / the rate that lasts exactly)
+  var hasInc=M.rows.some(function(r){return r.age<P.lifeExpect&&r.income>0});
+  var yrOpts=cmp.map(function(c,i){return{label:i===0?c.label:c.label.replace(/^ถ้า/,""),rateTxt:c.rateTxt,rows:(c.r.rows||[]).filter(function(r){return r.age<P.lifeExpect})}}).filter(function(o){return o.rows.length});
+  var yrTable=function(k){
+    var o=yrOpts[k];
+    var mb=function(v){return(v/1e6).toFixed(2)},sub=function(s,c){return'<br><span class="sub"'+(c?' style="color:'+c+'"':"")+'>'+s+"</span>"};
+    var desc=k===0?"แผนตามที่ทำอยู่ตอนนี้"+(noBtc?"":" (Bitcoin "+scn[main].g+"% ต่อปี)"):"ถ้าเงินออมใหม่ทุกเดือนได้ผลตอบแทน "+o.rateTxt+" ต่อปี พอร์ตเดิมไม่เปลี่ยน";
+    return'<p class="foot-note" style="margin-top:10px">'+desc+" · ตัวเลขเงินหน่วยล้านบาท</p>"
+     +'<div class="tbl" style="margin-top:6px"><table class="yr-tbl"><thead><tr><th>อายุ</th><th class="r">เงิน<br>ต้นปี</th><th class="r">ผลตอบแทน<br>ปีนี้</th><th class="r">ใช้จ่าย<br>ทั้งปี</th>'+(hasInc?'<th class="r">รายได้<br>ทั้งปี</th><th class="r">ถอนจาก<br>พอร์ต</th>':"")+'<th class="r">ถอน %<br>ของต้นปี</th><th class="r">เงิน<br>สิ้นปี</th><th class="r col-today">สิ้นปี<br>ค่าเงินวันนี้</th></tr></thead><tbody>'
+     +o.rows.map(function(r){
+        var out=r.short>0,gp=r.start>0?r.growth/r.start*100:0,wp=r.start>0?(r.wd+r.short)/r.start*100:null,hot=wp!==null&&wp>gp;
+        return'<tr'+(out?' class="out"':"")+'><td class="num">'+r.age+'</td><td class="r num">'+mb(r.start)+'</td><td class="r num">'+mb(r.growth)+(r.start>0?sub(gp.toFixed(1)+"%"):"")+'</td><td class="r num">'+mb(r.spend)+sub(fmt(r.spend/12)+"/เดือน")+(!hasInc&&out?sub("ขาด "+mb(r.short),"var(--bad)"):"")+"</td>"
+          +(hasInc?'<td class="r num">'+mb(r.income)+'</td><td class="r num">'+mb(r.wd)+(out?sub("ขาด "+mb(r.short),"var(--bad)"):"")+"</td>":"")
+          +'<td class="r num"'+(hot?' style="color:var(--bad)"':"")+">"+(wp===null?"–":wp.toFixed(1)+"%")+'</td><td class="r num"'+(out?' style="color:var(--bad)"':"")+">"+mb(r.end)+'</td><td class="r num col-today">'+mb(today(r.end,r.age+1-P.age))+"</td></tr>"}).join("")
+     +"</tbody></table></div>";
+  };
+  var yrHTML=!yrOpts.length?"":'<section><div class="sec-head"><h2>เงินแต่ละปีหลังเกษียณ</h2><p>ค่าใช้จ่ายโตตามเงินเฟ้อ '+P.inflation+'% ต่อปี · ใช้ตรวจว่าตัวเลขไปทางเดียวกับกราฟ'+(yrOpts.length>1?" · กดเลือกเส้นเพื่อดูตารางของเส้นนั้น":"")+'</p></div>'
+   +'<details class="yr"><summary>ดูตารางรายปี ('+yrOpts[0].rows.length+' ปี)</summary>'
+   +(yrOpts.length>1?'<div class="chips" role="group" aria-label="เลือกเส้นที่จะดูตารางรายปี" style="margin-top:10px">'+yrOpts.map(function(o,i){return'<button class="chip-btn yr-pick" data-k="'+i+'" aria-pressed="'+(i===0)+'">'+esc(o.label)+(i?" "+esc(o.rateTxt):"")+"</button>"}).join("")+"</div>":"")
+   +'<div id="yr-body">'+yrTable(0)+"</div>"
+   +'<p class="foot-note" style="margin-top:8px">'+(hasInc?"เงินสิ้นปี = เงินต้นปี + ผลตอบแทนปีนี้ − ถอนจากพอร์ต · ถอนจากพอร์ต = ใช้จ่ายทั้งปี − รายได้":"เงินสิ้นปี = เงินต้นปี + ผลตอบแทนปีนี้ − ใช้จ่ายทั้งปี (ไม่มีบำนาญหรือรายได้เสริม จึงถอนจากพอร์ตเท่ากับที่ใช้จ่าย)")+' · ผลตอบแทนคิดจากสัดส่วนสินทรัพย์ที่มีวันเกษียณ · ถ้า % ที่ถอนสูงกว่า % ผลตอบแทนใต้ช่องผลตอบแทน (ตัวเลขสีแดง) เงินจะเริ่มลดลง และลดเร็วขึ้นทุกปี · แถวสีแดงคือเงินไม่พอจ่าย · ตัวเลขปัดเป็นทศนิยม 2 ตำแหน่ง ผลบวกลบอาจคลาด 0.01</p></details></section>';
   var pct=needs[main].pct,mOk=M.runOut===null;
   var shortHTML=M.shortAge===null?"":'<div class="notice err"><b>รายจ่ายจะเริ่มมากกว่ารายได้ตั้งแต่อายุ '+M.shortAge+'</b> ทั้งที่ยังไม่เกษียณ'+(M.shortAtEnd?' และเป็นแบบนี้ต่อเนื่องจนถึงวันเกษียณ ช่วงนั้นต้องดึงเงินเก็บออกมาใช้ทุกปี':' ช่วงนั้นต้องดึงเงินเก็บออกมาใช้')+(P.salaryG<P.inflation?' สาเหตุหลักคือรายจ่ายโตตามเงินเฟ้อ '+P.inflation+'% ต่อปี แต่รายได้โตแค่ '+P.salaryG+'% ต่อปี':'')+"</div>";
   var vClass=mOk&&pct>=100?"good":mOk?"warn":"bad";
@@ -643,8 +651,8 @@ function renderPlan(opt){
   +'<div class="tbl"><table style="min-width:500px"><thead><tr><th>สมมติฐาน Bitcoin</th><th class="r">เงินวันเกษียณ</th><th class="r">ค่าเงินวันนี้</th><th class="r">เทียบกับที่ควรมี</th><th>เงินพอถึงอายุ</th></tr></thead><tbody>'
   +res.map(function(r,i){var p=needs[i].pct;return'<tr class="'+(i===main?"main":"")+'"><td>'+(noBtc?"ไม่มี Bitcoin ในแผน":scn[i].l+" "+scn[i].g+"%/ปี"+(i===main?" · หลัก":""))+'</td><td class="r num">'+fmtM(r.retV)+'</td><td class="r num">'+fmtM(today(r.retV,yrsToRet))+'</td><td class="r num">'+p+"%</td><td>"+(r.runOut===null?'<span class="tag t-good">'+P.lifeExpect+"+ อยู่รอด</span>":'<span class="tag t-bad">หมดตอน '+r.runOut+"</span>")+"</td></tr>"}).join("")
   +"</tbody></table></div></section>"
-  +yrHTML
   +cmpHTML
+  +yrHTML
   +'<section><div class="sec-head"><h2>สุขภาพการเงิน 3 ด้าน</h2><p>70 ขึ้นไปถือว่าดี 40–69 พอรับได้ ต่ำกว่า 40 ควรแก้ก่อน</p></div><div class="health">'
   +[["ความพร้อมเกษียณ",rs,"มีเงินวันเกษียณ "+pct+"% ของที่ควรมี"],["เงินสำรองฉุกเฉิน",ls,"เงินสดพอใช้ "+months.toFixed(1)+" เดือน (เป้า 6 เดือน)"],["การกระจุกตัวใน Bitcoin",cs,"Bitcoin เป็น "+share.toFixed(0)+"% ของสินทรัพย์ทางการเงิน"]].map(function(h){var t=tone(h[1]);return'<div class="card"><div class="meter-top"><h3>'+h[0]+'</h3><span class="tag t-'+t[0]+'">'+t[1]+'</span></div><div class="meter-top"><b class="num" style="font-size:21px;color:var(--bright);font-weight:500">'+h[1]+'</b><span class="label">/ 100</span></div><div class="track"><div class="fill" style="width:'+h[1]+"%;background:var(--"+t[0]+')"></div></div><p>'+h[2]+"</p></div>"}).join("")
   +"</div></section>"
@@ -655,6 +663,7 @@ function renderPlan(opt){
   +'<section><div class="sec-head"><h2>ข้อมูลและสมมติฐานที่ใช้</h2></div><div class="tbl"><table><tbody>'+assume.map(function(r){return"<tr><td>"+esc(r[0])+'</td><td class="r num">'+esc(r[1])+"</td></tr>"}).join("")+"</tbody></table></div></section>"
   +'<div class="actions"><button class="btn solid" id="pdf-plan">บันทึกเป็น PDF</button><button class="btn dl-plan" id="dl-plan">ดาวน์โหลดไฟล์แผน</button><button class="btn" id="edit-again">แก้ตัวเลขแล้วคำนวณใหม่</button><button class="btn" id="restart">เริ่มแผนใหม่ด้วยรหัสอื่น</button></div><p class="foot-note" id="dl-msg" hidden></p>';
   if(opt.keepScroll!=null){window.scrollTo(0,opt.keepScroll);}else{show("v-plan");}el.style.display="flex";showPlanLink();
+  document.querySelectorAll(".yr-pick").forEach(function(b){b.onclick=function(){$("yr-body").innerHTML=yrTable(+b.getAttribute("data-k"));document.querySelectorAll(".yr-pick").forEach(function(x){x.setAttribute("aria-pressed",String(x===b));});};});
   document.querySelectorAll(".btc-pick").forEach(function(b){b.onclick=function(){var i=+b.getAttribute("data-i");if(i===P.btcLevel)return;data.btcLevel=i;renderPlan({keepScroll:window.scrollY,reuseSummary:true});};});
   var mode="today";var redraw=function(){
     drawLines("chart","legend",P,[{label:"ถ้ายังทำแบบเดิม",r:M,color:"var(--s2)",w:3}],need,mode);
