@@ -109,6 +109,7 @@ async function start(body) {
 async function chat(body) {
   const plan = await loadPlan(body?.planId);
   if (!plan) return fail("no_plan", 404);
+  if (plan.record?.inputs) return fail("locked", 409);
   if (plan.msgs >= LIMIT.msgs) return fail("msg_limit", 429);
   const turns = body.turns;
   if (!checkTurns(turns) || turns[turns.length - 1].content.length > LIMIT.userChars) return fail("bad_input", 400);
@@ -129,6 +130,7 @@ async function chat(body) {
 async function extract(body) {
   const plan = await loadPlan(body?.planId);
   if (!plan) return fail("no_plan", 404);
+  if (plan.record?.inputs) return fail("locked", 409);
   if (plan.extracts >= LIMIT.extracts) return fail("extract_limit", 429);
   const turns = body.turns;
   if (!Array.isArray(turns) || !checkTurns(turns.concat({ role: "user", content: "." }))) return fail("bad_input", 400);
@@ -154,6 +156,7 @@ async function extract(body) {
 async function summary(body) {
   const plan = await loadPlan(body?.planId);
   if (!plan) return fail("no_plan", 404);
+  if (plan.record?.summary) return fail("summary_done", 409);
   if (plan.summaries >= LIMIT.summaries) return fail("summary_limit", 429);
   const facts = body.facts;
   const factsText = JSON.stringify(facts ?? null);
@@ -170,10 +173,14 @@ async function save(body) {
   if (plan.saves >= LIMIT.saves) return fail("save_limit", 429);
   const r = body.record;
   if (!r || typeof r !== "object" || JSON.stringify(r).length > 40000) return fail("bad_input", 400);
+  // the first save fixes the plan's numbers; later saves may only add the summary once
+  const rec = plan.record || {};
   const keep = {};
-  for (const k of ["inputs", "defaultsUsed", "summary", "summaryG"]) if (k in r) keep[k] = r[k];
+  if (!rec.inputs) for (const k of ["inputs", "defaultsUsed"]) if (k in r) keep[k] = r[k];
+  if (!rec.summary) for (const k of ["summary", "summaryG"]) if (k in r) keep[k] = r[k];
+  if (!Object.keys(keep).length) return json({ ok: true, locked: true });
   plan.saves++;
-  plan.record = { ...(plan.record || {}), ...keep, updatedAt: new Date().toISOString() };
+  plan.record = { ...rec, ...keep, updatedAt: new Date().toISOString() };
   await savePlan(body.planId, plan);
   return json({ ok: true });
 }

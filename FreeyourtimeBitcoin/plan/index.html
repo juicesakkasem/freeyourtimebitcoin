@@ -260,7 +260,7 @@ footer.site-foot{margin-top:56px;border-top:1px solid var(--line);padding:0;font
 
   <!-- 3. review -->
   <section id="v-review" hidden>
-    <div class="sec-head"><h2>ตรวจตัวเลขก่อนสร้างแผน</h2><p>แก้ตรงไหนก็ได้ ช่องที่ติดป้าย "ค่ากลาง" คือคุณไม่ได้ระบุ ระบบเติมค่ามาตรฐานให้ ช่องขอบแดงต้องกรอก</p></div>
+    <div class="sec-head"><h2>ตรวจตัวเลขก่อนสร้างแผน</h2><p>แก้ตรงไหนก็ได้ ช่องที่ติดป้าย "ค่ากลาง" คือคุณไม่ได้ระบุ ระบบเติมค่ามาตรฐานให้ ช่องขอบแดงต้องกรอก · <b style="color:var(--warn)">กดสร้างแผนแล้วจะแก้ตัวเลขไม่ได้ ตรวจให้ครบก่อน</b></p></div>
     <div class="notice" id="extracting">กำลังอ่านคำตอบจากบทสนทนา…</div>
     <div id="review-body" hidden>
       <div class="tbl"><table class="review-tbl"><tbody id="review-rows"></tbody></table></div>
@@ -308,7 +308,7 @@ function addMsg(role,text){var d=document.createElement("div");d.className="msg 
 function setQuick(){var q=done?[]:["ไม่แน่ใจ","ไม่มี","ใช้ค่ากลางได้"];$("quick").innerHTML=q.map(function(t){return'<button class="chip-btn" data-q="'+esc(t)+'">'+esc(t)+"</button>"}).join("");}
 function setBusy(b){busy=b;$("send").hidden=b;$("stop").hidden=!b;$("box").disabled=b;}
 
-var ERR={"bad_code": "รหัสนี้ใช้ไม่ได้ ตรวจตัวสะกดอีกครั้ง", "code_used": "รหัสนี้ใช้ครบจำนวนแผนแล้ว", "no_plan": "ไม่พบแผนนี้ ลิงก์อาจไม่ถูกต้อง", "msg_limit": "คุยครบจำนวนข้อความของแผนนี้แล้ว กด \"ไปตรวจตัวเลข\" เพื่อสร้างแผนได้เลย", "extract_limit": "อ่านคำตอบครบจำนวนครั้งของแผนนี้แล้ว", "summary_limit": "เขียนสรุปครบจำนวนครั้งของแผนนี้แล้ว", "save_limit": "บันทึกแผนครบจำนวนครั้งแล้ว", "busy": "ระบบมีคนใช้เยอะ รอสักครู่แล้วลองใหม่", "refused": "AI ตอบข้อความนี้ไม่ได้ ลองพิมพ์ใหม่อีกแบบ", "bad_input": "ข้อความยาวเกินไป ลองพิมพ์ให้สั้นลง", "network": "เชื่อมต่อไม่ได้ ตรวจอินเทอร์เน็ตแล้วลองใหม่"};
+var ERR={"bad_code": "รหัสนี้ใช้ไม่ได้ ตรวจตัวสะกดอีกครั้ง", "code_used": "รหัสนี้ใช้ครบจำนวนแผนแล้ว", "no_plan": "ไม่พบแผนนี้ ลิงก์อาจไม่ถูกต้อง", "msg_limit": "คุยครบจำนวนข้อความของแผนนี้แล้ว กด \"ไปตรวจตัวเลข\" เพื่อสร้างแผนได้เลย", "extract_limit": "อ่านคำตอบครบจำนวนครั้งของแผนนี้แล้ว", "summary_limit": "เขียนสรุปครบจำนวนครั้งของแผนนี้แล้ว", "save_limit": "บันทึกแผนครบจำนวนครั้งแล้ว", "locked": "แผนนี้สร้างเสร็จแล้ว ตัวเลขถูกล็อกไว้ เปิดลิงก์แผนเพื่อดูได้เลย", "summary_done": "แผนนี้มีสรุปจาก AI แล้ว", "busy": "ระบบมีคนใช้เยอะ รอสักครู่แล้วลองใหม่", "refused": "AI ตอบข้อความนี้ไม่ได้ ลองพิมพ์ใหม่อีกแบบ", "bad_input": "ข้อความยาวเกินไป ลองพิมพ์ให้สั้นลง", "network": "เชื่อมต่อไม่ได้ ตรวจอินเทอร์เน็ตแล้วลองใหม่"};
 var errText=function(e){return ERR[e&&e.code]||"เชื่อมต่อ AI ไม่สำเร็จ ลองส่งใหม่อีกครั้ง"};
 
 async function ask(){
@@ -690,7 +690,7 @@ function renderPlan(opt){
   +'<section><div class="sec-head"><h2>สรุปแผนของคุณ</h2></div><div class="ai-sum"><div class="who"><span class="dot"></span>สรุปโดย AI จากตัวเลขในแผนนี้</div><div class="body" id="ai-body">กำลังเขียนสรุป…</div></div></section>'
   +'<section><div class="sec-head"><h2>สิ่งที่ทำได้ใน 30 วันแรก</h2></div><ul class="todo">'+todo.map(function(t){return"<li><span><b>"+t[0]+"</b> — "+t[1]+"</span></li>"}).join("")+"</ul></section>"
   +'<section><div class="sec-head"><h2>ข้อมูลและสมมติฐานที่ใช้</h2></div><div class="tbl"><table><tbody>'+assume.map(function(r){return"<tr><td>"+esc(r[0])+'</td><td class="r num">'+esc(r[1])+"</td></tr>"}).join("")+"</tbody></table></div></section>"
-  +'<div class="actions"><button class="btn solid" id="pdf-plan">บันทึกเป็น PDF</button><button class="btn" id="edit-again">แก้ตัวเลขแล้วคำนวณใหม่</button><button class="btn" id="restart">เสร็จแล้ว กลับหน้าแรก</button></div><p class="foot-note" id="dl-msg" hidden></p>';
+  +'<p class="foot-note">ตัวเลขในแผนนี้ล็อกแล้ว ถ้าข้อมูลของคุณเปลี่ยน ทำแผนใหม่ได้ด้วยรหัสใหม่</p><div class="actions"><button class="btn solid" id="pdf-plan">บันทึกเป็น PDF</button><button class="btn" id="restart">เสร็จแล้ว กลับหน้าแรก</button></div><p class="foot-note" id="dl-msg" hidden></p>';
   if(opt.keepScroll!=null){window.scrollTo(0,opt.keepScroll);}else{show("v-plan");}el.style.display="flex";showPlanLink();
   document.querySelectorAll(".yr-pick").forEach(function(b){b.onclick=function(){$("yr-body").innerHTML=yrTable(+b.getAttribute("data-k"));document.querySelectorAll(".yr-pick").forEach(function(x){x.setAttribute("aria-pressed",String(x===b));});};});
   document.querySelectorAll(".btc-pick").forEach(function(b){b.onclick=function(){var i=+b.getAttribute("data-i");if(i===P.btcLevel)return;data.btcLevel=i;renderPlan({keepScroll:window.scrollY,reuseSummary:true});};});
@@ -699,7 +699,6 @@ function renderPlan(opt){
     drawLines("chart2","legend2",P,cmp,need,mode);$("m-today").setAttribute("aria-pressed",String(mode==="today"));$("m-future").setAttribute("aria-pressed",String(mode!=="today"));$("m-today").style.borderColor=mode==="today"?"var(--orange)":"";$("m-future").style.borderColor=mode!=="today"?"var(--orange)":"";};
   $("m-today").onclick=function(){mode="today";redraw();};$("m-future").onclick=function(){mode="future";redraw();};redraw();
   $("pdf-plan").onclick=function(){window.print();};
-  $("edit-again").onclick=function(){el.style.display="none";show("v-review");renderReview();};
   $("restart").onclick=function(){if(confirm("เก็บลิงก์แผนไว้แล้วหรือยัง? เปิดลิงก์นั้นเมื่อไรก็กลับมาดูแผนนี้ได้\n\nกด OK เพื่อไปหน้าแรก หรือ Cancel เพื่อกลับไปคัดลอกลิงก์"))location.href="/";};
 
   // raw numbers of the plan on screen, read by the recheck script (recheck_plan.py)
@@ -784,6 +783,9 @@ function downloadPlan(btn){
     .catch(function(e){var k=e&&e.code;say(k==="declined"?"":k==="rate_limited"?"มีหน้าต่างดาวน์โหลดเปิดค้างอยู่ ลองใหม่อีกครั้ง":"ดาวน์โหลดไม่สำเร็จในหน้านี้");})
     .then(function(){btn.disabled=false;});
 }
+
+// building fixes the numbers for good, so ask once before it happens
+$("build").addEventListener("click",function(e){if(!confirm("สร้างแผนแล้วจะแก้ตัวเลขไม่ได้\n\nตรวจตัวเลขครบแล้ว กด OK เพื่อสร้างแผน")){e.stopImmediatePropagation();e.preventDefault();}},true);
 
 // printing (PDF) shows the folded yearly table too
 window.addEventListener("beforeprint",function(){document.querySelectorAll("#v-plan details").forEach(function(d){d.open=true;});});
