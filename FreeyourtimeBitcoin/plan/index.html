@@ -148,6 +148,7 @@ ul.todo b{color:var(--bright);font-weight:600}
 .cf-in{background:var(--line)} .cf-exp{background:var(--s1)} .cf-debt{background:var(--bad)} .cf-ev{background:var(--warn)} .cf-dca{background:var(--orange)} .cf-save{background:var(--good)}
 tr.cf-total td{background:var(--surface-2)}
 .cmp-tbl td:first-child{white-space:nowrap}
+.ref-block{display:flex;flex-direction:column;gap:inherit}
 footer{font-size:13px;color:var(--dim);border-top:1px solid var(--line);padding-top:14px}
 @media (prefers-reduced-motion: reduce){*{scroll-behavior:auto!important}}
 /* claude.ai hides [hidden] elements by itself; a normal page needs this rule */
@@ -173,7 +174,7 @@ footer{font-size:13px;color:var(--dim);border-top:1px solid var(--line);padding-
   .tbl{overflow:visible}
   .testtag,.actions,#dl-msg,#plan-link,.btc-pick-row .foot-note,footer{display:none!important}
   .print-only{display:block!important}
-  section,.verdict,.card,.chart-box,.tile,tr,p,li,.notice,.tbl{break-inside:avoid}
+  section,.verdict,.card,.chart-box,.tile,tr,p,li,.notice,.tbl,.ref-block{break-inside:avoid}
   p{orphans:3;widows:3}
   h2,h3,.sec-head{break-after:avoid}
 }
@@ -538,13 +539,13 @@ function renderPlan(opt){
   // history column: real figures only, each with its period and source; "—" where no reliable group average exists
   var refRows=[["เงินฝาก",RATE.cash,"ต่ำมาก","เงินต้นไม่ลด",null,"0.75–1.5%","ฝากประจำ 12 เดือน ปี 2569"],["ทองคำ",RATE.gold,"กลาง","ราคาขึ้นลงตามตลาดโลก",8.8,"8.8%","ทองแท่งไทย 2540–2568"],["กองทุนอสังหาฯ / REIT",P.inflation+2,"กลาง","ได้ปันผลสม่ำเสมอ แต่ราคาหน่วยขึ้นลงได้",null,"—","ยังไม่มีตัวเลขเฉลี่ยที่ยืนยันได้"],["กองทุนรวม (ผสม)",RATE.fund,"กลาง","ขึ้นกับว่ากองทุนลงอะไร",null,"—","แต่ละกองต่างกันมาก"],["หุ้น",RATE.stocks,"สูง","บางปีลดลงมาก",10.8,"10.8%","หุ้นไทยรวมปันผล 2545–2569"]];
   var overHist=refRows.filter(function(a){return a[4]!==null&&a[1]>a[4]}).map(function(a){return a[0]});
-  var refHTML=reqRate===null?"":'<h3 style="margin-top:6px">ผลตอบแทน '+reqRate+'% เทียบกับสินทรัพย์ทั่วไป</h3>'
+  var refHTML=reqRate===null?"":'<div class="ref-block"><h3 style="margin-top:6px">ผลตอบแทน '+reqRate+'% เทียบกับสินทรัพย์ทั่วไป</h3>'
    +'<div class="tbl"><table style="min-width:640px"><thead><tr><th>สินทรัพย์</th><th class="r">แผนสมมติ</th><th>เทียบกับ '+reqRate+'%</th><th class="r">เคยได้จริง</th><th>ความผันผวน</th></tr></thead><tbody>'
    +refRows.map(function(a){var d=a[1]-reqRate,tag=Math.abs(d)<0.5?'<span class="tag t-warn">ใกล้เคียง</span>':d>0?'<span class="tag t-good">สูงกว่า</span>':'<span class="tag t-bad">ต่ำกว่า</span>';return"<tr><td>"+a[0]+'</td><td class="r num">'+(+a[1].toFixed(1))+"%</td><td>"+tag+'</td><td class="r"><span class="num">'+a[5]+'</span><br><span style="color:var(--dim);font-size:12.5px">'+a[6]+"</span></td><td>"+a[2]+' <span style="color:var(--dim)">· '+a[3]+"</span></td></tr>"}).join("")
    +'</tbody></table></div><p class="foot-note">"แผนสมมติ" คือตัวเลขที่ใช้คำนวณทั้งแผน (ผูกกับเงินเฟ้อ '+P.inflation+'%) "เทียบกับ '+reqRate+'%" เทียบจากตัวเลขนี้ '
    +(overHist.length?"ตัวเลขที่แผนสมมติของ"+overHist.join(" และ")+"สูงกว่าที่เคยเกิดขึ้นจริง เพราะแผนคิดเงินเฟ้อสูงกว่าเงินเฟ้อทางการ ":"")
    +'"เคยได้จริง" คือผลตอบแทนเฉลี่ยต่อปีแบบทบต้นในช่วงเวลาที่ระบุ ผลตอบแทนที่สูงขึ้นมักแลกกับการขึ้นลงที่แรงขึ้น ผลตอบแทนในอดีตไม่ได้รับประกันอนาคต และตารางนี้ไม่ใช่คำแนะนำให้ซื้อ ขาย หรือจัดสัดส่วนสินทรัพย์ใด</p>'
-   +'<p class="foot-note">ที่มา: หุ้น = ดัชนี SET TRI จาก 1,000 จุด (วันฐาน 2 ม.ค. 2545) ถึง 12,830.70 จุด (28 ต.ค. 2569) ข้อมูลจาก<a href="https://www.set.or.th/th/market/index/tri/overview" target="_blank" rel="noopener">ตลาดหลักทรัพย์ฯ</a> และ<a href="https://www.bualuang.co.th/article/set-tri-index" target="_blank" rel="noopener">หลักทรัพย์บัวหลวง</a> · ทองคำ = ราคาทองแท่งในประเทศ 6,200 บาท (31 ธ.ค. 2540) ถึง 64,950 บาท (31 ธ.ค. 2568) จาก<a href="https://www.bualuang.co.th/article/goldprice" target="_blank" rel="noopener">หลักทรัพย์บัวหลวง</a> อ้างอิง Bloomberg · เงินฝาก = ดอกเบี้ยฝากประจำ 12 เดือนของธนาคารไทยช่วงปี 2569 ตามที่ธนาคารประกาศ · กองทุนอสังหาฯ และกองทุนรวมผสม ยังไม่พบตัวเลขเฉลี่ยทั้งกลุ่มจากแหล่งที่ยืนยันได้</p>';
+   +'<p class="foot-note">ที่มา: หุ้น = ดัชนี SET TRI จาก 1,000 จุด (วันฐาน 2 ม.ค. 2545) ถึง 12,830.70 จุด (28 ต.ค. 2569) ข้อมูลจาก<a href="https://www.set.or.th/th/market/index/tri/overview" target="_blank" rel="noopener">ตลาดหลักทรัพย์ฯ</a> และ<a href="https://www.bualuang.co.th/article/set-tri-index" target="_blank" rel="noopener">หลักทรัพย์บัวหลวง</a> · ทองคำ = ราคาทองแท่งในประเทศ 6,200 บาท (31 ธ.ค. 2540) ถึง 64,950 บาท (31 ธ.ค. 2568) จาก<a href="https://www.bualuang.co.th/article/goldprice" target="_blank" rel="noopener">หลักทรัพย์บัวหลวง</a> อ้างอิง Bloomberg · เงินฝาก = ดอกเบี้ยฝากประจำ 12 เดือนของธนาคารไทยช่วงปี 2569 ตามที่ธนาคารประกาศ · กองทุนอสังหาฯ และกองทุนรวมผสม ยังไม่พบตัวเลขเฉลี่ยทั้งกลุ่มจากแหล่งที่ยืนยันได้</p></div>';
   var cmpHTML='<section><div class="sec-head"><h2>เทียบผลตอบแทน</h2><p>พอร์ตที่มีอยู่แล้วโตตามเดิม เปลี่ยนแค่ว่าเงินที่ออมใหม่ทุกเดือนจากนี้ไปลงที่ไหน</p></div>'
    +'<div class="card"><p style="color:var(--text);font-size:15px">'+reqText+'</p></div>'
    +'<div class="chart-box"><div class="legend" id="legend2"></div><div style="overflow-x:auto"><svg id="chart2" viewBox="0 0 760 320" width="100%" role="img" aria-label="กราฟเทียบผลตอบแทน"></svg></div></div>'
