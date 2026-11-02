@@ -692,7 +692,7 @@ function renderPlan(opt){
   +'<section><div class="sec-head"><h2>สรุปแผนของคุณ</h2></div><div class="ai-sum"><div class="who"><span class="dot"></span>สรุปโดย AI จากตัวเลขในแผนนี้</div><div class="body" id="ai-body">กำลังเขียนสรุป…</div></div></section>'
   +'<section><div class="sec-head"><h2>สิ่งที่ทำได้ใน 30 วันแรก</h2></div><ul class="todo">'+todo.map(function(t){return"<li><span><b>"+t[0]+"</b> — "+t[1]+"</span></li>"}).join("")+"</ul></section>"
   +'<section><div class="sec-head"><h2>ข้อมูลและสมมติฐานที่ใช้</h2></div><div class="tbl"><table><tbody>'+assume.map(function(r){return"<tr><td>"+esc(r[0])+'</td><td class="r num">'+esc(r[1])+"</td></tr>"}).join("")+"</tbody></table></div></section>"
-  +'<div class="actions"><button class="btn solid" id="pdf-plan">บันทึกเป็น PDF</button><button class="btn dl-plan" id="dl-plan">ดาวน์โหลดไฟล์แผน</button><button class="btn" id="edit-again">แก้ตัวเลขแล้วคำนวณใหม่</button><button class="btn" id="restart">เริ่มแผนใหม่ด้วยรหัสอื่น</button></div><p class="foot-note" id="dl-msg" hidden></p>';
+  +'<div class="actions"><button class="btn solid" id="pdf-plan">บันทึกเป็น PDF</button><button class="btn" id="edit-again">แก้ตัวเลขแล้วคำนวณใหม่</button><button class="btn" id="restart">เสร็จแล้ว กลับหน้าแรก</button></div><p class="foot-note" id="dl-msg" hidden></p>';
   if(opt.keepScroll!=null){window.scrollTo(0,opt.keepScroll);}else{show("v-plan");}el.style.display="flex";showPlanLink();
   document.querySelectorAll(".yr-pick").forEach(function(b){b.onclick=function(){$("yr-body").innerHTML=yrTable(+b.getAttribute("data-k"));document.querySelectorAll(".yr-pick").forEach(function(x){x.setAttribute("aria-pressed",String(x===b));});};});
   document.querySelectorAll(".btc-pick").forEach(function(b){b.onclick=function(){var i=+b.getAttribute("data-i");if(i===P.btcLevel)return;data.btcLevel=i;renderPlan({keepScroll:window.scrollY,reuseSummary:true});};});
@@ -700,10 +700,9 @@ function renderPlan(opt){
     drawLines("chart","legend",P,[{label:"ถ้ายังทำแบบเดิม",r:M,color:"var(--s2)",w:3}],need,mode);
     drawLines("chart2","legend2",P,cmp,need,mode);$("m-today").setAttribute("aria-pressed",String(mode==="today"));$("m-future").setAttribute("aria-pressed",String(mode!=="today"));$("m-today").style.borderColor=mode==="today"?"var(--orange)":"";$("m-future").style.borderColor=mode!=="today"?"var(--orange)":"";};
   $("m-today").onclick=function(){mode="today";redraw();};$("m-future").onclick=function(){mode="future";redraw();};redraw();
-  $("dl-plan").onclick=function(){downloadPlan(this)};
   $("pdf-plan").onclick=function(){window.print();};
   $("edit-again").onclick=function(){el.style.display="none";show("v-review");renderReview();};
-  $("restart").onclick=function(){el.style.display="none";el.innerHTML="";data=null;turns=[];planId=null;lastSummary=null;history.replaceState(null,"",location.pathname);$("code").value="";show("v-intro");};
+  $("restart").onclick=function(){if(confirm("เก็บลิงก์แผนไว้แล้วหรือยัง? เปิดลิงก์นั้นเมื่อไรก็กลับมาดูแผนนี้ได้\n\nกด OK เพื่อไปหน้าแรก หรือ Cancel เพื่อกลับไปคัดลอกลิงก์"))location.href="/";};
 
   // raw numbers of the plan on screen, read by the recheck script (recheck_plan.py)
   window.__lastPlan={inputs:JSON.parse(JSON.stringify(P)),btcG:scn[main].g,noBtc:noBtc,
