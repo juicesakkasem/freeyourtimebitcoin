@@ -148,6 +148,8 @@ ul.todo b{color:var(--bright);font-weight:600}
 .cf-in{background:var(--line)} .cf-exp{background:var(--s1)} .cf-debt{background:var(--bad)} .cf-ev{background:var(--warn)} .cf-dca{background:var(--orange)} .cf-save{background:var(--good)}
 tr.cf-total td{background:var(--surface-2)}
 .cmp-tbl td:first-child{white-space:nowrap}
+details.yr>summary{cursor:pointer;color:var(--orange);font-weight:600;font-size:15px;width:fit-content}
+.yr-tbl td{vertical-align:top}
 .ref-block{display:flex;flex-direction:column;gap:inherit}
 footer{font-size:13px;color:var(--dim);border-top:1px solid var(--line);padding-top:14px}
 @media (prefers-reduced-motion: reduce){*{scroll-behavior:auto!important}}
@@ -411,7 +413,7 @@ function rates(p){var i=p.inflation;return{cash:1.5,stocks:i+5,fund:i+3,gold:i+1
 function sim(p,bgr,o){
   o=o||{};
   var inf=p.inflation/100,T=p.lifeExpect-p.age,ra=p.retireAge+(o.later||0);
-  var RATE=rates(p),c=p.cash,s=p.stocks,f=p.fund,g=p.gold,ot=p.other||0,b=p.btcValue,ports=[],shortAge=null,shortAtEnd=false,nw=0,NEW=o.newRate!=null;
+  var RATE=rates(p),c=p.cash,s=p.stocks,f=p.fund,g=p.gold,ot=p.other||0,b=p.btcValue,ports=[],rows=[],shortAge=null,shortAtEnd=false,nw=0,NEW=o.newRate!=null;
   // newRate: existing portfolio keeps growing as it is; every new baht saved from now on (leftover + DCA) goes into one asset at this rate
   // flatRate: what-if the whole portfolio earned one rate (comparison chart)
   if(o.flatRate!=null){var fr=o.flatRate;RATE={cash:fr,stocks:fr,fund:fr,gold:fr,other:fr,disc:RATE.disc};bgr=fr;}
@@ -440,10 +442,12 @@ function sim(p,bgr,o){
     }else{
       var need=p.retireIncome*Math.pow(1+inf,y)+debt+evOut-p.pension-p.sideIncome-evIn;
       var wd=Math.max(0,need)*12,all2=c+s+f+g+ot+b+nw,r2=all2>0?Math.max(0,all2-wd)/all2:0;c*=r2;s*=r2;f*=r2;g*=r2;ot*=r2;b*=r2;nw*=r2;
+      var st=ports[ports.length-1];
+      rows.push({age:age,start:st,growth:all2-st,spend:(p.retireIncome*Math.pow(1+inf,y)+debt+evOut)*12,income:(p.pension+p.sideIncome+evIn)*12,wd:Math.min(wd,Math.max(0,all2)),short:Math.max(0,wd-Math.max(0,all2)),end:Math.max(0,all2-wd)});
     }
   }
   var runOut=null;ports.forEach(function(v,i){if(runOut===null&&v<=0&&p.age+i>ra)runOut=p.age+i;});
-  return{ports:ports,runOut:runOut,retV:ports[ra-p.age]||0,final:c+s+f+g+ot+b+nw,shortAge:shortAge,shortAtEnd:shortAtEnd};
+  return{ports:ports,rows:rows,runOut:runOut,retV:ports[ra-p.age]||0,final:c+s+f+g+ot+b+nw,shortAge:shortAge,shortAtEnd:shortAtEnd};
 }
 // money needed on retirement day = the portfolio size (same mix) that lasts exactly to the planned age
 function neededBySim(p,bgr,r){
@@ -552,6 +556,14 @@ function renderPlan(opt){
    +'<div class="tbl"><table class="cmp-tbl" style="min-width:520px"><thead><tr><th>เส้น</th><th class="r">ผลตอบแทนต่อปี</th><th class="r">เงินวันเกษียณ</th><th class="r">ค่าเงินวันนี้</th><th>เงินพอถึงอายุ</th></tr></thead><tbody>'
    +cmp.map(function(c){return'<tr><td><span class="cf-dot" style="background:'+c.color+'"></span>'+c.label+'</td><td class="r num">'+c.rateTxt+'</td><td class="r num">'+fmtM(c.r.retV)+'</td><td class="r num">'+fmtM(today(c.r.retV,yrsToRet))+"</td><td>"+(c.endsExact?'<span class="tag t-warn">หมดพอดีอายุ '+P.lifeExpect+"</span>":c.r.runOut===null?'<span class="tag t-good">'+P.lifeExpect+"+ อยู่รอด</span>":'<span class="tag t-bad">หมดตอน '+c.r.runOut+"</span>")+"</td></tr>"}).join("")
    +'</tbody></table></div><p class="foot-note">เส้นเทียบสมมติว่าเงินออมใหม่ทุกบาท (เงินเหลือเก็บและ DCA) ได้ผลตอบแทนอัตราเดียวทุกปี ส่วนพอร์ตเดิมไม่เปลี่ยน เพื่อให้เห็นว่าเงินออมใหม่ต้องได้ผลตอบแทนเท่าไรถึงพอ ไม่ใช่คำแนะนำให้ลงทุนในสินทรัพย์ใด S&P 500 ใช้ค่าเฉลี่ยในอดีตราว 10% ต่อปี (สกุลดอลลาร์ ไม่รวมผลของค่าเงิน) ผลตอบแทนในอนาคตอาจต่างจากนี้มาก</p>'+refHTML+'</section>';
+  // year-by-year after retirement on the main path, so the numbers can be checked by hand: start + return − withdrawal = end
+  var yrRows=M.rows.filter(function(r){return r.age<P.lifeExpect});
+  var hasInc=yrRows.some(function(r){return r.income>0});
+  var yrHTML=!yrRows.length?"":'<section><div class="sec-head"><h2>เงินแต่ละปีหลังเกษียณ</h2><p>'+(noBtc?"":"ตามสมมติฐานหลัก Bitcoin "+scn[main].g+"% ต่อปี · ")+'ค่าใช้จ่ายโตตามเงินเฟ้อ '+P.inflation+'% ต่อปี · ใช้ตรวจว่าตัวเลขไปทางเดียวกับกราฟ</p></div>'
+   +'<details class="yr"><summary>ดูตารางรายปี ('+yrRows.length+' ปี)</summary>'
+   +'<div class="tbl" style="margin-top:10px"><table class="yr-tbl" style="min-width:'+(hasInc?760:660)+'px"><thead><tr><th>อายุ</th><th class="r">เงินต้นปี</th><th class="r">ผลตอบแทนปีนี้</th><th class="r">ใช้จ่ายทั้งปี</th>'+(hasInc?'<th class="r">รายได้ (บำนาญ เสริม)</th>':"")+'<th class="r">ถอนจากพอร์ต</th><th class="r">เงินสิ้นปี</th><th class="r">สิ้นปี (ค่าเงินวันนี้)</th></tr></thead><tbody>'
+   +yrRows.map(function(r){var out=r.short>0;return'<tr'+(out?' style="background:var(--bad-soft)"':"")+'><td class="num">'+r.age+'</td><td class="r num">'+fmt(r.start)+'</td><td class="r num">'+fmt(r.growth)+'</td><td class="r num">'+fmt(r.spend)+'<br><span style="color:var(--dim);font-size:12px">เดือนละ '+fmt(r.spend/12)+'</span></td>'+(hasInc?'<td class="r num">'+fmt(r.income)+"</td>":"")+'<td class="r num">'+fmt(r.wd)+(out?'<br><span style="color:var(--bad);font-size:12px">ขาด '+fmt(r.short)+"</span>":"")+'</td><td class="r num"'+(out?' style="color:var(--bad)"':"")+'>'+fmt(r.end)+'</td><td class="r num">'+fmt(today(r.end,r.age+1-P.age))+"</td></tr>"}).join("")
+   +'</tbody></table></div><p class="foot-note" style="margin-top:8px">เงินสิ้นปี = เงินต้นปี + ผลตอบแทนปีนี้ − ถอนจากพอร์ต · ถอนจากพอร์ต = ใช้จ่ายทั้งปี'+(hasInc?" − รายได้":"")+' · ผลตอบแทนคิดจากสัดส่วนสินทรัพย์ที่มีวันเกษียณ · ปีที่เป็นสีแดงคือเงินไม่พอจ่าย</p></details></section>';
   var pct=needs[main].pct,mOk=M.runOut===null;
   var shortHTML=M.shortAge===null?"":'<div class="notice err"><b>รายจ่ายจะเริ่มมากกว่ารายได้ตั้งแต่อายุ '+M.shortAge+'</b> ทั้งที่ยังไม่เกษียณ'+(M.shortAtEnd?' และเป็นแบบนี้ต่อเนื่องจนถึงวันเกษียณ ช่วงนั้นต้องดึงเงินเก็บออกมาใช้ทุกปี':' ช่วงนั้นต้องดึงเงินเก็บออกมาใช้')+(P.salaryG<P.inflation?' สาเหตุหลักคือรายจ่ายโตตามเงินเฟ้อ '+P.inflation+'% ต่อปี แต่รายได้โตแค่ '+P.salaryG+'% ต่อปี':'')+"</div>";
   var vClass=mOk&&pct>=100?"good":mOk?"warn":"bad";
@@ -620,6 +632,7 @@ function renderPlan(opt){
   +'<div class="tbl"><table style="min-width:500px"><thead><tr><th>สมมติฐาน Bitcoin</th><th class="r">เงินวันเกษียณ</th><th class="r">ค่าเงินวันนี้</th><th class="r">เทียบกับที่ควรมี</th><th>เงินพอถึงอายุ</th></tr></thead><tbody>'
   +res.map(function(r,i){var p=needs[i].pct;return'<tr class="'+(i===main?"main":"")+'"><td>'+(noBtc?"ไม่มี Bitcoin ในแผน":scn[i].l+" "+scn[i].g+"%/ปี"+(i===main?" · หลัก":""))+'</td><td class="r num">'+fmtM(r.retV)+'</td><td class="r num">'+fmtM(today(r.retV,yrsToRet))+'</td><td class="r num">'+p+"%</td><td>"+(r.runOut===null?'<span class="tag t-good">'+P.lifeExpect+"+ อยู่รอด</span>":'<span class="tag t-bad">หมดตอน '+r.runOut+"</span>")+"</td></tr>"}).join("")
   +"</tbody></table></div></section>"
+  +yrHTML
   +cmpHTML
   +'<section><div class="sec-head"><h2>สุขภาพการเงิน 3 ด้าน</h2><p>70 ขึ้นไปถือว่าดี 40–69 พอรับได้ ต่ำกว่า 40 ควรแก้ก่อน</p></div><div class="health">'
   +[["ความพร้อมเกษียณ",rs,"มีเงินวันเกษียณ "+pct+"% ของที่ควรมี"],["เงินสำรองฉุกเฉิน",ls,"เงินสดพอใช้ "+months.toFixed(1)+" เดือน (เป้า 6 เดือน)"],["การกระจุกตัวใน Bitcoin",cs,"Bitcoin เป็น "+share.toFixed(0)+"% ของสินทรัพย์ทางการเงิน"]].map(function(h){var t=tone(h[1]);return'<div class="card"><div class="meter-top"><h3>'+h[0]+'</h3><span class="tag t-'+t[0]+'">'+t[1]+'</span></div><div class="meter-top"><b class="num" style="font-size:21px;color:var(--bright);font-weight:500">'+h[1]+'</b><span class="label">/ 100</span></div><div class="track"><div class="fill" style="width:'+h[1]+"%;background:var(--"+t[0]+')"></div></div><p>'+h[2]+"</p></div>"}).join("")
@@ -644,7 +657,7 @@ function renderPlan(opt){
   // raw numbers of the plan on screen, read by the recheck script (recheck_plan.py)
   window.__lastPlan={inputs:JSON.parse(JSON.stringify(P)),btcG:scn[main].g,noBtc:noBtc,
     scenarios:scn.map(function(x,i){return{g:x.g,retV:res[i].retV,runOut:res[i].runOut,final:res[i].final,need:needs[i].need,pct:needs[i].pct}}),
-    retV:M.retV,runOut:M.runOut,need:need,pct:pct,shortAge:M.shortAge,shortAtEnd:M.shortAtEnd,ports:M.ports.slice(),
+    retireRows:M.rows,retV:M.retV,runOut:M.runOut,need:need,pct:pct,shortAge:M.shortAge,shortAtEnd:M.shortAtEnd,ports:M.ports.slice(),
     cash:{inc:incNow,exp:P.exp,debt:debtNow,evOut:evOutNow,dca:dcaNow,canSave:canSave,saveNow:saveNow,saveRate:saveRate},
     peakReal:peakReal,peakAge:peakAge,
     cmp:{newMoney:newMoney,reqRate:reqRate,reqExact:typeof reqExact==="number"?reqExact:null,reqEnough:reqEnough,mixRate:mixRate,lines:cmp.map(function(c){return{label:c.label,retV:c.r.retV,runOut:c.r.runOut,final:c.r.final,lastPort:c.r.ports[c.r.ports.length-1]}})},
@@ -705,6 +718,7 @@ function downloadPlan(btn){
   if(!downloads){say("หน้านี้ดาวน์โหลดไม่ได้");return;}
   var c=$("v-plan").cloneNode(true);
   c.querySelectorAll(".actions,#dl-msg").forEach(function(n){n.remove();});
+  c.querySelectorAll("details").forEach(function(d){d.setAttribute("open","");});
   // buttons do nothing in a saved file: keep the chosen values as plain text
   var pick=c.querySelector(".btc-pick-row");
   if(pick){var on=pick.querySelector('[aria-pressed="true"]');pick.innerHTML='<span class="label">คิดด้วย Bitcoin โตปีละ '+(on?on.textContent:"")+"</span>";}
@@ -722,6 +736,9 @@ function downloadPlan(btn){
     .catch(function(e){var k=e&&e.code;say(k==="declined"?"":k==="rate_limited"?"มีหน้าต่างดาวน์โหลดเปิดค้างอยู่ ลองใหม่อีกครั้ง":"ดาวน์โหลดไม่สำเร็จในหน้านี้");})
     .then(function(){btn.disabled=false;});
 }
+
+// printing (PDF) shows the folded yearly table too
+window.addEventListener("beforeprint",function(){document.querySelectorAll("#v-plan details").forEach(function(d){d.open=true;});});
 
 // ---------- server calls (Netlify functions at /api) ----------
 var planId=null;
