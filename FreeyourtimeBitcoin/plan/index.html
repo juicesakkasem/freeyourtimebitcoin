@@ -150,6 +150,11 @@ tr.cf-total td{background:var(--surface-2)}
 .cmp-tbl td:first-child{white-space:nowrap}
 details.yr>summary{cursor:pointer;color:var(--orange);font-weight:600;font-size:15px;width:fit-content}
 .yr-tbl td{vertical-align:top}
+.yr-tbl th,.yr-tbl td{padding:8px 9px}
+.yr-tbl th{white-space:nowrap;line-height:1.4}
+.yr-tbl .sub{color:var(--dim);font-size:12px;white-space:nowrap}
+.yr-tbl tr.out td{background:var(--bad-soft)}
+@media (max-width:600px){.yr-tbl .col-today{display:none}.yr-tbl{font-size:12.5px}.yr-tbl th,.yr-tbl td{padding:6px 4px}.yr-tbl th{font-size:11px}.yr-tbl .sub{font-size:10.5px}}
 .ref-block{display:flex;flex-direction:column;gap:inherit}
 footer{font-size:13px;color:var(--dim);border-top:1px solid var(--line);padding-top:14px}
 @media (prefers-reduced-motion: reduce){*{scroll-behavior:auto!important}}
@@ -561,9 +566,15 @@ function renderPlan(opt){
   var hasInc=yrRows.some(function(r){return r.income>0});
   var yrHTML=!yrRows.length?"":'<section><div class="sec-head"><h2>เงินแต่ละปีหลังเกษียณ</h2><p>'+(noBtc?"":"ตามสมมติฐานหลัก Bitcoin "+scn[main].g+"% ต่อปี · ")+'ค่าใช้จ่ายโตตามเงินเฟ้อ '+P.inflation+'% ต่อปี · ใช้ตรวจว่าตัวเลขไปทางเดียวกับกราฟ</p></div>'
    +'<details class="yr"><summary>ดูตารางรายปี ('+yrRows.length+' ปี)</summary>'
-   +'<div class="tbl" style="margin-top:10px"><table class="yr-tbl" style="min-width:'+(hasInc?860:760)+'px"><thead><tr><th>อายุ</th><th class="r">เงินต้นปี</th><th class="r">ผลตอบแทนปีนี้</th><th class="r">ใช้จ่ายทั้งปี</th>'+(hasInc?'<th class="r">รายได้ (บำนาญ เสริม)</th>':"")+'<th class="r">ถอนจากพอร์ต</th><th class="r">ถอนกี่ % ของเงินต้นปี</th><th class="r">เงินสิ้นปี</th><th class="r">สิ้นปี (ค่าเงินวันนี้)</th></tr></thead><tbody>'
-   +yrRows.map(function(r){var out=r.short>0,gp=r.start>0?r.growth/r.start*100:0,wp=r.start>0?(r.wd+r.short)/r.start*100:null,hot=wp!==null&&wp>gp;return'<tr'+(out?' style="background:var(--bad-soft)"':"")+'><td class="num">'+r.age+'</td><td class="r num">'+fmt(r.start)+'</td><td class="r num">'+fmt(r.growth)+(r.start>0?'<br><span style="color:var(--dim);font-size:12px">'+gp.toFixed(1)+'%</span>':"")+'</td><td class="r num">'+fmt(r.spend)+'<br><span style="color:var(--dim);font-size:12px">เดือนละ '+fmt(r.spend/12)+'</span></td>'+(hasInc?'<td class="r num">'+fmt(r.income)+"</td>":"")+'<td class="r num">'+fmt(r.wd)+(out?'<br><span style="color:var(--bad);font-size:12px">ขาด '+fmt(r.short)+"</span>":"")+'</td><td class="r num"'+(hot?' style="color:var(--bad)"':"")+'>'+(wp===null?"–":wp.toFixed(1)+"%")+'</td><td class="r num"'+(out?' style="color:var(--bad)"':"")+'>'+fmt(r.end)+'</td><td class="r num">'+fmt(today(r.end,r.age+1-P.age))+"</td></tr>"}).join("")
-   +'</tbody></table></div><p class="foot-note" style="margin-top:8px">เงินสิ้นปี = เงินต้นปี + ผลตอบแทนปีนี้ − ถอนจากพอร์ต · ถอนจากพอร์ต = ใช้จ่ายทั้งปี'+(hasInc?" − รายได้":"")+' · ผลตอบแทนคิดจากสัดส่วนสินทรัพย์ที่มีวันเกษียณ · ถ้า % ที่ถอนสูงกว่า % ผลตอบแทนใต้ช่องผลตอบแทน (ตัวเลขสีแดง) เงินจะเริ่มลดลง และลดเร็วขึ้นทุกปี · แถวสีแดงคือเงินไม่พอจ่าย</p></details></section>';
+   +'<p class="foot-note" style="margin-top:10px">ตัวเลขเงินหน่วยล้านบาท</p>'
+   +'<div class="tbl" style="margin-top:6px"><table class="yr-tbl"><thead><tr><th>อายุ</th><th class="r">เงิน<br>ต้นปี</th><th class="r">ผลตอบแทน<br>ปีนี้</th><th class="r">ใช้จ่าย<br>ทั้งปี</th>'+(hasInc?'<th class="r">รายได้<br>ทั้งปี</th><th class="r">ถอนจาก<br>พอร์ต</th>':"")+'<th class="r">ถอน %<br>ของต้นปี</th><th class="r">เงิน<br>สิ้นปี</th><th class="r col-today">สิ้นปี<br>ค่าเงินวันนี้</th></tr></thead><tbody>'
+   +yrRows.map(function(r){
+      var out=r.short>0,gp=r.start>0?r.growth/r.start*100:0,wp=r.start>0?(r.wd+r.short)/r.start*100:null,hot=wp!==null&&wp>gp;
+      var mb=function(v){return(v/1e6).toFixed(2)},sub=function(s,c){return'<br><span class="sub"'+(c?' style="color:'+c+'"':"")+'>'+s+"</span>"};
+      return'<tr'+(out?' class="out"':"")+'><td class="num">'+r.age+'</td><td class="r num">'+mb(r.start)+'</td><td class="r num">'+mb(r.growth)+(r.start>0?sub(gp.toFixed(1)+"%"):"")+'</td><td class="r num">'+mb(r.spend)+sub(fmt(r.spend/12)+"/เดือน")+(!hasInc&&out?sub("ขาด "+mb(r.short),"var(--bad)"):"")+"</td>"
+        +(hasInc?'<td class="r num">'+mb(r.income)+'</td><td class="r num">'+mb(r.wd)+(out?sub("ขาด "+mb(r.short),"var(--bad)"):"")+"</td>":"")
+        +'<td class="r num"'+(hot?' style="color:var(--bad)"':"")+">"+(wp===null?"–":wp.toFixed(1)+"%")+'</td><td class="r num"'+(out?' style="color:var(--bad)"':"")+">"+mb(r.end)+'</td><td class="r num col-today">'+mb(today(r.end,r.age+1-P.age))+"</td></tr>"}).join("")
+   +'</tbody></table></div><p class="foot-note" style="margin-top:8px">'+(hasInc?"เงินสิ้นปี = เงินต้นปี + ผลตอบแทนปีนี้ − ถอนจากพอร์ต · ถอนจากพอร์ต = ใช้จ่ายทั้งปี − รายได้":"เงินสิ้นปี = เงินต้นปี + ผลตอบแทนปีนี้ − ใช้จ่ายทั้งปี (ไม่มีบำนาญหรือรายได้เสริม จึงถอนจากพอร์ตเท่ากับที่ใช้จ่าย)")+' · ผลตอบแทนคิดจากสัดส่วนสินทรัพย์ที่มีวันเกษียณ · ถ้า % ที่ถอนสูงกว่า % ผลตอบแทนใต้ช่องผลตอบแทน (ตัวเลขสีแดง) เงินจะเริ่มลดลง และลดเร็วขึ้นทุกปี · แถวสีแดงคือเงินไม่พอจ่าย · ตัวเลขปัดเป็นทศนิยม 2 ตำแหน่ง ผลบวกลบอาจคลาด 0.01</p></details></section>';
   var pct=needs[main].pct,mOk=M.runOut===null;
   var shortHTML=M.shortAge===null?"":'<div class="notice err"><b>รายจ่ายจะเริ่มมากกว่ารายได้ตั้งแต่อายุ '+M.shortAge+'</b> ทั้งที่ยังไม่เกษียณ'+(M.shortAtEnd?' และเป็นแบบนี้ต่อเนื่องจนถึงวันเกษียณ ช่วงนั้นต้องดึงเงินเก็บออกมาใช้ทุกปี':' ช่วงนั้นต้องดึงเงินเก็บออกมาใช้')+(P.salaryG<P.inflation?' สาเหตุหลักคือรายจ่ายโตตามเงินเฟ้อ '+P.inflation+'% ต่อปี แต่รายได้โตแค่ '+P.salaryG+'% ต่อปี':'')+"</div>";
   var vClass=mOk&&pct>=100?"good":mOk?"warn":"bad";
