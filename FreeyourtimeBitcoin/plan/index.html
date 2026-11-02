@@ -150,6 +150,8 @@ tr.cf-total td{background:var(--surface-2)}
 .cmp-tbl td:first-child{white-space:nowrap}
 footer{font-size:13px;color:var(--dim);border-top:1px solid var(--line);padding-top:14px}
 @media (prefers-reduced-motion: reduce){*{scroll-behavior:auto!important}}
+/* claude.ai hides [hidden] elements by itself; a normal page needs this rule */
+[hidden]{display:none!important}
 @media print{
   :root,:root[data-theme]{--bg:#fff;--surface:#fff;--surface-2:#f3f0eb;--line:#ddd6cc;--text:#2b2620;--bright:#000;--dim:#5f574e;--orange:#b86400;--orange-soft:rgba(184,100,0,.08);--on-orange:#fff;--good:#1f7a52;--good-soft:rgba(31,122,82,.08);--warn:#8a6508;--warn-soft:rgba(138,101,8,.08);--bad:#b23b2c;--bad-soft:rgba(178,59,44,.08);--s1:#55697e;--s2:#b86400;--s3:#8f6b36;color-scheme:light}
   body{background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}

@@ -84,7 +84,8 @@ async function runStream(params, onText) {
 
 // ---------- routes ----------
 async function start(body) {
-  const code = String(body?.code ?? "").trim().toUpperCase();
+  // "JUICE01:5" typed by mistake still means JUICE01 (the number is only set in ACCESS_CODES)
+  const code = String(body?.code ?? "").split(":")[0].trim().toUpperCase();
   if (!code || code.length > 40) return fail("bad_code", 400);
   const s = store();
   let rec = await s.get("codes/" + code, { type: "json" });
