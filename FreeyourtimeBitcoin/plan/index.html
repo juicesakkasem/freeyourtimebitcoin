@@ -295,7 +295,7 @@ var fmtM=function(n){var a=Math.abs(n);return a>=1e6?(n/1e6).toFixed(1)+" ล้
 var STEP_NAMES=["ชีวิตและเป้าหมาย","รายรับ","รายจ่าย","เงินที่มี","Bitcoin","เหตุการณ์","ความรู้สึก"];
 var FIRST="สวัสดีครับ เริ่มจากข้อง่าย ๆ ก่อนนะครับ\n\nตอนนี้อายุเท่าไรครับ [[step:1]]";
 
-var sample=null, turns=[], ctl=null, busy=false, step=1, done=false;
+var chatCapped=false, sample=null, turns=[], ctl=null, busy=false, step=1, done=false;
 var clean=function(t){return t.replace(/\[\[[^\]]*\]\]/g,"").replace(/\[\[[^\]]*$/,"").trim()};
 
 function show(v){["v-intro","v-chat","v-review","v-plan"].forEach(function(id){$(id).hidden=id!==v});document.body.classList.toggle("chatting",v==="v-chat");window.scrollTo(0,0);if(v==="v-chat")toBottom();}
@@ -323,8 +323,8 @@ async function ask(){
     bubble.textContent=clean(raw)||"…";toBottom();
   }catch(e){
     if(e&&e.code==="cancelled"){bubble.remove();}
-    else{bubble.remove();$("chat-err").textContent=errText(e);$("chat-err").hidden=false;}
-  }finally{setBusy(false);renderSteps();setQuick();$("skip-review").hidden=!(done||step>=5);$("skip-review").textContent=done?"ตรวจตัวเลขก่อนสร้างแผน":"ไปตรวจตัวเลขเลย (ข้ามข้อที่เหลือ)";if(done)$("skip-review").classList.add("solid");$("box").focus();}
+    else{bubble.remove();if(e&&e.code==="msg_limit")chatCapped=true;$("chat-err").textContent=errText(e);$("chat-err").hidden=false;}
+  }finally{setBusy(false);renderSteps();setQuick();$("skip-review").hidden=!(done||chatCapped);$("skip-review").textContent=done?"ตรวจตัวเลขก่อนสร้างแผน":"ไปตรวจตัวเลขเลย (ข้ามข้อที่เหลือ)";if(done)$("skip-review").classList.add("solid");$("box").focus();}
 }
 function send(text){
   text=(text||$("box").value).trim();if(!text||busy)return;
@@ -353,7 +353,7 @@ function resumeChat(saved){
   turns=saved;step=1;done=false;$("chat").innerHTML="";
   turns.slice(1).forEach(function(x){addMsg(x.role,clean(x.content));if(x.role==="assistant"){var m=x.content.match(/\[\[step:(\d)\]\]/);if(m)step=Math.min(7,Math.max(step,+m[1]));if(/\[\[done\]\]/.test(x.content))done=true;}});
   renderSteps();setQuick();show("v-chat");
-  $("skip-review").hidden=!(done||step>=5);$("skip-review").textContent=done?"ตรวจตัวเลขก่อนสร้างแผน":"ไปตรวจตัวเลขเลย (ข้ามข้อที่เหลือ)";if(done)$("skip-review").classList.add("solid");
+  $("skip-review").hidden=!(done||chatCapped);$("skip-review").textContent=done?"ตรวจตัวเลขก่อนสร้างแผน":"ไปตรวจตัวเลขเลย (ข้ามข้อที่เหลือ)";if(done)$("skip-review").classList.add("solid");
 }
 $("send").onclick=function(){send()};
 $("stop").onclick=function(){if(ctl)ctl.abort()};
