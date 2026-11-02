@@ -268,7 +268,6 @@ footer.site-foot{margin-top:56px;border-top:1px solid var(--line);padding:0;font
     <div class="notice err" id="review-err" hidden></div>
     <div class="actions">
       <button class="btn solid" id="build" disabled>สร้างแผน</button>
-      <button class="btn" id="back-chat">กลับไปคุยต่อ</button>
     </div>
   </section>
 
@@ -362,7 +361,6 @@ $("box").addEventListener("keydown",function(e){if(e.key==="Enter"&&!e.shiftKey&
 $("box").addEventListener("input",autosize);
 $("quick").addEventListener("click",function(e){var b=e.target.closest("[data-q]");if(b)send(b.getAttribute("data-q"));});
 $("skip-review").onclick=function(){startReview()};
-$("back-chat").onclick=function(){show("v-chat");$("box").focus();};
 
 // ---------- review ----------
 var DEF={retireAge:55,lifeExpect:85,sideIncome:0,pension:0,cash:0,stocks:0,fund:0,gold:0,other:0,btcValue:0,dca:0,inflation:7};
@@ -385,7 +383,7 @@ async function startReview(){
     var j=await api.json("extract",{planId:planId,turns:turns});
     data=normalize(j||{});renderReview();
   }catch(e){
-    $("extracting").hidden=true;$("review-err").textContent=(e&&e.code==="invalid_json")?"อ่านคำตอบไม่สำเร็จ ลองกด \"กลับไปคุยต่อ\" แล้วกดตรวจตัวเลขอีกครั้ง":errText(e);$("review-err").hidden=false;
+    $("extracting").hidden=true;$("review-err").textContent=(e&&e.code==="invalid_json")?"อ่านคำตอบไม่สำเร็จ รีเฟรชหน้านี้ แล้วกด \"ตรวจตัวเลขก่อนสร้างแผน\" อีกครั้ง":errText(e);$("review-err").hidden=false;
   }
 }
 var numOrNull=function(v){if(v===null||v===undefined||v==="")return null;var n=Number(String(v).replace(/[^0-9.\-]/g,""));return isFinite(n)?n:null};
