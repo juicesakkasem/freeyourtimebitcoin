@@ -183,6 +183,10 @@ footer{font-size:13px;color:var(--dim);border-top:1px solid var(--line);padding-
   .print-only{display:block!important}
   section,.verdict,.card,.chart-box,.tile,tr,p,li,.notice,.tbl,.ref-block{break-inside:avoid}
   p{orphans:3;widows:3}
+  /* the yearly table is longer than a page: start right under its heading and flow on (the header row repeats); buttons mean nothing on paper */
+  section:has(details.yr),details.yr,details.yr .tbl{break-inside:auto}
+  details.yr>summary,details.yr .chips{display:none!important}
+  .yr-tbl thead{display:table-header-group}
   h2,h3,.sec-head{break-after:avoid}
 }
 .print-only{display:none}
