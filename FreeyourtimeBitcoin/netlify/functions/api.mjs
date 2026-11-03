@@ -12,7 +12,7 @@ const MODEL = {
   extract: env("EXTRACT_MODEL", "claude-opus-5-5"),
   summary: env("SUMMARY_MODEL", "claude-opus-5-5"),
 };
-const EFFORT = { chat: env("CHAT_EFFORT", "low"), extract: env("EXTRACT_EFFORT", "medium"), summary: env("SUMMARY_EFFORT", "medium") };
+const EFFORT = { chat: env("CHAT_EFFORT", "low"), extract: env("EXTRACT_EFFORT", "medium"), summary: env("SUMMARY_EFFORT", "low") };
 
 // per-plan limits so one code cannot run up the bill
 const LIMIT = { msgs: 80, extracts: 6, summaries: 4, saves: 30, turns: 120, userChars: 1200, aiChars: 4000, totalChars: 80000 };
@@ -60,9 +60,10 @@ function streamText(run) {
       async start(ctrl) {
         try {
           await run((s) => ctrl.enqueue(enc.encode(s)));
+          ctrl.enqueue(enc.encode("\u0000END"));
         } catch (e) {
           console.error("ai error", e?.status, e?.message);
-          const code = e instanceof Anthropic.RateLimitError ? "busy" : e?.message === "refused" ? "refused" : "server";
+          const code = e instanceof Anthropic.RateLimitError ? "busy" : e?.message === "refused" ? "refused" : e?.message === "cut" ? "cut" : "server";
           ctrl.enqueue(enc.encode("\u0000ERR:" + code));
         }
         ctrl.close();
@@ -79,6 +80,7 @@ async function runStream(params, onText) {
   }
   const msg = await stream.finalMessage();
   if (msg.stop_reason === "refusal") throw new Error("refused");
+  if (msg.stop_reason === "max_tokens") throw new Error("cut");
   return msg.content.filter((b) => b.type === "text").map((b) => b.text).join("");
 }
 
@@ -156,7 +158,7 @@ async function extract(body) {
 async function summary(body) {
   const plan = await loadPlan(body?.planId);
   if (!plan) return fail("no_plan", 404);
-  if (plan.record?.summary) return fail("summary_done", 409);
+  if (plan.record?.summary && plan.record?.summaryOk) return fail("summary_done", 409);
   if (plan.summaries >= LIMIT.summaries) return fail("summary_limit", 429);
   const facts = body.facts;
   const factsText = JSON.stringify(facts ?? null);
@@ -164,7 +166,7 @@ async function summary(body) {
   plan.summaries++;
   await savePlan(body.planId, plan);
   const prompt = SUMMARY_LINES.concat(["", "ข้อมูล:", factsText]).join("\n");
-  return streamText((send) => runStream(aiParams("summary", { max_tokens: 8000, messages: [{ role: "user", content: prompt }] }), send));
+  return streamText((send) => runStream(aiParams("summary", { max_tokens: 16000, messages: [{ role: "user", content: prompt }] }), send));
 }
 
 async function save(body) {
@@ -185,10 +187,11 @@ async function save(body) {
     keep.defaultsUsed = r.defaultsUsed;
     keep.summary = null;
     keep.summaryG = null;
+    keep.summaryOk = false;
     plan.edits = (plan.edits || 0) + 1;
     edited = true;
   }
-  if (!rec.summary && !edited) for (const k of ["summary", "summaryG"]) if (k in r) keep[k] = r[k];
+  if (!rec.summaryOk && !edited) for (const k of ["summary", "summaryG", "summaryOk"]) if (k in r) keep[k] = r[k];
   if (!Object.keys(keep).length) return json({ ok: true, locked: true });
   plan.saves++;
   plan.record = { ...rec, ...keep, updatedAt: new Date().toISOString() };

@@ -309,7 +309,7 @@ function addMsg(role,text){var d=document.createElement("div");d.className="msg 
 function setQuick(){var q=done?[]:["ไม่แน่ใจ","ไม่มี","ใช้ค่ากลางได้"];$("quick").innerHTML=q.map(function(t){return'<button class="chip-btn" data-q="'+esc(t)+'">'+esc(t)+"</button>"}).join("");}
 function setBusy(b){busy=b;$("send").hidden=b;$("stop").hidden=!b;$("box").disabled=b;}
 
-var ERR={"bad_code": "รหัสนี้ใช้ไม่ได้ ตรวจตัวสะกดอีกครั้ง", "code_used": "รหัสนี้ใช้ครบจำนวนแผนแล้ว", "no_plan": "ไม่พบแผนนี้ ลิงก์อาจไม่ถูกต้อง", "msg_limit": "คุยครบจำนวนข้อความของแผนนี้แล้ว กด \"ไปตรวจตัวเลข\" เพื่อสร้างแผนได้เลย", "extract_limit": "อ่านคำตอบครบจำนวนครั้งของแผนนี้แล้ว", "summary_limit": "เขียนสรุปครบจำนวนครั้งของแผนนี้แล้ว", "save_limit": "บันทึกแผนครบจำนวนครั้งแล้ว", "locked": "แผนนี้สร้างเสร็จแล้ว ตัวเลขถูกล็อกไว้ เปิดลิงก์แผนเพื่อดูได้เลย", "summary_done": "แผนนี้มีสรุปจาก AI แล้ว", "busy": "ระบบมีคนใช้เยอะ รอสักครู่แล้วลองใหม่", "refused": "AI ตอบข้อความนี้ไม่ได้ ลองพิมพ์ใหม่อีกแบบ", "bad_input": "ข้อความยาวเกินไป ลองพิมพ์ให้สั้นลง", "network": "เชื่อมต่อไม่ได้ ตรวจอินเทอร์เน็ตแล้วลองใหม่"};
+var ERR={"bad_code": "รหัสนี้ใช้ไม่ได้ ตรวจตัวสะกดอีกครั้ง", "code_used": "รหัสนี้ใช้ครบจำนวนแผนแล้ว", "no_plan": "ไม่พบแผนนี้ ลิงก์อาจไม่ถูกต้อง", "msg_limit": "คุยครบจำนวนข้อความของแผนนี้แล้ว กด \"ไปตรวจตัวเลข\" เพื่อสร้างแผนได้เลย", "extract_limit": "อ่านคำตอบครบจำนวนครั้งของแผนนี้แล้ว", "summary_limit": "เขียนสรุปครบจำนวนครั้งของแผนนี้แล้ว", "save_limit": "บันทึกแผนครบจำนวนครั้งแล้ว", "locked": "แผนนี้สร้างเสร็จแล้ว ตัวเลขถูกล็อกไว้ เปิดลิงก์แผนเพื่อดูได้เลย", "summary_done": "แผนนี้มีสรุปจาก AI แล้ว", "busy": "ระบบมีคนใช้เยอะ รอสักครู่แล้วลองใหม่", "refused": "AI ตอบข้อความนี้ไม่ได้ ลองพิมพ์ใหม่อีกแบบ", "bad_input": "ข้อความยาวเกินไป ลองพิมพ์ให้สั้นลง", "cut": "AI ตอบไม่จบ ลองส่งใหม่อีกครั้ง", "network": "เชื่อมต่อไม่ได้ ตรวจอินเทอร์เน็ตแล้วลองใหม่"};
 var errText=function(e){return ERR[e&&e.code]||"เชื่อมต่อ AI ไม่สำเร็จ ลองส่งใหม่อีกครั้ง"};
 
 async function ask(){
@@ -725,8 +725,8 @@ function renderPlan(opt){
   if(editing){editing=false;editsLeft=0;$("cancel-edit").hidden=true;}
   // the summary waits for the save, so an edited plan is stored before its new summary is asked for
   saved.then(function(){return api.stream("summary",{planId:planId,facts:facts},{onText:function(u){summarySoFar=u.text;var el=$("ai-body");if(el)el.textContent=u.text;}});})
-    .then(function(r){summaryPending=false;lastSummary=r.text;lastSummaryG=gNow;var el=$("ai-body");if(el)el.textContent=r.text+noteFor(gNow);savePlanRemote({summary:r.text,summaryG:gNow});})
-    .catch(function(e){summaryPending=false;var el=$("ai-body");if(el)el.textContent=(e&&e.text)||("เขียนสรุปไม่สำเร็จ: "+errText(e));});
+    .then(function(r){summaryPending=false;lastSummary=r.text;lastSummaryG=gNow;var el=$("ai-body");if(el)el.textContent=r.text+noteFor(gNow);savePlanRemote({summary:r.text,summaryG:gNow,summaryOk:true});})
+    .catch(function(e){summaryPending=false;var el=$("ai-body");if(!el)return;if(e&&e.code==="summary_done"){el.textContent="แผนนี้มีสรุปแล้ว เปิดลิงก์แผนอีกครั้งเพื่อดู";return;}el.innerHTML=esc(e&&e.code==="cut"?"สรุปจาก AI เขียนไม่จบ":"เขียนสรุปไม่สำเร็จ: "+errText(e))+' <button class="btn" id="sum-retry" style="margin-left:6px">ลองเขียนสรุปใหม่</button>';$("sum-retry").onclick=function(){renderPlan({keepScroll:window.scrollY});};});
 }
 
 // generic line chart: series = [{label, r:{ports,retV}, color, w, dash}]; the first series and any dashed one set the scale, others may run off the top
@@ -810,7 +810,7 @@ var api={
     return api.post(route,body,opt.signal).then(function(r){
       var rd=r.body.getReader(),dec=new TextDecoder(),text="";
       var pump=function(){return rd.read().then(function(x){
-        if(x.done){var i=text.indexOf("\u0000ERR:");if(i>=0)throw{code:text.slice(i+5).trim(),text:text.slice(0,i)};return{text:text};}
+        if(x.done){var i=text.indexOf("\u0000ERR:");if(i>=0)throw{code:text.slice(i+5).trim(),text:text.slice(0,i)};var e=text.indexOf("\u0000END");if(e<0)throw{code:"cut",text:text};return{text:text.slice(0,e)};}
         text+=dec.decode(x.value,{stream:true});var k=text.indexOf("\u0000");
         if(opt.onText)opt.onText({text:k>=0?text.slice(0,k):text});
         return pump();
@@ -846,7 +846,7 @@ renderSteps();
     var rec=j.record;editsLeft=Math.max(0,1-(j.edits||0));
     if(rec&&rec.inputs){
       data=rec.inputs;defaultsUsed=rec.defaultsUsed||[];if(j.turns)turns=j.turns;
-      if(rec.summary){lastSummary=rec.summary;lastSummaryG=rec.summaryG;renderPlan({reuseSummary:true});}else renderPlan();
+      if(rec.summary&&rec.summaryOk!==false&&rec.summaryOk){lastSummary=rec.summary;lastSummaryG=rec.summaryG;renderPlan({reuseSummary:true});}else renderPlan();
     }else if(j.turns&&j.turns.length>2)resumeChat(j.turns);
     else beginChat();
   }).catch(function(e){
