@@ -173,11 +173,22 @@ async function save(body) {
   if (plan.saves >= LIMIT.saves) return fail("save_limit", 429);
   const r = body.record;
   if (!r || typeof r !== "object" || JSON.stringify(r).length > 40000) return fail("bad_input", 400);
-  // the first save fixes the plan's numbers; later saves may only add the summary once
+  // the first save fixes the plan's numbers; the customer may then change them once (edit: true),
+  // which clears the summary so the new numbers get their own; after that only a missing summary can be added
   const rec = plan.record || {};
   const keep = {};
-  if (!rec.inputs) for (const k of ["inputs", "defaultsUsed"]) if (k in r) keep[k] = r[k];
-  if (!rec.summary) for (const k of ["summary", "summaryG"]) if (k in r) keep[k] = r[k];
+  let edited = false;
+  if (!rec.inputs) {
+    for (const k of ["inputs", "defaultsUsed"]) if (k in r) keep[k] = r[k];
+  } else if (r.edit === true && "inputs" in r && (plan.edits || 0) < 1) {
+    keep.inputs = r.inputs;
+    keep.defaultsUsed = r.defaultsUsed;
+    keep.summary = null;
+    keep.summaryG = null;
+    plan.edits = (plan.edits || 0) + 1;
+    edited = true;
+  }
+  if (!rec.summary && !edited) for (const k of ["summary", "summaryG"]) if (k in r) keep[k] = r[k];
   if (!Object.keys(keep).length) return json({ ok: true, locked: true });
   plan.saves++;
   plan.record = { ...rec, ...keep, updatedAt: new Date().toISOString() };
@@ -188,7 +199,7 @@ async function save(body) {
 async function view(url) {
   const plan = await loadPlan(url.searchParams.get("id"));
   if (!plan) return fail("no_plan", 404);
-  return json({ turns: plan.turns, record: plan.record, created: plan.created });
+  return json({ turns: plan.turns, record: plan.record, created: plan.created, edits: plan.edits || 0 });
 }
 
 export default async (req) => {

@@ -260,7 +260,7 @@ footer.site-foot{margin-top:56px;border-top:1px solid var(--line);padding:0;font
 
   <!-- 3. review -->
   <section id="v-review" hidden>
-    <div class="sec-head"><h2>ตรวจตัวเลขก่อนสร้างแผน</h2><p>แก้ตรงไหนก็ได้ ช่องที่ติดป้าย "ค่ากลาง" คือคุณไม่ได้ระบุ ระบบเติมค่ามาตรฐานให้ ช่องขอบแดงต้องกรอก · <b style="color:var(--warn)">กดสร้างแผนแล้วจะแก้ตัวเลขไม่ได้ ตรวจให้ครบก่อน</b></p></div>
+    <div class="sec-head"><h2>ตรวจตัวเลขก่อนสร้างแผน</h2><p>แก้ตรงไหนก็ได้ ช่องที่ติดป้าย "ค่ากลาง" คือคุณไม่ได้ระบุ ระบบเติมค่ามาตรฐานให้ ช่องขอบแดงต้องกรอก · <b style="color:var(--warn)">หลังสร้างแผน แก้ตัวเลขเองได้อีกเพียง 1 ครั้ง ตรวจให้ครบก่อน</b></p></div>
     <div class="notice" id="extracting">กำลังอ่านคำตอบจากบทสนทนา…</div>
     <div id="review-body" hidden>
       <div class="tbl"><table class="review-tbl"><tbody id="review-rows"></tbody></table></div>
@@ -268,6 +268,7 @@ footer.site-foot{margin-top:56px;border-top:1px solid var(--line);padding:0;font
     <div class="notice err" id="review-err" hidden></div>
     <div class="actions">
       <button class="btn solid" id="build" disabled>สร้างแผน</button>
+      <button class="btn" id="cancel-edit" hidden>ยกเลิก กลับไปแผนเดิม</button>
     </div>
   </section>
 
@@ -295,7 +296,7 @@ var fmtM=function(n){var a=Math.abs(n);return a>=1e6?(n/1e6).toFixed(1)+" ล้
 var STEP_NAMES=["ชีวิตและเป้าหมาย","รายรับ","รายจ่าย","เงินที่มี","Bitcoin","เหตุการณ์","ความรู้สึก"];
 var FIRST="สวัสดีครับ เริ่มจากข้อง่าย ๆ ก่อนนะครับ\n\nตอนนี้อายุเท่าไรครับ [[step:1]]";
 
-var chatCapped=false, sample=null, turns=[], ctl=null, busy=false, step=1, done=false;
+var chatCapped=false, editing=false, editSnap=null, editsLeft=1, sample=null, turns=[], ctl=null, busy=false, step=1, done=false;
 var clean=function(t){return t.replace(/\[\[[^\]]*\]\]/g,"").replace(/\[\[[^\]]*$/,"").trim()};
 
 function show(v){["v-intro","v-chat","v-review","v-plan"].forEach(function(id){$(id).hidden=id!==v});document.body.classList.toggle("chatting",v==="v-chat");window.scrollTo(0,0);if(v==="v-chat")toBottom();}
@@ -690,7 +691,7 @@ function renderPlan(opt){
   +'<section><div class="sec-head"><h2>สรุปแผนของคุณ</h2></div><div class="ai-sum"><div class="who"><span class="dot"></span>สรุปโดย AI จากตัวเลขในแผนนี้</div><div class="body" id="ai-body">กำลังเขียนสรุป…</div></div></section>'
   +'<section><div class="sec-head"><h2>สิ่งที่ทำได้ใน 30 วันแรก</h2></div><ul class="todo">'+todo.map(function(t){return"<li><span><b>"+t[0]+"</b> — "+t[1]+"</span></li>"}).join("")+"</ul></section>"
   +'<section><div class="sec-head"><h2>ข้อมูลและสมมติฐานที่ใช้</h2></div><div class="tbl"><table><tbody>'+assume.map(function(r){return"<tr><td>"+esc(r[0])+'</td><td class="r num">'+esc(r[1])+"</td></tr>"}).join("")+"</tbody></table></div></section>"
-  +'<p class="foot-note">ตัวเลขในแผนนี้ล็อกแล้ว ถ้าข้อมูลของคุณเปลี่ยน ทำแผนใหม่ได้ด้วยรหัสใหม่</p><div class="actions"><button class="btn solid" id="pdf-plan">บันทึกเป็น PDF</button><button class="btn" id="restart">เสร็จแล้ว กลับหน้าแรก</button></div><p class="foot-note" id="dl-msg" hidden></p>';
+  +'<p class="foot-note">'+(editsLeft>0?'แก้ตัวเลขเองได้อีก 1 ครั้ง หลังจากนั้นตัวเลขในแผนจะล็อก':'ตัวเลขในแผนนี้ล็อกแล้ว ถ้าข้อมูลของคุณเปลี่ยน ทำแผนใหม่ได้ด้วยรหัสใหม่')+'</p><div class="actions"><button class="btn solid" id="pdf-plan">บันทึกเป็น PDF</button>'+(editsLeft>0?'<button class="btn" id="edit-again">แก้ตัวเลข (เหลือ 1 ครั้ง)</button>':'')+'<button class="btn" id="restart">เสร็จแล้ว กลับหน้าแรก</button></div><p class="foot-note" id="dl-msg" hidden></p>';
   if(opt.keepScroll!=null){window.scrollTo(0,opt.keepScroll);}else{show("v-plan");}el.style.display="flex";showPlanLink();
   document.querySelectorAll(".yr-pick").forEach(function(b){b.onclick=function(){$("yr-body").innerHTML=yrTable(+b.getAttribute("data-k"));document.querySelectorAll(".yr-pick").forEach(function(x){x.setAttribute("aria-pressed",String(x===b));});};});
   document.querySelectorAll(".btc-pick").forEach(function(b){b.onclick=function(){var i=+b.getAttribute("data-i");if(i===P.btcLevel)return;data.btcLevel=i;renderPlan({keepScroll:window.scrollY,reuseSummary:true});};});
@@ -699,6 +700,7 @@ function renderPlan(opt){
     drawLines("chart2","legend2",P,cmp,need,mode);$("m-today").setAttribute("aria-pressed",String(mode==="today"));$("m-future").setAttribute("aria-pressed",String(mode!=="today"));$("m-today").style.borderColor=mode==="today"?"var(--orange)":"";$("m-future").style.borderColor=mode!=="today"?"var(--orange)":"";};
   $("m-today").onclick=function(){mode="today";redraw();};$("m-future").onclick=function(){mode="future";redraw();};redraw();
   $("pdf-plan").onclick=function(){window.print();};
+  var eb=$("edit-again");if(eb)eb.onclick=function(){if(!confirm("แก้ตัวเลขได้ 1 ครั้ง สร้างแผนใหม่แล้วจะแก้ไม่ได้อีก\n\nกด OK เพื่อแก้ตัวเลข"))return;editing=true;editSnap=JSON.parse(JSON.stringify({data:data,defaultsUsed:defaultsUsed}));el.style.display="none";show("v-review");renderReview();$("cancel-edit").hidden=false;};
   $("restart").onclick=function(){if(confirm("เก็บลิงก์แผนไว้แล้วหรือยัง? เปิดลิงก์นั้นเมื่อไรก็กลับมาดูแผนนี้ได้\n\nกด OK เพื่อไปหน้าแรก หรือ Cancel เพื่อกลับไปคัดลอกลิงก์"))location.href="/";};
 
   // raw numbers of the plan on screen, read by the recheck script (recheck_plan.py)
@@ -718,8 +720,10 @@ function renderPlan(opt){
   if(opt.reuseSummary&&summaryPending){$("ai-body").textContent=summarySoFar||"กำลังเขียนสรุป…";return;}
   if(opt.reuseSummary){$("ai-body").textContent="สรุปจาก AI ไม่สำเร็จในรอบนี้ กด \"แก้ตัวเลขแล้วคำนวณใหม่\" เพื่อสร้างแผนอีกครั้ง";return;}
   var gNow=scn[main].g;summaryPending=true;summarySoFar="";lastSummary=null;
-  savePlanRemote({inputs:JSON.parse(JSON.stringify(P)),defaultsUsed:defaultsUsed.slice(),summary:null,summaryG:null});
-  api.stream("summary",{planId:planId,facts:facts},{onText:function(u){summarySoFar=u.text;var el=$("ai-body");if(el)el.textContent=u.text;}})
+  var saved=savePlanRemote({inputs:JSON.parse(JSON.stringify(P)),defaultsUsed:defaultsUsed.slice(),summary:null,summaryG:null,edit:editing});
+  if(editing){editing=false;editsLeft=0;$("cancel-edit").hidden=true;}
+  // the summary waits for the save, so an edited plan is stored before its new summary is asked for
+  saved.then(function(){return api.stream("summary",{planId:planId,facts:facts},{onText:function(u){summarySoFar=u.text;var el=$("ai-body");if(el)el.textContent=u.text;}});})
     .then(function(r){summaryPending=false;lastSummary=r.text;lastSummaryG=gNow;var el=$("ai-body");if(el)el.textContent=r.text+noteFor(gNow);savePlanRemote({summary:r.text,summaryG:gNow});})
     .catch(function(e){summaryPending=false;var el=$("ai-body");if(el)el.textContent=(e&&e.text)||("เขียนสรุปไม่สำเร็จ: "+errText(e));});
 }
@@ -784,8 +788,9 @@ function downloadPlan(btn){
     .then(function(){btn.disabled=false;});
 }
 
-// building fixes the numbers for good, so ask once before it happens
-$("build").addEventListener("click",function(e){if(!confirm("สร้างแผนแล้วจะแก้ตัวเลขไม่ได้\n\nตรวจตัวเลขครบแล้ว กด OK เพื่อสร้างแผน")){e.stopImmediatePropagation();e.preventDefault();}},true);
+// building fixes the numbers, so ask before it happens; cancelling an edit puts the old plan back
+$("build").addEventListener("click",function(e){if(!confirm(editing?"สร้างแผนใหม่จากตัวเลขนี้ หลังจากนี้จะแก้ไม่ได้อีก\n\nกด OK เพื่อสร้างแผน":"สร้างแผนแล้ว แก้ตัวเลขเองได้อีกเพียง 1 ครั้ง\n\nตรวจตัวเลขครบแล้ว กด OK เพื่อสร้างแผน")){e.stopImmediatePropagation();e.preventDefault();}else if(editing)editsLeft=0;},true);
+$("cancel-edit").onclick=function(){if(editing)editsLeft=1;editing=false;$("cancel-edit").hidden=true;data=editSnap.data;defaultsUsed=editSnap.defaultsUsed;renderPlan({reuseSummary:true});};
 
 // printing (PDF) shows the folded yearly table too
 window.addEventListener("beforeprint",function(){document.querySelectorAll("#v-plan details").forEach(function(d){d.open=true;});});
@@ -815,7 +820,7 @@ var api={
   json:function(route,body){return api.stream(route,body,{}).then(function(r){try{return JSON.parse(r.text.trim());}catch(e){throw{code:"invalid_json"};}});},
   get:function(path){return fetch("/api/"+path,{cache:"no-store"}).then(function(r){return r.json().catch(function(){return{};}).then(function(j){if(!r.ok)throw{code:j.error||"server"};return j;});},function(){throw{code:"network"};});}
 };
-function savePlanRemote(rec){if(!planId)return;api.post("save",{planId:planId,record:rec}).catch(function(e){console.warn("save failed",e&&e.code);});}
+function savePlanRemote(rec){if(!planId)return Promise.resolve();return api.post("save",{planId:planId,record:rec}).catch(function(e){console.warn("save failed",e&&e.code);});}
 function showPlanLink(){
   var b=$("plan-link");if(!b||!planId)return;
   var url=location.origin+location.pathname+"?id="+planId;
@@ -837,7 +842,7 @@ renderSteps();
   planId=qid;$("v-intro").hidden=true;$("loading").hidden=false;
   api.get("plan?id="+encodeURIComponent(qid)).then(function(j){
     $("loading").hidden=true;
-    var rec=j.record;
+    var rec=j.record;editsLeft=Math.max(0,1-(j.edits||0));
     if(rec&&rec.inputs){
       data=rec.inputs;defaultsUsed=rec.defaultsUsed||[];if(j.turns)turns=j.turns;
       if(rec.summary){lastSummary=rec.summary;lastSummaryG=rec.summaryG;renderPlan({reuseSummary:true});}else renderPlan();
