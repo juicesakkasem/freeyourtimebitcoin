@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex">
-<title>แผนเกษียณด้วย Bitcoin | FreeyourtimeBitcoin</title>
+<title>Free Your Time Map | FreeyourtimeBitcoin</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23f7931a'/%3E%3Ctext x='32' y='44' font-size='34' text-anchor='middle' font-family='Arial' font-weight='700' fill='%231a1206'%3E%E2%82%BF%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -224,8 +224,8 @@ footer.site-foot{margin-top:56px;border-top:1px solid var(--line);padding:0;font
   <!-- 1. intro -->
   <section id="v-intro" class="intro">
     <div>
-      <div class="label">แผนเกษียณด้วย Bitcoin · <span class="testtag">ช่วงทดลอง</span></div>
-      <h1>คุยกับ AI 10 นาที ได้แผนเกษียณของคุณกลับไปทันที</h1>
+      <div class="label">Free Your Time Map · <span class="testtag">ช่วงทดลอง</span></div>
+      <h1>คุยกับ AI 10 นาที ได้ Free Your Time Map ของคุณทันที</h1>
     </div>
     <p>AI จะถามประมาณ 15–18 ข้อ เรื่องอายุ รายรับ รายจ่าย เงินที่มี และ Bitcoin ตอบคร่าว ๆ ได้ ข้อไหนไม่รู้ตอบว่า "ไม่แน่ใจ" ระบบจะใช้ค่ากลางให้</p>
     <ul>
@@ -369,8 +369,8 @@ var SALARY_G_DEFAULT=3; // income growth when the customer does not know
 var LEVELS=[{g:12,l:"ระมัดระวัง",c:"var(--s1)"},{g:15,l:"กลาง",c:"var(--s2)"},{g:20,l:"สูง",c:"var(--s3)"}];
 var vsInf=function(g,inf){var d=Math.round((g-inf)*10)/10;return d>=0?"สูงกว่าเงินเฟ้อ "+d+"%":"ต่ำกว่าเงินเฟ้อ "+(-d)+"%"};
 var FIELDS=[
- ["ชีวิตและเป้าหมาย"],["age","อายุตอนนี้","ปี",1],["retireAge","อายุที่อยากเกษียณ","ปี"],["lifeExpect","วางแผนถึงอายุ","ปี"],["retireIncome","อยากใช้ต่อเดือนตอนเกษียณ (ค่าเงินวันนี้)","บาท"],
- ["รายรับ"],["salary","รายได้หลักต่อเดือน (ก่อนหักภาษี)","บาท",1],["salaryG","รายได้โตต่อปี","%"],["sideIncome","รายได้เสริมต่อเดือน","บาท"],["pension","บำนาญหลังเกษียณต่อเดือน","บาท"],
+ ["ชีวิตและเป้าหมาย"],["age","อายุตอนนี้","ปี",1],["retireAge","อายุที่อยากหยุดทำงาน (วัน Free Your Time)","ปี"],["lifeExpect","วางแผนถึงอายุ","ปี"],["retireIncome","อยากใช้ต่อเดือนหลังหยุดทำงาน (ค่าเงินวันนี้)","บาท"],
+ ["รายรับ"],["salary","รายได้หลักต่อเดือน (ก่อนหักภาษี)","บาท",1],["salaryG","รายได้โตต่อปี","%"],["sideIncome","รายได้เสริมต่อเดือน","บาท"],["pension","บำนาญหลังหยุดทำงานต่อเดือน","บาท"],
  ["รายจ่าย"],["exp","รายจ่ายต่อเดือน รวมภาษีและประกันสังคม (ไม่รวมหนี้)","บาท",1],
  ["เงินที่มี"],["cash","เงินสดและเงินฝาก","บาท"],["stocks","หุ้น","บาท"],["fund","กองทุน (รวม SSF RMF สำรองเลี้ยงชีพ)","บาท"],["gold","ทองคำ","บาท"],["other","ลงทุนอื่น ๆ (ตราสารหนี้ หุ้นกู้ ฯลฯ)","บาท"],
  ["Bitcoin"],["btcValue","มูลค่า Bitcoin ที่มีตอนนี้","บาท"],["dca","DCA ต่อเดือน","บาท"],["dcaToAge","DCA ถึงอายุ","ปี"],["btcLevel","สมมติฐานหลัก Bitcoin","select"],
@@ -432,8 +432,8 @@ $("build").onclick=function(){
   if(!(data.age>=18&&data.age<=80))errs.push("อายุตอนนี้ต้องอยู่ระหว่าง 18–80");
   if(!(data.salary>0))errs.push("กรอกรายได้หลักต่อเดือน");
   if(!(data.exp>0))errs.push("กรอกรายจ่ายต่อเดือน");
-  if(!(data.retireAge>data.age))errs.push("อายุเกษียณต้องมากกว่าอายุตอนนี้");
-  if(!(data.lifeExpect>data.retireAge))errs.push("อายุที่วางแผนถึงต้องมากกว่าอายุเกษียณ");
+  if(!(data.retireAge>data.age))errs.push("อายุที่อยากหยุดทำงานต้องมากกว่าอายุตอนนี้");
+  if(!(data.lifeExpect>data.retireAge))errs.push("อายุที่วางแผนถึงต้องมากกว่าอายุที่อยากหยุดทำงาน");
   ["retireIncome","sideIncome","pension","cash","stocks","fund","gold","other","btcValue","dca","inflation"].forEach(function(k){if(data[k]===null)data[k]=k==="retireIncome"?Math.round((data.exp||0)*0.7):(DEF[k]||0);});
   if(data.salaryG===null)data.salaryG=SALARY_G_DEFAULT;
   if(!(data.btcLevel>=0&&data.btcLevel<=2))data.btcLevel=1;
@@ -533,7 +533,7 @@ function renderPlan(opt){
   // DCA is shown at its real amount; if it is more than what is left, the gap is a red row (it comes out of savings)
   var shortRow=function(v){return'<tr><td><span class="cf-dot cf-debt"></span><span style="padding-left:14px;color:var(--bad)">DCA เกินเงินที่เหลือ ต้องดึงจากเงินเก็บ</span></td><td class="r num" style="color:var(--bad)">−'+fmt(v)+'</td><td class="r num" style="color:var(--bad)">−'+fmt(v*12)+"</td></tr>"};
   var saveRows=canSave>0?(dcaNow>0?row('<span style="padding-left:14px">DCA Bitcoin</span>',dcaNow,"dca"):"")+(saveNow>=0?row('<span style="padding-left:14px">เงินเก็บอื่น (เงินฝาก กองทุน ฯลฯ)</span>',saveNow,"save"):shortRow(-saveNow)):"";
-  var cfHTML='<section><div class="sec-head"><h2>เงินเข้าออกตอนนี้</h2><p>จากข้อมูลที่คุณให้ ก่อนเริ่มคิดเรื่องเกษียณ</p></div>'
+  var cfHTML='<section><div class="sec-head"><h2>เงินเข้าออกตอนนี้</h2><p>จากข้อมูลที่คุณให้ ก่อนเริ่มคิดเรื่องวัน Free Your Time</p></div>'
    +'<div class="cf-bar" aria-hidden="true">'+seg(P.exp,"exp")+seg(debtNow,"debt")+seg(evOutNow,"ev")+seg(Math.min(dcaNow,Math.max(0,canSave)),"dca")+seg(Math.max(0,saveNow),"save")+'</div>'
    +'<div class="tbl"><table><thead><tr><th></th><th class="r">ต่อเดือน</th><th class="r">ต่อปี</th></tr></thead><tbody>'
    +cfRows.map(function(r){return row(esc(r[0]),r[1],r[2])}).join("")
@@ -588,7 +588,7 @@ function renderPlan(opt){
   var cmpHTML='<section><div class="sec-head"><h2>เทียบผลตอบแทน</h2><p>พอร์ตที่มีอยู่แล้วโตตามเดิม เปลี่ยนแค่ว่าเงินที่ออมใหม่ทุกเดือนจากนี้ไปลงที่ไหน</p></div>'
    +'<div class="card"><p style="color:var(--text);font-size:15px">'+reqText+'</p></div>'
    +'<div class="chart-box"><div class="legend" id="legend2"></div><div style="overflow-x:auto"><svg id="chart2" viewBox="0 0 760 320" width="100%" role="img" aria-label="กราฟเทียบผลตอบแทน"></svg></div></div>'
-   +'<div class="tbl"><table class="cmp-tbl" style="min-width:520px"><thead><tr><th>เส้น</th><th class="r">ผลตอบแทนต่อปี</th><th class="r">เงินวันเกษียณ</th><th class="r">ค่าเงินวันนี้</th><th>เงินพอถึงอายุ</th></tr></thead><tbody>'
+   +'<div class="tbl"><table class="cmp-tbl" style="min-width:520px"><thead><tr><th>เส้น</th><th class="r">ผลตอบแทนต่อปี</th><th class="r">เงินวัน Free Your Time</th><th class="r">ค่าเงินวันนี้</th><th>เงินพอถึงอายุ</th></tr></thead><tbody>'
    +cmp.map(function(c){return'<tr><td><span class="cf-dot" style="background:'+c.color+'"></span>'+c.label+'</td><td class="r num">'+c.rateTxt+'</td><td class="r num">'+fmtM(c.r.retV)+'</td><td class="r num">'+fmtM(today(c.r.retV,yrsToRet))+"</td><td>"+(c.endsExact?'<span class="tag t-warn">หมดพอดีอายุ '+P.lifeExpect+"</span>":c.r.runOut===null?'<span class="tag t-good">'+P.lifeExpect+"+ อยู่รอด</span>":'<span class="tag t-bad">หมดตอน '+c.r.runOut+"</span>")+"</td></tr>"}).join("")
    +'</tbody></table></div><p class="foot-note">เส้นเทียบสมมติว่าเงินออมใหม่ทุกบาท (เงินเหลือเก็บและ DCA) ได้ผลตอบแทนอัตราเดียวทุกปี ส่วนพอร์ตเดิมไม่เปลี่ยน เพื่อให้เห็นว่าเงินออมใหม่ต้องได้ผลตอบแทนเท่าไรถึงพอ ไม่ใช่คำแนะนำให้ลงทุนในสินทรัพย์ใด S&P 500 ใช้ค่าเฉลี่ยในอดีตราว 10% ต่อปี (สกุลดอลลาร์ ไม่รวมผลของค่าเงิน) ผลตอบแทนในอนาคตอาจต่างจากนี้มาก</p>'+refHTML+'</section>';
   // year-by-year after retirement, so the numbers can be checked by hand: start + return − withdrawal = end
@@ -608,16 +608,16 @@ function renderPlan(opt){
           +'<td class="r num"'+(hot?' style="color:var(--bad)"':"")+">"+(wp===null?"–":wp.toFixed(1)+"%")+'</td><td class="r num"'+(out?' style="color:var(--bad)"':"")+">"+mb(r.end)+'</td><td class="r num col-today">'+mb(today(r.end,r.age+1-P.age))+"</td></tr>"}).join("")
      +"</tbody></table></div>";
   };
-  var yrHTML=!yrOpts.length?"":'<section><div class="sec-head"><h2>เงินแต่ละปีหลังเกษียณ</h2><p>ค่าใช้จ่ายโตตามเงินเฟ้อ '+P.inflation+'% ต่อปี · ใช้ตรวจว่าตัวเลขไปทางเดียวกับกราฟ'+(yrOpts.length>1?" · กดเลือกเส้นเพื่อดูตารางของเส้นนั้น":"")+'</p></div>'
+  var yrHTML=!yrOpts.length?"":'<section><div class="sec-head"><h2>เงินแต่ละปีหลังวัน Free Your Time</h2><p>ค่าใช้จ่ายโตตามเงินเฟ้อ '+P.inflation+'% ต่อปี · ใช้ตรวจว่าตัวเลขไปทางเดียวกับกราฟ'+(yrOpts.length>1?" · กดเลือกเส้นเพื่อดูตารางของเส้นนั้น":"")+'</p></div>'
    +'<details class="yr"><summary>ดูตารางรายปี ('+yrOpts[0].rows.length+' ปี)</summary>'
    +(yrOpts.length>1?'<div class="chips" role="group" aria-label="เลือกเส้นที่จะดูตารางรายปี" style="margin-top:10px">'+yrOpts.map(function(o,i){return'<button class="chip-btn yr-pick" data-k="'+i+'" aria-pressed="'+(i===0)+'">'+esc(o.label)+(i?" "+esc(o.rateTxt):"")+"</button>"}).join("")+"</div>":"")
    +'<div id="yr-body">'+yrTable(0)+"</div>"
-   +'<p class="foot-note" style="margin-top:8px">'+(hasInc?"เงินสิ้นปี = เงินต้นปี + ผลตอบแทนปีนี้ − ถอนจากพอร์ต · ถอนจากพอร์ต = ใช้จ่ายทั้งปี − รายได้":"เงินสิ้นปี = เงินต้นปี + ผลตอบแทนปีนี้ − ใช้จ่ายทั้งปี (ไม่มีบำนาญหรือรายได้เสริม จึงถอนจากพอร์ตเท่ากับที่ใช้จ่าย)")+' · ผลตอบแทนคิดจากสัดส่วนสินทรัพย์ที่มีวันเกษียณ · ถ้า % ที่ถอนสูงกว่า % ผลตอบแทนใต้ช่องผลตอบแทน (ตัวเลขสีแดง) เงินจะเริ่มลดลง และลดเร็วขึ้นทุกปี · แถวสีแดงคือเงินไม่พอจ่าย · ตัวเลขปัดเป็นทศนิยม 2 ตำแหน่ง ผลบวกลบอาจคลาด 0.01</p></details></section>';
+   +'<p class="foot-note" style="margin-top:8px">'+(hasInc?"เงินสิ้นปี = เงินต้นปี + ผลตอบแทนปีนี้ − ถอนจากพอร์ต · ถอนจากพอร์ต = ใช้จ่ายทั้งปี − รายได้":"เงินสิ้นปี = เงินต้นปี + ผลตอบแทนปีนี้ − ใช้จ่ายทั้งปี (ไม่มีบำนาญหรือรายได้เสริม จึงถอนจากพอร์ตเท่ากับที่ใช้จ่าย)")+' · ผลตอบแทนคิดจากสัดส่วนสินทรัพย์ที่มีวัน Free Your Time · ถ้า % ที่ถอนสูงกว่า % ผลตอบแทนใต้ช่องผลตอบแทน (ตัวเลขสีแดง) เงินจะเริ่มลดลง และลดเร็วขึ้นทุกปี · แถวสีแดงคือเงินไม่พอจ่าย · ตัวเลขปัดเป็นทศนิยม 2 ตำแหน่ง ผลบวกลบอาจคลาด 0.01</p></details></section>';
   var pct=needs[main].pct,mOk=M.runOut===null;
-  var shortHTML=M.shortAge===null?"":'<div class="notice err"><b>รายจ่ายจะเริ่มมากกว่ารายได้ตั้งแต่อายุ '+M.shortAge+'</b> ทั้งที่ยังไม่เกษียณ'+(M.shortAtEnd?' และเป็นแบบนี้ต่อเนื่องจนถึงวันเกษียณ ช่วงนั้นต้องดึงเงินเก็บออกมาใช้ทุกปี':' ช่วงนั้นต้องดึงเงินเก็บออกมาใช้')+(P.salaryG<P.inflation?' สาเหตุหลักคือรายจ่ายโตตามเงินเฟ้อ '+P.inflation+'% ต่อปี แต่รายได้โตแค่ '+P.salaryG+'% ต่อปี':'')+"</div>";
+  var shortHTML=M.shortAge===null?"":'<div class="notice err"><b>รายจ่ายจะเริ่มมากกว่ารายได้ตั้งแต่อายุ '+M.shortAge+'</b> ทั้งที่ยังทำงานอยู่'+(M.shortAtEnd?' และเป็นแบบนี้ต่อเนื่องจนถึงวัน Free Your Time ช่วงนั้นต้องดึงเงินเก็บออกมาใช้ทุกปี':' ช่วงนั้นต้องดึงเงินเก็บออกมาใช้')+(P.salaryG<P.inflation?' สาเหตุหลักคือรายจ่ายโตตามเงินเฟ้อ '+P.inflation+'% ต่อปี แต่รายได้โตแค่ '+P.salaryG+'% ต่อปี':'')+"</div>";
   var vClass=mOk&&pct>=100?"good":mOk?"warn":"bad";
-  var vTitle=mOk?(pct>=100?"ตามสมมติฐานหลัก เงินพอใช้ถึงอายุ "+P.lifeExpect:"เงินพอถึงอายุ "+P.lifeExpect+" แต่เหลือเผื่อน้อย"):(M.retV<P.retireIncome*12*Math.pow(1+infl,yrsToRet)?"ตามสมมติฐานหลัก แทบไม่มีเงินเหลือในวันเกษียณ":"ตามสมมติฐานหลัก เงินจะหมดตอนอายุ "+M.runOut);
-  var vText="วันเกษียณคาดว่าจะมีเงิน "+fmtM(M.retV)+" บาท (เท่ากับราว "+fmtM(today(M.retV,yrsToRet))+" บาทในค่าเงินวันนี้) จากที่ควรมี "+fmtM(need)+" บาท ("+pct+"%)"+(main!==0&&cons.runOut!==null&&cons.runOut!==M.runOut?" · ถ้าใช้สมมติฐานแบบระมัดระวัง เงินจะหมดตอนอายุ "+cons.runOut:"")+" · คิดด้วยเงินเฟ้อ "+P.inflation+"% ต่อปี"+(defaultsUsed.indexOf("inflation")>=0||P.inflation===DEF.inflation?" (ค่ากลางของแผนนี้)":" (ตามที่คุณเลือก)");
+  var vTitle=mOk?(pct>=100?"ตามสมมติฐานหลัก เงินพอใช้ถึงอายุ "+P.lifeExpect:"เงินพอถึงอายุ "+P.lifeExpect+" แต่เหลือเผื่อน้อย"):(M.retV<P.retireIncome*12*Math.pow(1+infl,yrsToRet)?"ตามสมมติฐานหลัก แทบไม่มีเงินเหลือในวัน Free Your Time":"ตามสมมติฐานหลัก เงินจะหมดตอนอายุ "+M.runOut);
+  var vText="วัน Free Your Time คาดว่าจะมีเงิน "+fmtM(M.retV)+" บาท (เท่ากับราว "+fmtM(today(M.retV,yrsToRet))+" บาทในค่าเงินวันนี้) จากที่ควรมี "+fmtM(need)+" บาท ("+pct+"%)"+(main!==0&&cons.runOut!==null&&cons.runOut!==M.runOut?" · ถ้าใช้สมมติฐานแบบระมัดระวัง เงินจะหมดตอนอายุ "+cons.runOut:"")+" · คิดด้วยเงินเฟ้อ "+P.inflation+"% ต่อปี"+(defaultsUsed.indexOf("inflation")>=0||P.inflation===DEF.inflation?" (ค่ากลางของแผนนี้)":" (ตามที่คุณเลือก)");
 
   var months=outNow>0?P.cash/outNow:0,ls=Math.min(100,Math.round(months/6*100));
   var rs=mOk?Math.min(100,pct):Math.min(65,Math.round((M.runOut-P.retireAge)/(P.lifeExpect-P.retireAge)*100));
@@ -627,7 +627,7 @@ function renderPlan(opt){
   if(target>=0){
     var g=scn[target].g,xs=solve(g,"xSave"),xd=solve(g,"xDca"),lt=later(g);
     optNote=target===main?"ทำอย่างใดอย่างหนึ่งต่อไปนี้ แล้วเงินจะพอถึงอายุ "+P.lifeExpect+" ตามสมมติฐานหลัก":"สมมติฐานหลักผ่านแล้ว ถ้าอยากให้แผนรอดแม้ในแบบระมัดระวัง ("+g+"%/ปี) ทำอย่างใดอย่างหนึ่งต่อไปนี้";
-    optHTML=[["ออมเพิ่ม",xs===null?"มากกว่า 300,000 ฿":fmt(xs)+" ฿","ต่อเดือน ลงกองทุน (สมมติ "+RATE.fund+"%/ปี) จากรายได้เพิ่มหรือรายจ่ายที่ลดลง"],["เกษียณช้าลง",lt?lt+" ปี":"มากกว่า 20 ปี",lt?"เลื่อนจากอายุ "+P.retireAge+" เป็น "+(P.retireAge+lt):"ทางนี้อย่างเดียวไม่พอ"],[noBtc?"ถ้าเริ่ม DCA Bitcoin":"DCA เพิ่ม",xd===null?"มากกว่า 300,000 ฿":fmt(xd)+" ฿","ต่อเดือน ตามสมมติฐาน "+g+"%/ปี ผลขึ้นกับสมมติฐานมากที่สุด"]]
+    optHTML=[["ออมเพิ่ม",xs===null?"มากกว่า 300,000 ฿":fmt(xs)+" ฿","ต่อเดือน ลงกองทุน (สมมติ "+RATE.fund+"%/ปี) จากรายได้เพิ่มหรือรายจ่ายที่ลดลง"],["หยุดทำงานช้าลง",lt?lt+" ปี":"มากกว่า 20 ปี",lt?"เลื่อนจากอายุ "+P.retireAge+" เป็น "+(P.retireAge+lt):"ทางนี้อย่างเดียวไม่พอ"],[noBtc?"ถ้าเริ่ม DCA Bitcoin":"DCA เพิ่ม",xd===null?"มากกว่า 300,000 ฿":fmt(xd)+" ฿","ต่อเดือน ตามสมมติฐาน "+g+"%/ปี ผลขึ้นกับสมมติฐานมากที่สุด"]]
       .map(function(o){return'<div class="card"><span class="label">'+o[0]+'</span><span class="big">'+o[1]+"</span><p>"+o[2]+"</p></div>"}).join("");
   }
 
@@ -642,16 +642,16 @@ function renderPlan(opt){
     if(M.retV>need3*0.1){var sc=sim(P,scn[main].g,{scaleRet:need3/M.retV});outAge=sc.runOut;}
     else{var bal=need3;for(var a=P.retireAge;a<P.lifeExpect;a++){bal=bal*(1+r3)-Math.max(0,spend(X,a-P.age)-P.pension-P.sideIncome)*12;if(bal<=0){outAge=a;break;}}}
     infHTML='<section><div class="sec-head"><h2>ทำไมแผนนี้ไม่ใช้เงินเฟ้อ 3%</h2></div>'
-    +'<div class="card" style="gap:10px"><p style="color:var(--text);font-size:15px">เงินเฟ้อ 1–3% ที่เห็นในข่าว วัดจากราคาสินค้าในตะกร้าที่ทางการเลือกไว้ ไม่ได้รวมราคาบ้าน ที่ดิน หรือสินทรัพย์ และค่าใช้จ่ายบางอย่างที่คนใกล้เกษียณเจอจริง เช่น ค่ารักษาพยาบาล มักขึ้นเร็วกว่านั้น</p>'
+    +'<div class="card" style="gap:10px"><p style="color:var(--text);font-size:15px">เงินเฟ้อ 1–3% ที่เห็นในข่าว วัดจากราคาสินค้าในตะกร้าที่ทางการเลือกไว้ ไม่ได้รวมราคาบ้าน ที่ดิน หรือสินทรัพย์ และค่าใช้จ่ายบางอย่างที่คนสูงวัยเจอจริง เช่น ค่ารักษาพยาบาล มักขึ้นเร็วกว่านั้น</p>'
     +'<p style="color:var(--text);font-size:15px">แผนนี้จึงใช้เงินเฟ้อ '+P.inflation+'% ต่อปี โดยคิดจากการเพิ่มขึ้นของปริมาณเงิน (money supply) เงินที่ถือไว้เฉย ๆ จะเสียอำนาจซื้อเร็วกว่าที่ตัวเลขทางการบอก</p></div>'
     +'<div class="tbl"><table style="min-width:460px"><thead><tr><th></th><th class="r">ถ้าคิดด้วย 3%</th><th class="r">แผนนี้ ('+P.inflation+'%)</th></tr></thead><tbody>'
     +'<tr><td>เงินที่ต้องใช้ต่อเดือน ตอนอายุ '+P.retireAge+'</td><td class="r num">'+fmt(spend(0.03,yrsToRet))+' ฿</td><td class="r num">'+fmt(spend(X,yrsToRet))+' ฿</td></tr>'
     +'<tr><td>เงินที่ต้องใช้ต่อเดือน ตอนอายุ '+(P.lifeExpect-1)+'</td><td class="r num">'+fmt(spend(0.03,P.lifeExpect-1-P.age))+' ฿</td><td class="r num">'+fmt(spend(X,P.lifeExpect-1-P.age))+' ฿</td></tr>'
-    +'<tr><td>เงินที่ควรมีวันเกษียณ</td><td class="r num">'+fmtM(need3)+'</td><td class="r num">'+fmtM(need)+'</td></tr>'
+    +'<tr><td>เงินที่ควรมีวัน Free Your Time</td><td class="r num">'+fmtM(need3)+'</td><td class="r num">'+fmtM(need)+'</td></tr>'
     +'</tbody></table></div>'
     +'<div class="verdict '+(outAge?"bad":"warn")+'" style="gap:4px"><div class="label">ถ้าวางแผนผิดตัวเลข</div><p style="font-size:15px;color:var(--text)">ถ้าตั้งเป้าด้วยเงินเฟ้อ 3% แล้วเก็บเงินได้แค่ '+fmtM(need3)+' บาท แต่ของแพงขึ้นจริงปีละ '+P.inflation+'% ตามสมมติฐานของแผนนี้ '
     +(outAge?'<b style="color:var(--bad)">เงินก้อนนี้จะหมดตอนอายุ '+outAge+'</b> ทั้งที่ตั้งใจให้พอถึงอายุ '+P.lifeExpect:'เงินจะเหลือเผื่อน้อยมากเมื่อถึงอายุ '+P.lifeExpect)+'</p></div>'
-    +'<p class="foot-note">ฝั่ง 3% คือตัวเลขที่ได้ถ้าวางแผนแบบทั่วไป (เงินเฟ้อ 3% ผลตอบแทน 7% ต่อปี) ฝั่งขวาคือตัวเลขของแผนนี้ ซึ่งเป็นตัวเดียวกับ "เงินที่ควรมีวันเกษียณ" ด้านบน</p></section>';
+    +'<p class="foot-note">ฝั่ง 3% คือตัวเลขที่ได้ถ้าวางแผนแบบทั่วไป (เงินเฟ้อ 3% ผลตอบแทน 7% ต่อปี) ฝั่งขวาคือตัวเลขของแผนนี้ ซึ่งเป็นตัวเดียวกับ "เงินที่ควรมีวัน Free Your Time" ด้านบน</p></section>';
   }
 
   var todo=[
@@ -662,29 +662,29 @@ function renderPlan(opt){
     ["นัดทบทวนแผนอีกครั้ง","อีก 12 เดือน หรือเมื่อรายได้ รายจ่าย หรือครอบครัวเปลี่ยน"]
   ];
 
-  var assume=[["อายุตอนนี้ / เกษียณ / วางแผนถึง",P.age+" / "+P.retireAge+" / "+P.lifeExpect],["รายได้ต่อเดือน (ก่อนหักภาษี)",fmt(P.salary)+" ฿ · โต "+P.salaryG+"%/ปี"],["รายได้เสริม / บำนาญ",fmt(P.sideIncome)+" / "+fmt(P.pension)+" ฿"],["รายจ่ายต่อเดือน รวมภาษีและประกันสังคม",fmt(P.exp)+" ฿"]]
+  var assume=[["อายุตอนนี้ / หยุดทำงาน / วางแผนถึง",P.age+" / "+P.retireAge+" / "+P.lifeExpect],["รายได้ต่อเดือน (ก่อนหักภาษี)",fmt(P.salary)+" ฿ · โต "+P.salaryG+"%/ปี"],["รายได้เสริม / บำนาญ",fmt(P.sideIncome)+" / "+fmt(P.pension)+" ฿"],["รายจ่ายต่อเดือน รวมภาษีและประกันสังคม",fmt(P.exp)+" ฿"]]
     .concat(P.debts.map(function(x){return[x.label,fmt(x.monthly)+" ฿/เดือน ถึงอายุ "+x.toAge]}))
-    .concat([["เงินสด / หุ้น / กองทุน / ทอง / อื่น ๆ",fmt(P.cash)+" / "+fmt(P.stocks)+" / "+fmt(P.fund)+" / "+fmt(P.gold)+" / "+fmt(P.other)+" ฿"],["ผลตอบแทนที่สมมติ (ผูกกับเงินเฟ้อ)","เงินสด "+RATE.cash+"% · หุ้น "+RATE.stocks+"% · กองทุน "+RATE.fund+"% · ทอง "+RATE.gold+"% · อื่น ๆ "+RATE.other+"%"],["Bitcoin 3 แบบ",scn.map(function(x){return x.l+" "+x.g+"%"}).join(" · ")],["Bitcoin ที่มี",fmt(P.btcValue)+" ฿"],["DCA",fmt(P.dca)+" ฿/เดือน ถึงอายุ "+P.dcaToAge+" (หักจากเงินออม)"],["อยากใช้ตอนเกษียณ",fmt(P.retireIncome)+" ฿/เดือน (ค่าเงินวันนี้)"],["เงินเฟ้อ",P.inflation+"%/ปี"],["กองทุนอสังหาฯ / REIT (ใช้ในตารางเทียบเท่านั้น)",(P.inflation+2)+"%/ปี (เงินเฟ้อ +2)"],["อัตราคิดลดของ \"เงินที่ควรมี\"",RATE.disc+"%/ปี (เงินเฟ้อ +4)"]])
+    .concat([["เงินสด / หุ้น / กองทุน / ทอง / อื่น ๆ",fmt(P.cash)+" / "+fmt(P.stocks)+" / "+fmt(P.fund)+" / "+fmt(P.gold)+" / "+fmt(P.other)+" ฿"],["ผลตอบแทนที่สมมติ (ผูกกับเงินเฟ้อ)","เงินสด "+RATE.cash+"% · หุ้น "+RATE.stocks+"% · กองทุน "+RATE.fund+"% · ทอง "+RATE.gold+"% · อื่น ๆ "+RATE.other+"%"],["Bitcoin 3 แบบ",scn.map(function(x){return x.l+" "+x.g+"%"}).join(" · ")],["Bitcoin ที่มี",fmt(P.btcValue)+" ฿"],["DCA",fmt(P.dca)+" ฿/เดือน ถึงอายุ "+P.dcaToAge+" (หักจากเงินออม)"],["อยากใช้หลังหยุดทำงาน",fmt(P.retireIncome)+" ฿/เดือน (ค่าเงินวันนี้)"],["เงินเฟ้อ",P.inflation+"%/ปี"],["กองทุนอสังหาฯ / REIT (ใช้ในตารางเทียบเท่านั้น)",(P.inflation+2)+"%/ปี (เงินเฟ้อ +2)"],["อัตราคิดลดของ \"เงินที่ควรมี\"",RATE.disc+"%/ปี (เงินเฟ้อ +4)"]])
     .concat(P.events.map(function(x){return[x.label,(x.type==="income"?"+":"−")+fmt(x.monthly)+" ฿/เดือน อายุ "+x.fromAge+"–"+x.toAge]}))
     .concat(P.assetSale?[["ขายอสังหาฯ",fmt(P.assetSale.amount)+" ฿ ตอนอายุ "+P.assetSale.age]]:[]);
 
   el.innerHTML=
-   '<header style="display:flex;flex-direction:column;gap:10px"><div class="label">แผนเกษียณด้วย Bitcoin · สร้างเมื่อ '+new Date().toLocaleDateString("th-TH",{day:"numeric",month:"short",year:"numeric"})+'</div><h1>แผนของคุณ</h1><p class="foot-note print-only">เครื่องมือเพื่อการศึกษา ไม่ใช่คำแนะนำการลงทุน ไม่ได้บอกว่าควรซื้อหรือขายสินทรัพย์ใด · FreeyourtimeBitcoin</p></header><div class="notice" id="plan-link" hidden></div>'
+   '<header style="display:flex;flex-direction:column;gap:10px"><div class="label">Free Your Time Map · สร้างเมื่อ '+new Date().toLocaleDateString("th-TH",{day:"numeric",month:"short",year:"numeric"})+'</div><h1>แผนของคุณ</h1><p class="foot-note print-only">เครื่องมือเพื่อการศึกษา ไม่ใช่คำแนะนำการลงทุน ไม่ได้บอกว่าควรซื้อหรือขายสินทรัพย์ใด · FreeyourtimeBitcoin</p></header><div class="notice" id="plan-link" hidden></div>'
   +cfHTML
   +(noBtc?"":'<div class="btc-pick-row"><span class="label">ให้ Bitcoin โตปีละ</span><div class="chips" role="group" aria-label="เลือกการเติบโตของ Bitcoin">'+LEVELS.map(function(L,i){return'<button class="chip-btn btc-pick" data-i="'+i+'" aria-pressed="'+(i===main)+'">'+L.g+'%</button>'}).join("")+'</div><span class="foot-note">กดเปลี่ยนแล้วทั้งแผนคำนวณใหม่</span></div>')
   +'<div class="verdict '+vClass+'"><div class="label">ผลสรุป</div><div class="v-title">'+vTitle+"</div><p>"+vText+"</p></div>"+shortHTML
   +'<section><div class="sec-head"><h2>ตัวเลขสำคัญ</h2><p>'+(noBtc?"แผนนี้ไม่มี Bitcoin · เงินเฟ้อ "+P.inflation+"% ต่อปี":'ตามสมมติฐานหลัก Bitcoin แบบ'+scn[main].l+' ('+scn[main].g+'% ต่อปี · '+vsInf(scn[main].g,P.inflation)+')')+'</p></div><div class="tiles">'
-  +[["เงินที่คาดว่าจะมีวันเกษียณ",fmtM(M.retV),"≈ "+fmtM(today(M.retV,yrsToRet))+" ค่าเงินวันนี้"],["เงินที่ควรมีวันเกษียณ",fmtM(need),"≈ "+fmtM(today(need,yrsToRet))+" ค่าเงินวันนี้"],["ออมและลงทุนต่อเดือน",fmt(Math.max(0,canSave)),dcaNow>0?(saveNow>=0?"DCA "+fmt(dcaNow)+" + เก็บอื่น "+fmt(saveNow):"DCA "+fmt(dcaNow)+" เกินเงินที่เหลือ "+fmt(-saveNow)):"บาท ต่อเดือน"],["เงินพอใช้ถึงอายุ",M.runOut===null?P.lifeExpect+"+":String(M.runOut),M.runOut===null?"อยู่รอดตลอดแผน":"ก่อนอายุ "+P.lifeExpect]].map(function(t){return'<div class="tile"><span class="label">'+t[0]+"</span><b>"+t[1]+"</b><span>"+t[2]+"</span></div>"}).join("")
+  +[["เงินที่คาดว่าจะมีวัน Free Your Time",fmtM(M.retV),"≈ "+fmtM(today(M.retV,yrsToRet))+" ค่าเงินวันนี้"],["เงินที่ควรมีวัน Free Your Time",fmtM(need),"≈ "+fmtM(today(need,yrsToRet))+" ค่าเงินวันนี้"],["ออมและลงทุนต่อเดือน",fmt(Math.max(0,canSave)),dcaNow>0?(saveNow>=0?"DCA "+fmt(dcaNow)+" + เก็บอื่น "+fmt(saveNow):"DCA "+fmt(dcaNow)+" เกินเงินที่เหลือ "+fmt(-saveNow)):"บาท ต่อเดือน"],["เงินพอใช้ถึงอายุ",M.runOut===null?P.lifeExpect+"+":String(M.runOut),M.runOut===null?"อยู่รอดตลอดแผน":"ก่อนอายุ "+P.lifeExpect]].map(function(t){return'<div class="tile"><span class="label">'+t[0]+"</span><b>"+t[1]+"</b><span>"+t[2]+"</span></div>"}).join("")
   +'</div></section>'
   +'<section><div class="sec-head"><h2>ถ้ายังเป็นแบบนี้ไปเรื่อย ๆ</h2><p>'+pathText+'</p></div><div class="chips" role="group" aria-label="หน่วยเงินของกราฟ"><button class="chip-btn" id="m-today" aria-pressed="true">ค่าเงินวันนี้</button><button class="chip-btn" id="m-future" aria-pressed="false">ค่าเงินในอนาคต</button></div><div class="chart-box"><div class="legend" id="legend"></div><div style="overflow-x:auto"><svg id="chart" viewBox="0 0 760 320" width="100%" role="img" aria-label="กราฟเงินตลอดชีวิตถ้ายังทำแบบเดิม"></svg></div></div>'
   +(noBtc?"":'<h3 style="margin-top:6px">ถ้า Bitcoin โตต่างจากนี้</h3>')
-  +'<div class="tbl"><table style="min-width:500px"><thead><tr><th>สมมติฐาน Bitcoin</th><th class="r">เงินวันเกษียณ</th><th class="r">ค่าเงินวันนี้</th><th class="r">เทียบกับที่ควรมี</th><th>เงินพอถึงอายุ</th></tr></thead><tbody>'
+  +'<div class="tbl"><table style="min-width:500px"><thead><tr><th>สมมติฐาน Bitcoin</th><th class="r">เงินวัน Free Your Time</th><th class="r">ค่าเงินวันนี้</th><th class="r">เทียบกับที่ควรมี</th><th>เงินพอถึงอายุ</th></tr></thead><tbody>'
   +res.map(function(r,i){var p=needs[i].pct;return'<tr class="'+(i===main?"main":"")+'"><td>'+(noBtc?"ไม่มี Bitcoin ในแผน":scn[i].l+" "+scn[i].g+"%/ปี"+(i===main?" · หลัก":""))+'</td><td class="r num">'+fmtM(r.retV)+'</td><td class="r num">'+fmtM(today(r.retV,yrsToRet))+'</td><td class="r num">'+p+"%</td><td>"+(r.runOut===null?'<span class="tag t-good">'+P.lifeExpect+"+ อยู่รอด</span>":'<span class="tag t-bad">หมดตอน '+r.runOut+"</span>")+"</td></tr>"}).join("")
   +"</tbody></table></div></section>"
   +cmpHTML
   +yrHTML
-  +'<section><div class="sec-head"><h2>สุขภาพการเงิน</h2><p>ความพร้อมเกษียณและเงินสำรองฉุกเฉิน: 70 ขึ้นไปถือว่าดี 40–69 พอรับได้ ต่ำกว่า 40 ควรแก้ก่อน</p></div><div class="health">'
-  +[["ความพร้อมเกษียณ",rs,"มีเงินวันเกษียณ "+pct+"% ของที่ควรมี"],["เงินสำรองฉุกเฉิน",ls,"เงินสดพอใช้ "+months.toFixed(1)+" เดือน (เป้า 6 เดือน)"]].map(function(h){var t=tone(h[1]);return'<div class="card"><div class="meter-top"><h3>'+h[0]+'</h3><span class="tag t-'+t[0]+'">'+t[1]+'</span></div><div class="meter-top"><b class="num" style="font-size:21px;color:var(--bright);font-weight:500">'+h[1]+'</b><span class="label">/ 100</span></div><div class="track"><div class="fill" style="width:'+h[1]+"%;background:var(--"+t[0]+')"></div></div><p>'+h[2]+"</p></div>"}).join("")
+  +'<section><div class="sec-head"><h2>สุขภาพการเงิน</h2><p>ความพร้อมวัน Free Your Time และเงินสำรองฉุกเฉิน: 70 ขึ้นไปถือว่าดี 40–69 พอรับได้ ต่ำกว่า 40 ควรแก้ก่อน</p></div><div class="health">'
+  +[["ความพร้อมวัน Free Your Time",rs,"มีเงินวัน Free Your Time "+pct+"% ของที่ควรมี"],["เงินสำรองฉุกเฉิน",ls,"เงินสดพอใช้ "+months.toFixed(1)+" เดือน (เป้า 6 เดือน)"]].map(function(h){var t=tone(h[1]);return'<div class="card"><div class="meter-top"><h3>'+h[0]+'</h3><span class="tag t-'+t[0]+'">'+t[1]+'</span></div><div class="meter-top"><b class="num" style="font-size:21px;color:var(--bright);font-weight:500">'+h[1]+'</b><span class="label">/ 100</span></div><div class="track"><div class="fill" style="width:'+h[1]+"%;background:var(--"+t[0]+')"></div></div><p>'+h[2]+"</p></div>"}).join("")
   +'<div class="card"><div class="meter-top"><h3>สัดส่วน Bitcoin ในสินทรัพย์</h3></div><div class="meter-top"><b class="num" style="font-size:21px;color:var(--bright);font-weight:500">'+share.toFixed(0)+'%</b><span class="label">ของสินทรัพย์ทางการเงิน</span></div><div class="track"><div class="fill" style="width:'+Math.min(100,share).toFixed(1)+'%;background:var(--orange)"></div></div><p>Bitcoin '+fmt(P.btcValue)+' บาท จากสินทรัพย์ทางการเงินทั้งหมด '+fmt(tot)+" บาท</p></div>"
   +"</div></section>"
   +(target>=0?'<section><div class="sec-head"><h2>ทางเลือกปิดช่องว่าง</h2><p>'+optNote+'</p></div><div class="options">'+optHTML+'</div><p class="foot-note">แต่ละทางเลือกคำนวณแยกกัน ทำทางใดทางหนึ่งก็พอ หรือผสมกันโดยลดสัดส่วนลง</p></section>':"")
@@ -742,7 +742,7 @@ function drawLines(svgId,legendId,P,series,needIn,mode){
   for(var g=0;g<=top+1;g+=nice){s+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+y(g)+'" y2="'+y(g)+'" stroke="var(--line)"/><text x="'+(L-8)+'" y="'+(y(g)+4)+'" text-anchor="end" font-size="12" fill="var(--dim)">'+(g/1e6).toFixed(nice<1e6?1:0)+" ล.</text>";}
   var span=P.lifeExpect-P.age,tick=span>40?10:5;
   for(var a=Math.ceil(P.age/tick)*tick;a<=P.lifeExpect;a+=tick){s+='<text x="'+x(a)+'" y="'+(H-12)+'" text-anchor="middle" font-size="12" fill="var(--dim)">'+a+"</text>";}
-  s+='<line x1="'+x(P.retireAge)+'" x2="'+x(P.retireAge)+'" y1="'+T+'" y2="'+(H-B)+'" stroke="var(--dim)" stroke-dasharray="4 4"/><text x="'+(x(P.retireAge)+6)+'" y="'+(T+12)+'" font-size="12" fill="var(--dim)">เกษียณ '+P.retireAge+"</text>";
+  s+='<line x1="'+x(P.retireAge)+'" x2="'+x(P.retireAge)+'" y1="'+T+'" y2="'+(H-B)+'" stroke="var(--dim)" stroke-dasharray="4 4"/><text x="'+(x(P.retireAge)+6)+'" y="'+(T+12)+'" font-size="12" fill="var(--dim)">หยุดทำงาน '+P.retireAge+"</text>";
   if(need<=top){s+='<circle cx="'+x(P.retireAge)+'" cy="'+y(need)+'" r="5" fill="none" stroke="var(--bright)" stroke-width="2"/><text x="'+(x(P.retireAge)-8)+'" y="'+(y(need)-9)+'" text-anchor="end" font-size="12" fill="var(--bright)">ควรมี '+fmtM(need)+"</text>";}
   var offN=0;
   res.forEach(function(r,i){
@@ -779,7 +779,7 @@ function downloadPlan(btn){
   var css=[].map.call(document.querySelectorAll("style"),function(s){return s.textContent}).join("\n");
   var fonts=[].map.call(document.querySelectorAll('link[rel="stylesheet"]'),function(l){return'<link rel="stylesheet" href="'+l.href+'">'}).join("");
   var d=new Date(),ymd=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
-  var html='<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>แผนเกษียณของคุณ '+ymd+"</title>"+fonts
+  var html='<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Free Your Time Map ของคุณ '+ymd+"</title>"+fonts
     +"<style>"+css+"\n.plan-file{display:flex;flex-direction:column;gap:36px}@media print{section,.verdict,.card,.chart-box,.tile{break-inside:avoid}}</style></head><body><div class=\"wrap\"><div class=\"plan-file\">"+c.innerHTML
     +"</div><footer>เครื่องมือเพื่อการศึกษา ไม่ใช่คำแนะนำการลงทุน ไม่ได้บอกว่าควรซื้อหรือขายสินทรัพย์ใด · © 2569 FreeyourtimeBitcoin</footer></div></body></html>";
   btn.disabled=true;say("");
