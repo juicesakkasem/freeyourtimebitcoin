@@ -234,7 +234,7 @@ async function waitlistJoin(body) {
     return json({ ok: true, again: true, n: wlPublic(await wlCount()) === null ? null : old.n });
   }
   const n = (await wlCount()) + 1;
-  const src = ["plan", "quickcheck"].includes(body?.src) ? body.src : "other";
+  const src = ["plan", "quickcheck", "fb", "tiktok", "line", "youtube", "ig"].includes(body?.src) ? body.src : "other";
   await s.setJSON(key, { n, nick, email, choice, need, src, consent: "ยินยอมให้เก็บข้อมูลและอีเมล เพื่อแจ้งข้อมูลเกี่ยวกับ Freeyourtime MAP เท่านั้น", created: new Date().toISOString() });
   return json({ ok: true, n: wlPublic(n) });
 }

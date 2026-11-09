@@ -899,7 +899,9 @@ function showPlanLink(){
 // ---------- waitlist ----------
 (function(){
   var t0=Date.now(),pick={choice:"",need:""},KEY="fytm-waitlist";
-  var src=new URLSearchParams(location.search).get("src")==="quickcheck"?"quickcheck":"plan";
+  // where the visitor came from: ?src=fb / tiktok / line / youtube / ig / quickcheck, else guessed from the referring site
+  var SRCS=["quickcheck","fb","tiktok","line","youtube","ig"],q=(new URLSearchParams(location.search).get("src")||"").toLowerCase(),ref=document.referrer||"";
+  var src=SRCS.indexOf(q)>=0?q:/facebook\.|fb\.|messenger\./.test(ref)?"fb":/tiktok\./.test(ref)?"tiktok":/line\.me|line\.naver/.test(ref)?"line":/youtube\.|youtu\.be/.test(ref)?"youtube":/instagram\./.test(ref)?"ig":/retirement-quick-check/.test(ref)?"quickcheck":"plan";
   function opts(id,k){var box=$(id);box.addEventListener("click",function(e){var b=e.target.closest("button");if(!b)return;
     var on=!b.classList.contains("on")||k==="choice";[].forEach.call(box.children,function(x){x.classList.remove("on");});
     if(on)b.classList.add("on");pick[k]=on?b.dataset.v:"";box.classList.remove("bad");$("wl-err").hidden=true;});}
