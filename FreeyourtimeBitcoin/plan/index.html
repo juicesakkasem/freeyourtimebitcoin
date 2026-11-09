@@ -609,7 +609,7 @@ function renderPlan(opt){
      +"</tbody></table></div>";
   };
   var yrHTML=!yrOpts.length?"":'<section><div class="sec-head"><h2>เงินแต่ละปีหลังวัน Free Your Time</h2><p>ค่าใช้จ่ายโตตามเงินเฟ้อ '+P.inflation+'% ต่อปี · ใช้ตรวจว่าตัวเลขไปทางเดียวกับกราฟ'+(yrOpts.length>1?" · กดเลือกเส้นเพื่อดูตารางของเส้นนั้น":"")+'</p></div>'
-   +'<details class="yr"><summary>ดูตารางรายปี ('+yrOpts[0].rows.length+' ปี)</summary>'
+   +'<details class="yr" open><summary>ดูตารางรายปี ('+yrOpts[0].rows.length+' ปี)</summary>'
    +(yrOpts.length>1?'<div class="chips" role="group" aria-label="เลือกเส้นที่จะดูตารางรายปี" style="margin-top:10px">'+yrOpts.map(function(o,i){return'<button class="chip-btn yr-pick" data-k="'+i+'" aria-pressed="'+(i===0)+'">'+esc(o.label)+(i?" "+esc(o.rateTxt):"")+"</button>"}).join("")+"</div>":"")
    +'<div id="yr-body">'+yrTable(0)+"</div>"
    +'<p class="foot-note" style="margin-top:8px">'+(hasInc?"เงินสิ้นปี = เงินต้นปี + ผลตอบแทนปีนี้ − ถอนจากพอร์ต · ถอนจากพอร์ต = ใช้จ่ายทั้งปี − รายได้":"เงินสิ้นปี = เงินต้นปี + ผลตอบแทนปีนี้ − ใช้จ่ายทั้งปี (ไม่มีบำนาญหรือรายได้เสริม จึงถอนจากพอร์ตเท่ากับที่ใช้จ่าย)")+' · ผลตอบแทนคิดจากสัดส่วนสินทรัพย์ที่มีวัน Free Your Time · ถ้า % ที่ถอนสูงกว่า % ผลตอบแทนใต้ช่องผลตอบแทน (ตัวเลขสีแดง) เงินจะเริ่มลดลง และลดเร็วขึ้นทุกปี · แถวสีแดงคือเงินไม่พอจ่าย · ตัวเลขปัดเป็นทศนิยม 2 ตำแหน่ง ผลบวกลบอาจคลาด 0.01</p></details></section>';
