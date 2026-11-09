@@ -199,6 +199,68 @@ async function save(body) {
   return json({ ok: true });
 }
 
+// ---------- waitlist ----------
+// one record per email (key = hash of the email, so the same person signing up twice is counted once)
+const WL_CHOICES = ["99", "399", "unsure"];
+const WL_NEEDS = ["<5", "5-10", "10-20", "20-50", ">50", "unknown"];
+// the count is only shown publicly once this many people have signed up
+const wlShowFrom = () => Math.max(0, parseInt(env("WAITLIST_SHOW", "30"), 10) || 0);
+
+async function sha(s) {
+  const b = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s));
+  return [...new Uint8Array(b)].map((x) => x.toString(16).padStart(2, "0")).join("");
+}
+async function wlCount() {
+  const { blobs } = await store().list({ prefix: "waitlist/" });
+  return blobs.length;
+}
+const wlPublic = (n) => (n >= wlShowFrom() ? n : null);
+
+async function waitlistJoin(body) {
+  // bots fill the hidden "website" field or submit within a couple of seconds; answer as if it worked
+  if (body?.website || !(Number(body?.ms) >= 2500)) return json({ ok: true, n: null });
+  const nick = String(body?.nick ?? "").trim();
+  const email = String(body?.email ?? "").trim().toLowerCase();
+  const choice = WL_CHOICES.includes(body?.choice) ? body.choice : null;
+  const need = WL_NEEDS.includes(body?.need) ? body.need : "";
+  if (!nick || nick.length > 60 || email.length > 120 || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email) || !choice || body?.consent !== true)
+    return fail("bad_input", 400);
+  const s = store();
+  const key = "waitlist/" + (await sha(email));
+  const old = await s.get(key, { type: "json" });
+  if (old) {
+    // signing up again only updates the answers; the place in line stays the same
+    await s.setJSON(key, { ...old, nick, choice, need: need || old.need, updated: new Date().toISOString() });
+    return json({ ok: true, again: true, n: wlPublic(await wlCount()) === null ? null : old.n });
+  }
+  const n = (await wlCount()) + 1;
+  const src = ["plan", "quickcheck"].includes(body?.src) ? body.src : "other";
+  await s.setJSON(key, { n, nick, email, choice, need, src, consent: "ยินยอมให้เก็บข้อมูลและอีเมล เพื่อแจ้งข้อมูลเกี่ยวกับ Freeyourtime MAP เท่านั้น", created: new Date().toISOString() });
+  return json({ ok: true, n: wlPublic(n) });
+}
+
+async function waitlistCount() {
+  return json({ count: wlPublic(await wlCount()) });
+}
+
+// the owner downloads the list as a CSV that opens in Excel; needs WAITLIST_KEY (set in Netlify) in the x-admin-key header
+async function waitlistExport(req) {
+  const want = env("WAITLIST_KEY", "");
+  const got = req.headers.get("x-admin-key") || "";
+  if (want.length < 8 || (await sha(got)) !== (await sha(want))) return fail("no_access", 403);
+  const s = store();
+  const { blobs } = await s.list({ prefix: "waitlist/" });
+  const rows = (await Promise.all(blobs.map((b) => s.get(b.key, { type: "json" })))).filter(Boolean).sort((a, b) => a.n - b.n);
+  const q = (v) => '"' + String(v ?? "").replace(/"/g, '""') + '"';
+  const csv = ["ลำดับ,ชื่อเล่น,อีเมล,สนใจแบบ,คิดว่าต้องมีเงิน (ล้านบาท),มาจากหน้า,ลงชื่อเมื่อ"]
+    .concat(rows.map((r) => [r.n, r.nick, r.email, r.choice, r.need, r.src, r.created].map(q).join(",")))
+    .join("\r\n");
+  // the BOM makes Excel read Thai correctly
+  return new Response("﻿" + csv, {
+    headers: { "content-type": "text/csv; charset=utf-8", "content-disposition": 'attachment; filename="waitlist.csv"', "cache-control": "no-store" },
+  });
+}
+
 async function view(url) {
   const plan = await loadPlan(url.searchParams.get("id"));
   if (!plan) return fail("no_plan", 404);
@@ -210,8 +272,11 @@ export default async (req) => {
   const route = url.pathname.replace(/^\/api\//, "");
   try {
     if (req.method === "GET" && route === "plan") return await view(url);
+    if (req.method === "GET" && route === "waitlist-count") return await waitlistCount();
+    if (req.method === "GET" && route === "waitlist-export") return await waitlistExport(req);
     if (req.method !== "POST") return fail("not_found", 404);
     const body = await req.json().catch(() => null);
+    if (route === "waitlist") return await waitlistJoin(body);
     if (route === "start") return await start(body);
     if (route === "chat") return await chat(body);
     if (route === "extract") return await extract(body);
