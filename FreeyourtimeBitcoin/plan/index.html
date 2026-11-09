@@ -204,10 +204,18 @@ footer.site-foot{margin-top:56px;border-top:1px solid var(--line);padding:0;font
 /* waitlist */
 .wl-lead{font-size:18px;color:var(--bright);margin:6px 0 0}
 .wl-prices{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
-.wl-price{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
-.wl-price b{font-size:28px;color:var(--orange)}
-.wl-price span{display:block;font-size:14px;color:var(--bright);margin-top:2px}
-.wl-price p{font-size:14px;margin:8px 0 0}
+.wl-price{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px 20px;display:flex;flex-direction:column}
+.wl-best{border-color:var(--orange);background:linear-gradient(180deg,var(--orange-soft),var(--surface) 55%)}
+.wl-name{font-size:15px;font-weight:600;color:var(--bright);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.wl-badge{font-size:12px;font-weight:600;color:var(--orange);background:var(--orange-soft);border:1px solid var(--orange);padding:1px 10px;border-radius:999px}
+.wl-amt{margin-top:6px;font-size:15px}
+.wl-amt b{font-size:40px;line-height:1.1;color:var(--orange);margin-right:4px}
+.wl-sub{font-size:13.5px;color:var(--dim);margin:2px 0 12px;padding-bottom:12px;border-bottom:1px solid var(--line)}
+.wl-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:7px;font-size:14px;line-height:1.55}
+.wl-list li{position:relative;padding-left:24px}
+.nw{white-space:nowrap}
+.wl-list li::before{content:"✓";position:absolute;left:0;top:0;color:var(--orange);font-weight:700}
+.wl-more{margin:14px 0 8px;font-size:13.5px;font-weight:600;color:var(--bright)}.wl-more span{font-weight:400;color:var(--dim)}
 .wl-count{font-size:15px}.wl-count b{color:var(--orange)}
 .wl-in{font:inherit;font-size:15.5px;color:var(--bright);background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:9px 12px}
 .wl-in.bad{border-color:var(--warn)}
@@ -244,22 +252,22 @@ footer.site-foot{margin-top:56px;border-top:1px solid var(--line);padding:0;font
   <!-- 1. intro -->
   <section id="v-intro" class="intro">
     <div>
-      <div class="label">Free Your Time Map · <span class="testtag">เปิดลงชื่อรอ</span></div>
-      <h1><span style="white-space:nowrap">Free Your Time Map</span></h1>
-      <p class="wl-lead">มาเช็กกันว่า ตอนนี้คุณใช้เวลาของคุณได้หรือยัง</p>
+      <div class="label">Free Your Time Map · <span class="testtag">เปิดลงทะเบียน</span></div>
+      <h1><span style="white-space:nowrap">Freeyourtime <span style="color:var(--orange)">"MAP"</span></span></h1>
+      <p class="wl-lead">มา Check กันว่า คุณ "ใช้เวลาของคุณ" ได้หรือยัง</p>
     </div>
     <ul>
-      <li>ตัวเลขที่พอสำหรับคุณ และต้องออมเดือนละเท่าไร</li>
-      <li>เทียบหลายเส้นทาง พร้อมตารางเงินรายปี หลังวัน Free Your Time</li>
+      <li>ต้องมีเงินสะสมเท่าไหร่ถึง "พอเพียง" สำหรับใช้เวลาของคุณ และต้องเก็บเดือนละเท่าไหร่</li>
+      <li>แนะนำทางเลือก พร้อมตารางเงินรายปี</li>
       <li>บันทึกเป็น PDF เก็บไว้ดูได้</li>
     </ul>
     <div class="wl-prices">
-      <div class="wl-price"><div><b class="num">99</b> บาท</div><span>แผนเดียว</span><p>1 แผน · แก้ตัวเลขเองได้ 1 ครั้ง · บันทึก PDF</p></div>
-      <div class="wl-price"><div><b class="num">399</b> บาท</div><span>ใช้ได้ 1 ปี</span><p>ทำแผนได้เดือนละ 4 ครั้ง (คุยกับ AI 1 ครั้ง ปรับตัวเลขเอง 3 ครั้ง) · ประวัติและเทียบแผน · เครื่องมือเสริมใน dashboard ทยอยเพิ่ม</p></div>
+      <div class="wl-price"><div class="wl-name">แผนเดียว</div><div class="wl-amt"><b class="num">99</b> บาท</div><div class="wl-sub">ทำครั้งเดียว เก็บไว้ดูได้ตลอด</div><ul class="wl-list"><li>คุยกับ AI ทำแผนของคุณ 1 แผน</li><li>ตัวเลขที่ "พอเพียง" และเงินที่ต้องเก็บต่อเดือน</li><li>ทางเลือก พร้อมตารางเงินรายปี</li><li>แก้ตัวเลขเองได้ 1 ครั้ง</li><li>บันทึกเป็น PDF</li></ul></div>
+      <div class="wl-price wl-best"><div class="wl-name">ทั้งปี <span class="wl-badge">ใช้ได้ 1 ปี</span></div><div class="wl-amt"><b class="num">399</b> บาท</div><div class="wl-sub">เฉลี่ยเดือนละราว 33 บาท</div><ul class="wl-list"><li>ทุกอย่างในแบบแผนเดียว</li><li>ทำแผนหรือปรับแก้ไขได้เดือนละ 4 ครั้ง</li></ul><div class="wl-more">เครื่องมือเสริม</div><ul class="wl-list"><li>ประวัติแผน และเทียบกับแผนครั้งก่อน</li><li>ลองปรับ "ถ้า…"<br>เช่น หยุดทำงานเร็วขึ้น <span class="nw">ออมเพิ่ม</span></li><li>เช็กรายเดือน ว่ายังอยู่ในเส้นทางไหม</li><li>เครื่องมือบนเว็บ<br>ใช้ตัวเลขจากแผนของคุณ<span class="nw">ได้ทันที</span></li></ul></div>
     </div>
     <div class="wl-count" id="wl-count" hidden>มีคนลงชื่อแล้ว <b class="num" id="wl-n"></b> คน</div>
     <form class="consent" id="wl-form" novalidate>
-      <p>ยังไม่เปิดขาย ลงชื่อไว้ เราจะส่งอีเมลหาคนที่ลงชื่อก่อนเปิดให้คนทั่วไป</p>
+      <p style="font-size:17px;font-weight:600;color:var(--bright)">ลงชื่อที่นี่ได้เลย</p>
       <label class="label" for="wl-nick">ชื่อเล่น</label><input class="wl-in" id="wl-nick" maxlength="60" autocomplete="nickname" placeholder="แบงค์">
       <label class="label" for="wl-email">อีเมล</label><input class="wl-in" id="wl-email" type="email" maxlength="120" autocomplete="email" placeholder="name@gmail.com">
       <div class="label">สนใจแบบไหน</div>
@@ -267,7 +275,7 @@ footer.site-foot{margin-top:56px;border-top:1px solid var(--line);padding:0;font
       <div class="label">คิดว่าต้องมีเงินเท่าไร ถึงจะ Free Your Time ได้? <span class="wl-opt">(ไม่ต้องตอบก็ได้)</span></div>
       <div class="wl-opts" id="wl-need"><button type="button" data-v="<5">ไม่ถึง 5 ล้าน</button><button type="button" data-v="5-10">5–10 ล้าน</button><button type="button" data-v="10-20">10–20 ล้าน</button><button type="button" data-v="20-50">20–50 ล้าน</button><button type="button" data-v=">50">มากกว่า 50 ล้าน</button><button type="button" data-v="unknown">ไม่รู้เลย</button></div>
       <input id="wl-web" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px">
-      <label class="wl-check"><input type="checkbox" id="wl-ok"> ยินยอมให้เก็บชื่อเล่นและอีเมล เพื่อแจ้งเปิดขาย Free Your Time Map เท่านั้น ขอยกเลิกได้ทุกเมื่อ</label>
+      <label class="wl-check"><input type="checkbox" id="wl-ok"> ยินยอมให้เก็บข้อมูลและอีเมล เพื่อแจ้งข้อมูลเกี่ยวกับ Freeyourtime MAP เท่านั้น</label>
       <div class="notice err" id="wl-err" hidden></div>
       <button class="btn solid" id="wl-go" type="submit">ลงชื่อรอ</button>
     </form>
@@ -920,7 +928,7 @@ function showPlanLink(){
       .then(function(){btn.disabled=false;btn.textContent="ลงชื่อรอ";});
   });
   $("wl-share").onclick=function(){
-    var u=location.origin+"/plan/",t="Free Your Time Map: มาเช็กกันว่า ตอนนี้คุณใช้เวลาของคุณได้หรือยัง";
+    var u=location.origin+"/plan/",t="Free Your Time Map: มา Check กันว่า คุณ \"ใช้เวลาของคุณ\" ได้หรือยัง";
     if(navigator.share)navigator.share({title:"Free Your Time Map",text:t,url:u}).catch(function(){});
     else if(navigator.clipboard)navigator.clipboard.writeText(t+" "+u).then(function(){$("wl-share").textContent="คัดลอกลิงก์แล้ว";});
   };

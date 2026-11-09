@@ -235,7 +235,7 @@ async function waitlistJoin(body) {
   }
   const n = (await wlCount()) + 1;
   const src = ["plan", "quickcheck"].includes(body?.src) ? body.src : "other";
-  await s.setJSON(key, { n, nick, email, choice, need, src, consent: "แจ้งเปิดขาย Free Your Time Map", created: new Date().toISOString() });
+  await s.setJSON(key, { n, nick, email, choice, need, src, consent: "ยินยอมให้เก็บข้อมูลและอีเมล เพื่อแจ้งข้อมูลเกี่ยวกับ Freeyourtime MAP เท่านั้น", created: new Date().toISOString() });
   return json({ ok: true, n: wlPublic(n) });
 }
 
