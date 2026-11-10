@@ -203,6 +203,7 @@ footer.site-foot{margin-top:56px;border-top:1px solid var(--line);padding:0;font
 .print-only{display:none}
 /* waitlist */
 .wl-lead{font-size:18px;color:var(--bright);margin:6px 0 0}
+.wl-pick{margin:4px 0 0;font-size:17px;font-weight:600;color:var(--bright)}
 .wl-prices{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
 .wl-price{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px 20px;display:flex;flex-direction:column}
 .wl-best{border-color:var(--orange);background:linear-gradient(180deg,var(--orange-soft),var(--surface) 55%)}
@@ -226,6 +227,8 @@ footer.site-foot{margin-top:56px;border-top:1px solid var(--line);padding:0;font
 .wl-opt{font-weight:400;opacity:.75}
 .wl-check{display:flex;gap:8px;align-items:flex-start;font-size:14px}.wl-check input{margin-top:4px}
 .wl-btns{display:flex;flex-wrap:wrap;gap:8px}.wl-btns a.btn{text-decoration:none;display:inline-flex;align-items:center}
+.wl-qc{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px 14px;padding:12px 16px;border:1px solid var(--orange);border-radius:12px;background:var(--orange-soft);text-decoration:none;color:var(--bright);font-size:15px}
+.wl-qc b{color:var(--orange);white-space:nowrap}.wl-qc:hover{filter:brightness(1.15)}
 .wl-code{font-size:14px}.wl-code>summary{cursor:pointer;color:var(--dim);width:max-content}
 .wl-code[open]>summary{margin-bottom:12px}
 .wl-code>p,.wl-code>ul{margin:0 0 12px}
@@ -255,7 +258,9 @@ footer.site-foot{margin-top:56px;border-top:1px solid var(--line);padding:0;font
       <div class="label">Free Your Time Map · <span class="testtag">เปิดลงทะเบียน</span></div>
       <h1><span style="white-space:nowrap">Freeyourtime <span style="color:var(--orange)">"MAP"</span></span></h1>
       <p class="wl-lead">มา Check กันว่า คุณ "ใช้เวลาของคุณ" ได้หรือยัง</p>
+      <a class="wl-qc" style="margin-top:14px" href="/retirement-quick-check"><span>ยังไม่แน่ใจ? เช็กเร็วฟรีก่อน ว่าต้องมีเงินเท่าไหร่ถึง "พอเพียง"</span><b>เช็กเลย →</b></a>
     </div>
+    <p class="wl-pick">ถ้าอยากได้แผนละเอียดเพิ่ม เลือกแผนตามนี้ได้เลย</p>
     <ul>
       <li>ต้องมีเงินสะสมเท่าไหร่ถึง "พอเพียง" สำหรับใช้เวลาของคุณ และต้องเก็บเดือนละเท่าไหร่</li>
       <li>แนะนำทางเลือก พร้อมตารางเงินรายปี</li>
@@ -282,7 +287,7 @@ footer.site-foot{margin-top:56px;border-top:1px solid var(--line);padding:0;font
     <div class="consent" id="wl-done" hidden>
       <h2 id="wl-title">ลงชื่อแล้ว</h2>
       <p id="wl-msg">เราจะส่งอีเมลหาคุณก่อนเปิดขายให้คนทั่วไป</p>
-      <div class="wl-btns"><a class="btn" href="/retirement-quick-check.html">ลอง quick check ฟรีระหว่างรอ</a><button class="btn" id="wl-share" type="button">ส่งให้เพื่อน</button></div>
+      <div class="wl-btns"><a class="btn" href="/retirement-quick-check">เช็กเร็วฟรี ต้องมีเงินเท่าไหร่</a><button class="btn" id="wl-share" type="button">ส่งให้เพื่อน</button></div>
     </div>
     <div class="consent" id="wl-admin" hidden>
       <label class="label" for="wl-key">รหัสเจ้าของเว็บ (WAITLIST_KEY)</label>
