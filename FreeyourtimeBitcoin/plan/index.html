@@ -294,7 +294,7 @@ footer.site-foot{margin-top:56px;border-top:1px solid var(--line);padding:0;font
       <div class="row" style="flex-wrap:wrap"><input class="wl-in" id="wl-key" type="password" autocomplete="off" style="flex:1;min-width:200px"><button class="btn solid" id="wl-dl" type="button">ดาวน์โหลดรายชื่อ (Excel)</button></div>
       <div class="notice" id="wl-admin-msg" hidden></div>
     </div>
-    <details class="wl-code" id="code-box"><summary>มีรหัสทดลอง?</summary>
+    <details class="wl-code" id="code-box" hidden><summary>มีรหัสทดลอง?</summary>
     <p>AI จะถามประมาณ 15–18 ข้อ เรื่องอายุ รายรับ รายจ่าย เงินที่มี และ Bitcoin<br>ตอบคร่าว ๆ ได้ ข้อไหนไม่รู้ตอบว่า "ไม่แน่ใจ" ระบบจะใช้ค่ากลางให้</p>
     <ul>
       <li>ได้ตัวเลขว่าเงินพอใช้ถึงอายุเท่าไร เทียบ 3 สมมติฐาน</li>
@@ -943,6 +943,8 @@ function showPlanLink(){
   $("start").addEventListener("click",function(){$("code-box").open=true;});
   // owner only: /plan/#admin shows the download box
   if(location.hash==="#admin")$("wl-admin").hidden=false;
+  // the code box is hidden from the public; testers open /plan/#test (or #admin)
+  if(location.hash==="#test"||location.hash==="#admin"){$("code-box").hidden=false;$("code-box").open=location.hash==="#test";}
   $("wl-dl").onclick=function(){
     var m=$("wl-admin-msg");m.hidden=false;m.textContent="กำลังดาวน์โหลด…";
     fetch("/api/waitlist-export",{headers:{"x-admin-key":$("wl-key").value}}).then(function(r){
