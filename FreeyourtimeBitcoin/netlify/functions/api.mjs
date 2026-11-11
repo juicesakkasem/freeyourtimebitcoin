@@ -90,6 +90,16 @@ async function start(body) {
   const code = String(body?.code ?? "").split(":")[0].trim().toUpperCase();
   if (!code || code.length > 40) return fail("bad_code", 400);
   const s = store();
+  // a code listed in YEAR_CODES opens a 399 (one-year) account; the same code always opens the same account
+  const yearCodes = env("YEAR_CODES", "").split(",").map((x) => x.trim().toUpperCase()).filter(Boolean);
+  if (yearCodes.includes(code)) {
+    let link = await s.get("yearcodes/" + code, { type: "json" });
+    if (!link) {
+      link = { accountId: await createAccount("test:" + code) };
+      await s.setJSON("yearcodes/" + code, link);
+    }
+    return json({ accountId: link.accountId });
+  }
   let rec = await s.get("codes/" + code, { type: "json" });
   if (!rec) {
     // codes listed in ACCESS_CODES ("CODE:plans,CODE2:plans") are created on first use; payment will add codes directly later
@@ -111,7 +121,7 @@ async function start(body) {
 async function chat(body) {
   const plan = await loadPlan(body?.planId);
   if (!plan) return fail("no_plan", 404);
-  if (plan.record?.inputs) return fail("locked", 409);
+  if (plan.record?.inputs || plan.kind === "adjust") return fail("locked", 409);
   if (plan.msgs >= LIMIT.msgs) return fail("msg_limit", 429);
   const turns = body.turns;
   if (!checkTurns(turns) || turns[turns.length - 1].content.length > LIMIT.userChars) return fail("bad_input", 400);
@@ -132,7 +142,7 @@ async function chat(body) {
 async function extract(body) {
   const plan = await loadPlan(body?.planId);
   if (!plan) return fail("no_plan", 404);
-  if (plan.record?.inputs) return fail("locked", 409);
+  if (plan.record?.inputs || plan.kind === "adjust") return fail("locked", 409);
   if (plan.extracts >= LIMIT.extracts) return fail("extract_limit", 429);
   const turns = body.turns;
   if (!Array.isArray(turns) || !checkTurns(turns.concat({ role: "user", content: "." }))) return fail("bad_input", 400);
@@ -182,7 +192,7 @@ async function save(body) {
   let edited = false;
   if (!rec.inputs) {
     for (const k of ["inputs", "defaultsUsed"]) if (k in r) keep[k] = r[k];
-  } else if (r.edit === true && "inputs" in r && (plan.edits || 0) < 1) {
+  } else if (r.edit === true && "inputs" in r && (plan.edits || 0) < 1 && !plan.account) {
     keep.inputs = r.inputs;
     keep.defaultsUsed = r.defaultsUsed;
     keep.summary = null;
@@ -261,10 +271,174 @@ async function waitlistExport(req) {
   });
 }
 
+// ---------- 399 accounts ----------
+// one year from the day of payment; each month (counted from that day) allows 1 new interview with AI
+// and 3 plans adjusted from the last plan's numbers. Unused ones do not carry over.
+const QUOTA = { chat: 1, adjust: 3 };
+const newId = () => crypto.randomUUID().replace(/-/g, "");
+const loadAccount = async (id) => (isId(id) ? store().get("accounts/" + id, { type: "json" }) : null);
+const saveAccount = (id, acc) => store().setJSON("accounts/" + id, acc);
+
+function addMonths(d, n) {
+  const x = new Date(d);
+  const day = x.getUTCDate();
+  x.setUTCDate(1);
+  x.setUTCMonth(x.getUTCMonth() + n);
+  const last = new Date(Date.UTC(x.getUTCFullYear(), x.getUTCMonth() + 1, 0)).getUTCDate();
+  x.setUTCDate(Math.min(day, last));
+  return x;
+}
+function period(start, now) {
+  let k = (now.getUTCFullYear() - start.getUTCFullYear()) * 12 + (now.getUTCMonth() - start.getUTCMonth());
+  if (addMonths(start, k) > now) k--;
+  return { from: addMonths(start, k), to: addMonths(start, k + 1) };
+}
+function usage(acc, now = new Date()) {
+  const per = period(new Date(acc.created), now);
+  const used = (k) => acc.plans.filter((p) => p.kind === k && new Date(p.created) >= per.from).length;
+  return { per, chat: used("chat"), adjust: used("adjust"), active: now < new Date(acc.expires) };
+}
+// payment will call this too; source says where the account came from (test code or a payment id)
+async function createAccount(source, email = null) {
+  const id = newId();
+  const now = new Date();
+  await saveAccount(id, { tier: "year", source, email, created: now.toISOString(), expires: addMonths(now, 12).toISOString(), plans: [] });
+  return id;
+}
+
+async function accountView(url) {
+  const id = url.searchParams.get("a");
+  const acc = await loadAccount(id);
+  if (!acc) return fail("no_account", 404);
+  const u = usage(acc);
+  const plans = await Promise.all(
+    acc.plans.map(async (p) => {
+      const pl = await loadPlan(p.id);
+      return { id: p.id, created: p.created, kind: p.kind, done: !!pl?.record?.inputs };
+    }),
+  );
+  return json({
+    tier: acc.tier, created: acc.created, expires: acc.expires, active: u.active, periodEnd: u.per.to.toISOString(),
+    quota: { chat: { used: u.chat, max: QUOTA.chat }, adjust: { used: u.adjust, max: QUOTA.adjust } },
+    plans: plans.reverse(),
+  });
+}
+
+async function accountNew(body) {
+  const id = body?.accountId;
+  const acc = await loadAccount(id);
+  if (!acc) return fail("no_account", 404);
+  const kind = body?.kind === "adjust" ? "adjust" : body?.kind === "chat" ? "chat" : null;
+  if (!kind) return fail("bad_input", 400);
+  const u = usage(acc);
+  if (!u.active) return fail("expired", 403);
+  if (u[kind] >= QUOTA[kind]) return fail("quota", 429);
+  let seed;
+  if (kind === "adjust" && body?.fromPlanId) {
+    if (!acc.plans.some((p) => p.id === body.fromPlanId)) return fail("no_base", 409);
+    const pl = await loadPlan(body.fromPlanId);
+    if (!pl?.record?.inputs) return fail("no_base", 409);
+    seed = pl.record.inputs;
+  } else if (kind === "adjust") {
+    // start from the newest plan that was built
+    for (const p of [...acc.plans].reverse()) {
+      const pl = await loadPlan(p.id);
+      if (pl?.record?.inputs) { seed = pl.record.inputs; break; }
+    }
+    if (!seed) return fail("no_base", 409);
+  }
+  const planId = newId();
+  const created = new Date().toISOString();
+  await savePlan(planId, { code: null, account: id, kind, seed, created, msgs: 0, extracts: 0, summaries: 0, saves: 0, turns: null, record: null });
+  acc.plans.push({ id: planId, created, kind });
+  await saveAccount(id, acc);
+  return json({ planId });
+}
+
+// ---------- payment (Stripe Checkout) ----------
+// The buyer pays on Stripe's page, comes back to /plan/?paid=<session id>, and the server checks with Stripe
+// that it was paid before making the plan (99) or the one-year account (399). The same link always opens the same thing.
+const PRODUCTS = {
+  "99": { amount: 9900, name: "Freeyourtime MAP · แผนเดียว" },
+  "399": { amount: 39900, name: "Freeyourtime MAP · ทั้งปี (ใช้ได้ 1 ปี)" },
+};
+const stripeKey = () => env("STRIPE_SECRET_KEY", "");
+const testMode = () => stripeKey().startsWith("sk_test_");
+// SELL lists what the public can buy ("99" or "99,399"); in test mode testers can buy anything
+const selling = () => (stripeKey() ? env("SELL", "").split(",").map((x) => x.trim()).filter((x) => PRODUCTS[x]) : []);
+
+async function stripe(method, path, params) {
+  const r = await fetch("https://api.stripe.com/v1/" + path, {
+    method,
+    headers: { authorization: "Bearer " + stripeKey(), "content-type": "application/x-www-form-urlencoded" },
+    body: params ? new URLSearchParams(params).toString() : undefined,
+  });
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error("stripe " + r.status + " " + (j?.error?.message || ""));
+  return j;
+}
+
+async function shop() {
+  return json({ open: selling(), test: testMode() });
+}
+
+async function buy(body, url) {
+  const product = String(body?.product ?? "");
+  const item = PRODUCTS[product];
+  if (!item || !stripeKey()) return fail("not_selling", 403);
+  if (!selling().includes(product) && !testMode()) return fail("not_selling", 403);
+  const src = /^[a-z0-9]{1,20}$/.test(body?.src ?? "") ? body.src : "";
+  const origin = url.origin;
+  const session = await stripe("POST", "checkout/sessions", {
+    mode: "payment",
+    locale: "th",
+    success_url: origin + "/plan/?paid={CHECKOUT_SESSION_ID}",
+    cancel_url: origin + "/plan/?cancel=1",
+    "line_items[0][quantity]": "1",
+    "line_items[0][price_data][currency]": "thb",
+    "line_items[0][price_data][unit_amount]": String(item.amount),
+    "line_items[0][price_data][product_data][name]": item.name,
+    "metadata[product]": product,
+    "metadata[src]": src,
+  });
+  return json({ url: session.url });
+}
+
+async function paid(url) {
+  const id = url.searchParams.get("s") ?? "";
+  if (!/^cs_(test|live)_[A-Za-z0-9]{10,200}$/.test(id)) return fail("bad_session", 400);
+  const s = store();
+  const done = await s.get("paid/" + id, { type: "json" });
+  if (done) return json({ product: done.product, planId: done.planId, accountId: done.accountId });
+  if (!stripeKey()) return fail("not_selling", 403);
+  let session;
+  try {
+    session = await stripe("GET", "checkout/sessions/" + encodeURIComponent(id));
+  } catch (e) {
+    if (/stripe 404/.test(e.message)) return fail("bad_session", 404);
+    throw e;
+  }
+  const product = session.metadata?.product;
+  const item = PRODUCTS[product];
+  if (!item || session.currency !== "thb" || session.amount_total !== item.amount) return fail("bad_session", 409);
+  // a QR / bank payment may still be on its way: the page asks again in a moment
+  if (session.payment_status !== "paid") return json({ pending: true, status: session.status }, 202);
+  const email = session.customer_details?.email || null;
+  const rec = { product, email, amount: session.amount_total, src: session.metadata?.src || "", test: !session.livemode, created: new Date().toISOString() };
+  if (product === "399") {
+    rec.accountId = await createAccount("stripe:" + id, email);
+  } else {
+    rec.planId = newId();
+    await savePlan(rec.planId, { code: null, paid: id, created: rec.created, msgs: 0, extracts: 0, summaries: 0, saves: 0, turns: null, record: null });
+  }
+  await s.setJSON("paid/" + id, rec);
+  return json({ product, planId: rec.planId, accountId: rec.accountId });
+}
+
 async function view(url) {
   const plan = await loadPlan(url.searchParams.get("id"));
   if (!plan) return fail("no_plan", 404);
-  return json({ turns: plan.turns, record: plan.record, created: plan.created, edits: plan.edits || 0 });
+  return json({ turns: plan.turns, record: plan.record, created: plan.created, edits: plan.account ? 1 : plan.edits || 0, inAccount: !!plan.account, seed: plan.record?.inputs ? undefined : plan.seed });
 }
 
 export default async (req) => {
@@ -273,10 +447,15 @@ export default async (req) => {
   try {
     if (req.method === "GET" && route === "plan") return await view(url);
     if (req.method === "GET" && route === "waitlist-count") return await waitlistCount();
+    if (req.method === "GET" && route === "account") return await accountView(url);
+    if (req.method === "GET" && route === "shop") return await shop();
+    if (req.method === "GET" && route === "paid") return await paid(url);
     if (req.method === "GET" && route === "waitlist-export") return await waitlistExport(req);
     if (req.method !== "POST") return fail("not_found", 404);
     const body = await req.json().catch(() => null);
     if (route === "waitlist") return await waitlistJoin(body);
+    if (route === "account-new") return await accountNew(body);
+    if (route === "buy") return await buy(body, url);
     if (route === "start") return await start(body);
     if (route === "chat") return await chat(body);
     if (route === "extract") return await extract(body);

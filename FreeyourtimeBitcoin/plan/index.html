@@ -229,9 +229,32 @@ footer.site-foot{margin-top:56px;border-top:1px solid var(--line);padding:0;font
 .wl-btns{display:flex;flex-wrap:wrap;gap:8px}.wl-btns a.btn{text-decoration:none;display:inline-flex;align-items:center}
 .wl-qc{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px 14px;padding:12px 16px;border:1px solid var(--orange);border-radius:12px;background:var(--orange-soft);text-decoration:none;color:var(--bright);font-size:15px}
 .wl-qc b{color:var(--orange);white-space:nowrap}.wl-qc:hover{filter:brightness(1.15)}
+.wl-buy{margin-top:auto;padding-top:16px}.wl-buy .btn{width:100%;justify-content:center}
+.paid-ok{font-size:15px;color:var(--orange);font-weight:600}
 .wl-code{font-size:14px}.wl-code>summary{cursor:pointer;color:var(--dim);width:max-content}
 .wl-code[open]>summary{margin-bottom:12px}
 .wl-code>p,.wl-code>ul{margin:0 0 12px}
+/* 399 dashboard */
+.acc-exp{margin:6px 0 0;color:var(--dim)}
+.acc-quota{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.acc-q{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+.acc-q .k{font-size:14px;color:var(--dim)}.acc-q .n{font-size:30px;font-weight:600;color:var(--orange);margin-top:4px}.acc-q .n span{font-size:15px;color:var(--dim);font-weight:400}
+.acc-btns{display:flex;flex-wrap:wrap;gap:10px}
+.acc-sec h2{font-size:19px;margin:6px 0 10px}
+.acc-row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:12px 16px;border:1px solid var(--line);border-radius:12px;background:var(--surface);margin-bottom:8px;text-decoration:none;color:inherit}
+.acc-row:hover{border-color:var(--orange)}
+.acc-row b{color:var(--bright);font-weight:600}.acc-row .meta{font-size:14px;color:var(--dim)}
+.acc-tag{font-size:12.5px;padding:2px 10px;border-radius:999px;border:1px solid var(--line);color:var(--dim)}
+.acc-tag.done{border-color:var(--orange);color:var(--orange)}
+.acc-link{font-size:14px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 16px}
+.acc-link .row{margin-top:8px}
+/* in-page confirm */
+.ask-bg{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.65);display:flex;align-items:center;justify-content:center;padding:16px}
+.ask-bg[hidden]{display:none!important}
+.ask-box{width:min(420px,100%);background:var(--surface);border:1px solid var(--orange);border-radius:16px;padding:20px 22px;display:flex;flex-direction:column;gap:16px}
+.ask-box p{margin:0;font-size:16px;line-height:1.7;color:var(--bright)}
+.ask-btns{display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap}
+@media print{.ask-bg{display:none!important}}
 </style>
 </head>
 <body>
@@ -267,9 +290,11 @@ footer.site-foot{margin-top:56px;border-top:1px solid var(--line);padding:0;font
       <li>บันทึกเป็น PDF เก็บไว้ดูได้</li>
     </ul>
     <div class="wl-prices">
-      <div class="wl-price"><div class="wl-name">แผนเดียว</div><div class="wl-amt"><b class="num">99</b> บาท</div><div class="wl-sub">ทำครั้งเดียว เก็บไว้ดูได้ตลอด</div><ul class="wl-list"><li>คุยกับ AI ทำแผนของคุณ 1 แผน</li><li>ตัวเลขที่ "พอเพียง" และเงินที่ต้องเก็บต่อเดือน</li><li>ทางเลือก พร้อมตารางเงินรายปี</li><li>แก้ตัวเลขเองได้ 1 ครั้ง</li><li>บันทึกเป็น PDF</li></ul></div>
-      <div class="wl-price wl-best"><div class="wl-name">ทั้งปี <span class="wl-badge">ใช้ได้ 1 ปี</span></div><div class="wl-amt"><b class="num">399</b> บาท</div><div class="wl-sub">เฉลี่ยเดือนละราว 33 บาท</div><ul class="wl-list"><li>ทุกอย่างในแบบแผนเดียว</li><li>ทำแผนหรือปรับแก้ไขได้เดือนละ 4 ครั้ง</li></ul><div class="wl-more">เครื่องมือเสริม</div><ul class="wl-list"><li>ประวัติแผน และเทียบกับแผนครั้งก่อน</li><li>ลองปรับ "ถ้า…"<br>เช่น หยุดทำงานเร็วขึ้น <span class="nw">ออมเพิ่ม</span></li><li>เช็กรายเดือน ว่ายังอยู่ในเส้นทางไหม</li><li>เครื่องมือบนเว็บ<br>ใช้ตัวเลขจากแผนของคุณ<span class="nw">ได้ทันที</span></li></ul></div>
+      <div class="wl-price"><div class="wl-name">แผนเดียว</div><div class="wl-amt"><b class="num">99</b> บาท</div><div class="wl-sub">ทำครั้งเดียว เก็บไว้ดูได้ตลอด</div><ul class="wl-list"><li>คุยกับ AI ทำแผนของคุณ 1 แผน</li><li>ตัวเลขที่ "พอเพียง" และเงินที่ต้องเก็บต่อเดือน</li><li>ทางเลือก พร้อมตารางเงินรายปี</li><li>แก้ตัวเลขเองได้ 1 ครั้ง</li><li>บันทึกเป็น PDF</li></ul><div class="wl-buy" hidden><button class="btn solid" type="button" data-buy="99">ซื้อแผนเดียว 99 บาท</button></div></div>
+      <div class="wl-price wl-best"><div class="wl-name">ทั้งปี <span class="wl-badge">ใช้ได้ 1 ปี</span></div><div class="wl-amt"><b class="num">399</b> บาท</div><div class="wl-sub">เฉลี่ยเดือนละราว 33 บาท</div><ul class="wl-list"><li>ทุกอย่างในแบบแผนเดียว</li><li>ทำแผนหรือปรับแก้ไขได้เดือนละ 4 ครั้ง</li></ul><div class="wl-more">เครื่องมือเสริม</div><ul class="wl-list"><li>ประวัติแผน และเทียบกับแผนครั้งก่อน</li><li>ลองปรับ "ถ้า…"<br>เช่น หยุดทำงานเร็วขึ้น <span class="nw">ออมเพิ่ม</span></li><li>เช็กรายเดือน ว่ายังอยู่ในเส้นทางไหม</li><li>เครื่องมือบนเว็บ<br>ใช้ตัวเลขจากแผนของคุณ<span class="nw">ได้ทันที</span></li></ul><div class="wl-buy" hidden><button class="btn solid" type="button" data-buy="399">ซื้อทั้งปี 399 บาท</button></div></div>
     </div>
+    <p class="foot-note" id="buy-note" hidden>ชำระผ่าน Stripe ด้วยบัตร หรือ PromptPay · จ่ายแล้วเข้าใช้ได้ทันที · เครื่องมือเพื่อการศึกษา ไม่ใช่คำแนะนำการลงทุน</p>
+    <div class="notice err" id="buy-err" hidden></div>
     <div class="wl-count" id="wl-count" hidden>มีคนลงชื่อแล้ว <b class="num" id="wl-n"></b> คน</div>
     <form class="consent" id="wl-form" novalidate>
       <p style="font-size:17px;font-weight:600;color:var(--bright)">ลงชื่อที่นี่ได้เลย</p>
@@ -309,6 +334,31 @@ footer.site-foot{margin-top:56px;border-top:1px solid var(--line);padding:0;font
     </details>
     <div class="notice err" id="no-ai" hidden></div>
   </section>
+  <section id="v-paid" class="intro" hidden>
+    <div>
+      <div class="label">Freeyourtime "MAP"</div>
+      <h1 id="paid-title">กำลังตรวจสอบการชำระเงิน…</h1>
+      <p id="paid-msg" style="margin-top:8px">รอสักครู่ อย่าเพิ่งปิดหน้านี้</p>
+    </div>
+    <div id="paid-body" hidden></div>
+  </section>
+  <section id="v-account" class="intro" hidden>
+    <div>
+      <div class="label">Freeyourtime "MAP" · <span class="testtag">ทั้งปี</span></div>
+      <h1>แผนของคุณ</h1>
+      <p id="acc-exp" class="acc-exp"></p>
+    </div>
+    <div class="notice err" id="acc-err" hidden></div>
+    <div class="acc-quota" id="acc-quota"></div>
+    <div class="acc-btns"><button class="btn solid" id="acc-chat" type="button">ทำแผนใหม่ คุยกับ AI</button><button class="btn" id="acc-adjust" type="button">ปรับตัวเลขจากแผนล่าสุด</button></div>
+    <p class="foot-note" id="acc-note">คุยกับ AI: ตอบคำถามใหม่ทั้งหมด เหมาะเมื่อชีวิตเปลี่ยนเยอะ · ปรับตัวเลข: เริ่มจากตัวเลขในแผนล่าสุด แก้เฉพาะที่เปลี่ยน แล้วสร้างแผนใหม่</p>
+    <div class="acc-sec"><h2>แผนทั้งหมด</h2><div id="acc-plans"></div></div>
+    <div class="acc-link" id="acc-link"></div>
+  </section>
+  <div class="ask-bg" id="ask" hidden><div class="ask-box" role="dialog" aria-modal="true" aria-labelledby="ask-msg">
+    <p id="ask-msg"></p>
+    <div class="ask-btns"><button class="btn" id="ask-no" type="button">ยกเลิก</button><button class="btn solid" id="ask-yes" type="button">ตกลง</button></div>
+  </div></div>
   <div class="notice" id="loading" hidden>กำลังเปิดแผนของคุณ…</div>
 
   <!-- 2. chat -->
@@ -368,7 +418,7 @@ var FIRST="สวัสดีครับ เริ่มจากข้อง�
 var chatCapped=false, editing=false, editSnap=null, editsLeft=1, sample=null, turns=[], ctl=null, busy=false, step=1, done=false;
 var clean=function(t){return t.replace(/\[\[[^\]]*\]\]/g,"").replace(/\[\[[^\]]*$/,"").trim()};
 
-function show(v){["v-intro","v-chat","v-review","v-plan"].forEach(function(id){$(id).hidden=id!==v});document.body.classList.toggle("chatting",v==="v-chat");window.scrollTo(0,0);if(v==="v-chat")toBottom();}
+function show(v){["v-intro","v-chat","v-review","v-plan","v-account","v-paid"].forEach(function(id){$(id).hidden=id!==v});document.body.classList.toggle("chatting",v==="v-chat");window.scrollTo(0,0);if(v==="v-chat")toBottom();}
 function renderSteps(){$("steps").innerHTML=STEP_NAMES.map(function(n,i){return'<div class="'+(i<step||done?"on":"")+'"><i></i><span>'+n+"</span></div>"}).join("");}
 // keep the newest message in view; while a reply streams, follow it unless the reader scrolled up
 function nearBottom(){var c=$("chat");return c.scrollHeight-c.scrollTop-c.clientHeight<120;}
@@ -410,7 +460,7 @@ $("start").onclick=function(){
   var code=$("code").value.trim(),btn=$("start");
   if(!code){$("no-ai").textContent="กรอกรหัสเข้าใช้งานก่อน";$("no-ai").hidden=false;return;}
   btn.disabled=true;$("no-ai").hidden=true;
-  api.post("start",{code:code}).then(function(r){return r.json();}).then(function(j){planId=j.planId;history.replaceState(null,"","?id="+planId);beginChat();})
+  api.post("start",{code:code}).then(function(r){return r.json();}).then(function(j){if(j.accountId){location.href="/plan/?a="+j.accountId;return;}if(!j.planId)throw{code:j.error||"server"};planId=j.planId;history.replaceState(null,"","?id="+planId);beginChat();})
     .catch(function(e){$("no-ai").textContent=errText(e);$("no-ai").hidden=false;}).then(function(){btn.disabled=false;});
 };
 $("code").addEventListener("keydown",function(e){if(e.key==="Enter")$("start").click();});
@@ -770,8 +820,8 @@ function renderPlan(opt){
     drawLines("chart2","legend2",P,cmp,need,mode);$("m-today").setAttribute("aria-pressed",String(mode==="today"));$("m-future").setAttribute("aria-pressed",String(mode!=="today"));$("m-today").style.borderColor=mode==="today"?"var(--orange)":"";$("m-future").style.borderColor=mode!=="today"?"var(--orange)":"";};
   $("m-today").onclick=function(){mode="today";redraw();};$("m-future").onclick=function(){mode="future";redraw();};redraw();
   $("pdf-plan").onclick=function(){window.print();};
-  var eb=$("edit-again");if(eb)eb.onclick=function(){if(!confirm("แก้ตัวเลขได้ 1 ครั้ง สร้างแผนใหม่แล้วจะแก้ไม่ได้อีก\n\nกด OK เพื่อแก้ตัวเลข"))return;editing=true;editSnap=JSON.parse(JSON.stringify({data:data,defaultsUsed:defaultsUsed}));el.style.display="none";show("v-review");renderReview();$("cancel-edit").hidden=false;};
-  $("restart").onclick=function(){if(confirm("เก็บลิงก์แผนไว้แล้วหรือยัง? เปิดลิงก์นั้นเมื่อไรก็กลับมาดูแผนนี้ได้\n\nกด OK เพื่อไปหน้าแรก หรือ Cancel เพื่อกลับไปคัดลอกลิงก์"))location.href="/";};
+  var eb=$("edit-again");if(eb)eb.onclick=function(){if(!gate("แก้ตัวเลขได้ 1 ครั้ง สร้างแผนใหม่แล้วจะแก้ไม่ได้อีก","แก้ตัวเลข",function(){eb.click();}))return;editing=true;editSnap=JSON.parse(JSON.stringify({data:data,defaultsUsed:defaultsUsed}));el.style.display="none";show("v-review");renderReview();$("cancel-edit").hidden=false;};
+  $("restart").onclick=function(){if(gate("เก็บลิงก์แผนไว้แล้วหรือยัง? เปิดลิงก์นั้นเมื่อไรก็กลับมาดูแผนนี้ได้","ไปหน้าแรก",function(){$("restart").click();},"กลับไปคัดลอกลิงก์"))location.href="/";};
 
   // raw numbers of the plan on screen, read by the recheck script (recheck_plan.py)
   window.__lastPlan={inputs:JSON.parse(JSON.stringify(P)),btcG:scn[main].g,noBtc:noBtc,
@@ -859,7 +909,7 @@ function downloadPlan(btn){
 }
 
 // building fixes the numbers, so ask before it happens; cancelling an edit puts the old plan back
-$("build").addEventListener("click",function(e){if(!confirm(editing?"สร้างแผนใหม่จากตัวเลขนี้ หลังจากนี้จะแก้ไม่ได้อีก\n\nกด OK เพื่อสร้างแผน":"สร้างแผนแล้ว แก้ตัวเลขเองได้อีกเพียง 1 ครั้ง\n\nตรวจตัวเลขครบแล้ว กด OK เพื่อสร้างแผน")){e.stopImmediatePropagation();e.preventDefault();}else if(editing)editsLeft=0;},true);
+$("build").addEventListener("click",function(e){if(!gate(editing?"สร้างแผนใหม่จากตัวเลขนี้ หลังจากนี้จะแก้ไม่ได้อีก\n\nกด OK เพื่อสร้างแผน":(ACCT?"สร้างแผนแล้วตัวเลขในแผนนี้จะล็อก ถ้าอยากเปลี่ยนภายหลัง ใช้สิทธิ์ปรับตัวเลขของเดือน\n\nตรวจตัวเลขครบแล้ว":"สร้างแผนแล้ว แก้ตัวเลขเองได้อีกเพียง 1 ครั้ง\n\nตรวจตัวเลขครบแล้ว กด OK เพื่อสร้างแผน"),"สร้างแผน",function(){$("build").click();})){e.stopImmediatePropagation();e.preventDefault();}else if(editing)editsLeft=0;},true);
 $("cancel-edit").onclick=function(){if(editing)editsLeft=1;editing=false;$("cancel-edit").hidden=true;data=editSnap.data;defaultsUsed=editSnap.defaultsUsed;renderPlan({reuseSummary:true});};
 
 // printing (PDF) shows the folded yearly table too
@@ -906,7 +956,7 @@ function showPlanLink(){
   var t0=Date.now(),pick={choice:"",need:""},KEY="fytm-waitlist";
   // where the visitor came from: ?src=fb / tiktok / line / youtube / ig / quickcheck, else guessed from the referring site
   var SRCS=["quickcheck","fb","tiktok","line","youtube","ig"],q=(new URLSearchParams(location.search).get("src")||"").toLowerCase(),ref=document.referrer||"";
-  var src=SRCS.indexOf(q)>=0?q:/facebook\.|fb\.|messenger\./.test(ref)?"fb":/tiktok\./.test(ref)?"tiktok":/line\.me|line\.naver/.test(ref)?"line":/youtube\.|youtu\.be/.test(ref)?"youtube":/instagram\./.test(ref)?"ig":/retirement-quick-check/.test(ref)?"quickcheck":"plan";
+  var src=SRCS.indexOf(q)>=0?q:/facebook\.|fb\.|messenger\./.test(ref)?"fb":/tiktok\./.test(ref)?"tiktok":/line\.me|line\.naver/.test(ref)?"line":/youtube\.|youtu\.be/.test(ref)?"youtube":/instagram\./.test(ref)?"ig":/retirement-quick-check/.test(ref)?"quickcheck":"plan";window.FYT_SRC=src;
   function opts(id,k){var box=$(id);box.addEventListener("click",function(e){var b=e.target.closest("button");if(!b)return;
     var on=!b.classList.contains("on")||k==="choice";[].forEach.call(box.children,function(x){x.classList.remove("on");});
     if(on)b.classList.add("on");pick[k]=on?b.dataset.v:"";box.classList.remove("bad");$("wl-err").hidden=true;});}
@@ -954,6 +1004,137 @@ function showPlanLink(){
   };
 })();
 
+// ---------- in-page confirm ----------
+var askPass=false;
+function askBox(msg,ok,no){
+  return new Promise(function(done){
+    var bg=$("ask");
+    $("ask-msg").innerHTML=esc(String(msg).replace(/\s*กด OK[^\n]*/g,"").trim()).replace(/\n/g,"<br>");
+    $("ask-yes").textContent=ok||"ตกลง";$("ask-no").textContent=no||"ยกเลิก";
+    var end=function(v){bg.hidden=true;document.removeEventListener("keydown",key);done(v);};
+    var key=function(e){if(e.key==="Escape")end(false);};
+    $("ask-yes").onclick=function(){end(true);};$("ask-no").onclick=function(){end(false);};
+    bg.onclick=function(e){if(e.target===bg)end(false);};
+    document.addEventListener("keydown",key);bg.hidden=false;$("ask-yes").focus();
+  });
+}
+function gate(msg,ok,retry,no){if(askPass){askPass=false;return true;}askBox(msg,ok,no).then(function(y){if(y){askPass=true;retry();}});return false;}
+
+// ---------- 399 dashboard ----------
+var ACCT=(function(){var a=new URLSearchParams(location.search).get("a");return a&&/^[a-f0-9]{32}$/.test(a)?a:null;})();
+function accUrl(){return location.origin+"/plan/?a="+ACCT;}
+function thDate(iso){return new Date(iso).toLocaleDateString("th-TH",{day:"numeric",month:"short",year:"numeric"});}
+var ACC_ERR={quota:"ใช้สิทธิ์ของเดือนนี้ครบแล้ว รอเดือนถัดไป",expired:"สิทธิ์ใช้งาน 1 ปีหมดแล้ว ยังเปิดดูแผนเดิมได้",no_base:"ยังไม่มีแผนที่สร้างเสร็จ ทำแผนแรกด้วยการคุยกับ AI ก่อน",no_account:"ไม่พบบัญชีนี้ ลิงก์อาจไม่ถูกต้อง",network:"เชื่อมต่อไม่ได้ ตรวจอินเทอร์เน็ตแล้วลองใหม่"};
+function accErr(e){var el=$("acc-err");el.textContent=ACC_ERR[e&&e.code]||("ทำรายการไม่สำเร็จ ("+((e&&e.code)||"server")+")");el.hidden=false;}
+function loadAccount(){
+  show("v-account");$("acc-err").hidden=true;
+  api.get("account?a="+ACCT).then(renderAccount).catch(accErr);
+}
+function renderAccount(j){
+  var q=j.quota,left=function(x){return Math.max(0,x.max-x.used);};
+  $("acc-exp").textContent=j.active?"ใช้ได้ถึง "+thDate(j.expires)+" · สิทธิ์เดือนนี้ถึง "+thDate(j.periodEnd):"สิทธิ์ใช้งานหมดเมื่อ "+thDate(j.expires)+" · ยังเปิดดูแผนเดิมได้";
+  $("acc-quota").innerHTML=[["ทำแผนใหม่ คุยกับ AI",left(q.chat),q.chat.max],["ปรับตัวเลขจากแผนล่าสุด",left(q.adjust),q.adjust.max]]
+    .map(function(x){return'<div class="acc-q"><div class="k">'+x[0]+' · เดือนนี้เหลือ</div><div class="n num">'+x[1]+' <span>/ '+x[2]+' ครั้ง</span></div></div>';}).join("");
+  var hasDone=j.plans.some(function(x){return x.done;});
+  $("acc-chat").disabled=!j.active||left(q.chat)<1;
+  $("acc-adjust").disabled=!j.active||left(q.adjust)<1||!hasDone;
+  $("acc-plans").innerHTML=j.plans.length?j.plans.map(function(x){
+    return'<a class="acc-row" href="/plan/?id='+x.id+'&a='+ACCT+'"><span><b>'+(x.kind==="adjust"?"ปรับตัวเลข":"คุยกับ AI")+'</b><br><span class="meta">'+thDate(x.created)+'</span></span>'
+      +'<span class="acc-tag'+(x.done?" done":"")+'">'+(x.done?"สร้างแผนแล้ว":"ยังไม่เสร็จ ทำต่อ")+"</span></a>";}).join("")
+    :'<p class="foot-note">ยังไม่มีแผน เริ่มจาก "ทำแผนใหม่ คุยกับ AI"</p>';
+  $("acc-link").innerHTML='<b>ลิงก์ dashboard ของคุณ</b> เก็บลิงก์นี้ไว้ ใช้เข้ามาทำแผนใหม่และดูแผนทั้งหมด ใครมีลิงก์นี้ก็เข้าได้ อย่าส่งต่อ'
+    +'<div class="row"><input id="acc-url" readonly value="'+esc(accUrl())+'" aria-label="ลิงก์ dashboard" style="flex:1;min-width:0;font:inherit;font-size:14px;color:var(--bright);background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:6px 10px"><button class="btn" id="acc-copy" type="button">คัดลอก</button></div>';
+  $("acc-copy").onclick=function(){var i=$("acc-url");i.select();(navigator.clipboard?navigator.clipboard.writeText(i.value):Promise.reject()).then(function(){$("acc-copy").textContent="คัดลอกแล้ว";},function(){document.execCommand("copy");$("acc-copy").textContent="คัดลอกแล้ว";});};
+}
+function accNew(kind){
+  var msg=kind==="chat"?"ใช้สิทธิ์ \"คุยกับ AI\" ของเดือนนี้ 1 ครั้ง\n\nกด OK เพื่อเริ่ม":"ใช้สิทธิ์ \"ปรับตัวเลข\" ของเดือนนี้ 1 ครั้ง เริ่มจากตัวเลขในแผนล่าสุด\n\nกด OK เพื่อเริ่ม";
+  if(!gate(msg,"เริ่มเลย",function(){accNew(kind);}))return;
+  var b=$(kind==="chat"?"acc-chat":"acc-adjust");b.disabled=true;
+  fetch("/api/account-new",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({accountId:ACCT,kind:kind})})
+    .then(function(r){return r.json().then(function(j){if(!r.ok)throw{code:j.error||"server"};return j;});},function(){throw{code:"network"};})
+    .then(function(j){location.href="/plan/?id="+j.planId+"&a="+ACCT;})
+    .catch(function(e){accErr(e);b.disabled=false;});
+}
+$("acc-chat").onclick=function(){accNew("chat");};
+$("acc-adjust").onclick=function(){accNew("adjust");};
+// plans opened from the dashboard lead back to it
+if(ACCT){
+  document.querySelectorAll("#v-review .sec-head b").forEach(function(b){if(b.textContent.indexOf("แก้ตัวเลขเองได้อีกเพียง 1 ครั้ง")>=0)b.textContent="สร้างแผนแล้วตัวเลขจะล็อก ถ้าอยากเปลี่ยนภายหลัง ใช้สิทธิ์ปรับตัวเลขของเดือน";});
+  var _renderPlan=renderPlan;
+  renderPlan=function(o){
+    _renderPlan(o);
+    var r=$("restart");if(r){r.textContent="กลับไป dashboard";r.onclick=function(){location.href=accUrl();};}
+    // 399 plans change numbers with the monthly "adjust" quota, starting from this plan's numbers
+    var eb=$("edit-again");if(eb)eb.remove();
+    var acts=document.querySelector("#v-plan .actions");if(!acts||!r)return;
+    var note=acts.previousElementSibling&&acts.previousElementSibling.classList.contains("foot-note")?acts.previousElementSibling:null;
+    var ab=document.createElement("button");ab.className="btn";ab.id="adjust-this";ab.type="button";ab.textContent="ปรับตัวเลขจากแผนนี้";ab.disabled=true;
+    acts.insertBefore(ab,r);
+    if(note)note.textContent="ตัวเลขในแผนนี้ล็อกแล้ว · กำลังเช็กสิทธิ์ปรับตัวเลขของเดือนนี้…";
+    api.get("account?a="+ACCT).then(function(j){
+      var left=Math.max(0,j.quota.adjust.max-j.quota.adjust.used);
+      ab.disabled=!j.active||left<1;
+      if(note)note.textContent=!j.active?"ตัวเลขในแผนนี้ล็อกแล้ว · สิทธิ์ใช้งาน 1 ปีหมดแล้ว"
+        :left<1?"ตัวเลขในแผนนี้ล็อกแล้ว · ใช้สิทธิ์ปรับตัวเลขของเดือนนี้ครบแล้ว ได้สิทธิ์ใหม่ "+thDate(j.periodEnd)
+        :"ตัวเลขในแผนนี้ล็อกแล้ว · เดือนนี้ปรับตัวเลขได้อีก "+left+" ครั้ง กด \"ปรับตัวเลขจากแผนนี้\" เพื่อสร้างแผนใหม่จากตัวเลขชุดนี้";
+    }).catch(function(){if(note)note.textContent="ตัวเลขในแผนนี้ล็อกแล้ว · ปรับตัวเลขได้จาก dashboard";});
+    ab.onclick=function(){
+      if(!gate("ใช้สิทธิ์ปรับตัวเลขของเดือนนี้ 1 ครั้ง เริ่มจากตัวเลขในแผนนี้ แล้วสร้างเป็นแผนใหม่","เริ่มเลย",function(){ab.click();}))return;
+      ab.disabled=true;
+      fetch("/api/account-new",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({accountId:ACCT,kind:"adjust",fromPlanId:planId})})
+        .then(function(x){return x.json().then(function(j){if(!x.ok)throw{code:j.error||"server"};return j;});},function(){throw{code:"network"};})
+        .then(function(j){location.href="/plan/?id="+j.planId+"&a="+ACCT;})
+        .catch(function(e){ab.disabled=false;if(note)note.textContent=ACC_ERR[e&&e.code]||"ทำรายการไม่สำเร็จ ลองใหม่อีกครั้ง";});
+    };
+  };
+}
+
+// ---------- payment ----------
+// buttons show for what is on sale (SELL in Netlify); testers see both with /plan/#test while Stripe is in test mode
+(function(){
+  var tester=location.hash==="#test"||location.hash==="#admin";
+  api.get("shop").then(function(j){
+    var open=j.open||[];if(tester&&j.test)open=["99","399"];
+    document.querySelectorAll("[data-buy]").forEach(function(b){
+      if(open.indexOf(b.getAttribute("data-buy"))<0)return;
+      b.parentNode.hidden=false;$("buy-note").hidden=false;
+      if(j.test)b.textContent+=" (ทดสอบ)";
+      b.onclick=function(){
+        var all=document.querySelectorAll("[data-buy]");all.forEach(function(x){x.disabled=true;});
+        $("buy-err").hidden=true;var t=b.textContent;b.textContent="กำลังไปหน้าชำระเงิน…";
+        fetch("/api/buy",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({product:b.getAttribute("data-buy"),src:window.FYT_SRC||""})})
+          .then(function(r){return r.json().then(function(x){if(!r.ok||!x.url)throw x;return x;});})
+          .then(function(x){location.href=x.url;})
+          .catch(function(){$("buy-err").textContent="เปิดหน้าชำระเงินไม่สำเร็จ ลองใหม่อีกครั้ง";$("buy-err").hidden=false;all.forEach(function(x){x.disabled=false;});b.textContent=t;});
+      };
+    });
+  }).catch(function(){});
+  if(new URLSearchParams(location.search).get("cancel")){$("buy-err").textContent="ยกเลิกการชำระเงินแล้ว ยังไม่มีการตัดเงิน";$("buy-err").hidden=false;history.replaceState(null,"",location.pathname+location.hash);}
+})();
+function checkPaid(sid,tries){
+  show("v-paid");tries=tries||0;
+  fetch("/api/paid?s="+encodeURIComponent(sid),{cache:"no-store"}).then(function(r){return r.json().then(function(j){return{st:r.status,j:j};});}).then(function(x){
+    var j=x.j;
+    if(x.st===202){
+      if(tries<20){setTimeout(function(){checkPaid(sid,tries+1);},3000);return;}
+      $("paid-title").textContent="ยังไม่ได้รับยอดชำระ";$("paid-msg").textContent="ถ้าจ่ายแล้ว รอสักครู่แล้วรีเฟรชหน้านี้ ถ้ายังไม่ขึ้น ติดต่อเราพร้อมอีเมลที่ใช้จ่าย";return;
+    }
+    if(x.st!==200)throw j;
+    var link=j.product==="399"?location.origin+"/plan/?a="+j.accountId:location.origin+"/plan/?id="+j.planId;
+    $("paid-title").innerHTML='ชำระเงินแล้ว <span class="paid-ok">✓</span>';
+    $("paid-msg").textContent=j.product==="399"?"บัญชีทั้งปีของคุณพร้อมใช้แล้ว ใช้ได้ 1 ปีนับจากวันนี้":"แผนของคุณพร้อมแล้ว เริ่มคุยกับ AI ได้เลย";
+    var b=$("paid-body");b.hidden=false;
+    b.innerHTML='<div class="notice"><b>เก็บลิงก์นี้ไว้</b> ใช้กลับมาเปิด'+(j.product==="399"?" dashboard และแผนทั้งหมด":"แผนของคุณ")+' ใครมีลิงก์นี้ก็เข้าได้ อย่าส่งต่อ'
+      +'<div class="row" style="margin-top:8px"><input id="paid-url" readonly value="'+esc(link)+'" aria-label="ลิงก์ของคุณ" style="flex:1;min-width:0;font:inherit;font-size:14px;color:var(--bright);background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:6px 10px"><button class="btn" id="paid-copy" type="button">คัดลอก</button></div></div>'
+      +(j.product==="399"?"":'<div class="consent"><p>AI จะถามประมาณ 15–18 ข้อ เรื่องอายุ รายรับ รายจ่าย เงินที่มี และ Bitcoin ตอบคร่าว ๆ ได้ ข้อไหนไม่รู้ตอบว่า "ไม่แน่ใจ"</p><p>ตัวเลขทั้งหมดเป็นการจำลองจากข้อมูลและสมมติฐานที่คุณให้ เพื่อการศึกษา <b>ไม่ใช่คำแนะนำการลงทุน</b></p></div>')
+      +'<div class="actions"><a class="btn solid" href="'+esc(link)+'">'+(j.product==="399"?"ไปที่ dashboard":"เริ่มคุยกับ AI")+'</a></div>';
+    $("paid-copy").onclick=function(){var i=$("paid-url");i.select();(navigator.clipboard?navigator.clipboard.writeText(i.value):Promise.reject()).then(function(){$("paid-copy").textContent="คัดลอกแล้ว";},function(){document.execCommand("copy");$("paid-copy").textContent="คัดลอกแล้ว";});};
+  }).catch(function(){
+    if(tries<3){setTimeout(function(){checkPaid(sid,tries+1);},3000);return;}
+    $("paid-title").textContent="ตรวจสอบการชำระเงินไม่สำเร็จ";$("paid-msg").textContent="รีเฟรชหน้านี้อีกครั้ง ถ้ายังไม่ได้ ติดต่อเราพร้อมอีเมลที่ใช้จ่าย";
+  });
+}
+
 // mobile menu, same as the homepage
 (function(){var nav=document.querySelector(".nav"),b=document.querySelector(".menu-btn");if(b)b.onclick=function(){var o=nav.classList.toggle("open");b.setAttribute("aria-expanded",String(o));};})();
 
@@ -961,6 +1142,9 @@ function showPlanLink(){
 renderSteps();
 (function(){
   var qid=new URLSearchParams(location.search).get("id");
+  var paidId=new URLSearchParams(location.search).get("paid");
+  if(paidId){$("v-intro").hidden=true;checkPaid(paidId);return;}
+  if(!qid&&ACCT){$("v-intro").hidden=true;loadAccount();return;}
   if(!qid)return;
   planId=qid;$("v-intro").hidden=true;$("loading").hidden=false;
   api.get("plan?id="+encodeURIComponent(qid)).then(function(j){
@@ -969,7 +1153,8 @@ renderSteps();
     if(rec&&rec.inputs){
       data=rec.inputs;defaultsUsed=rec.defaultsUsed||[];if(j.turns)turns=j.turns;
       if(rec.summary&&rec.summaryOk!==false&&rec.summaryOk){lastSummary=rec.summary;lastSummaryG=rec.summaryG;renderPlan({reuseSummary:true});}else renderPlan();
-    }else if(j.turns&&j.turns.length>2)resumeChat(j.turns);
+    }else if(j.seed){data=j.seed;defaultsUsed=[];show("v-review");renderReview();}
+    else if(j.turns&&j.turns.length>2)resumeChat(j.turns);
     else beginChat();
   }).catch(function(e){
     $("loading").hidden=true;planId=null;history.replaceState(null,"",location.pathname);
