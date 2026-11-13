@@ -63,6 +63,9 @@
   .links a:hover{color:var(--text-bright)}
   .links .start{color:var(--orange)}
   .links .start:hover{color:var(--orange-hover)}
+  .links .map{color:var(--orange);font-weight:700;white-space:nowrap}
+  .btn-map{border:1px solid var(--orange);color:var(--orange)}
+  .btn-map:hover{background:var(--orange);color:var(--on-orange);transform:translateY(-1px)}
   .menu-btn{display:none;width:42px;height:42px;border:1px solid var(--line-2);border-radius:10px;background:transparent;cursor:pointer;place-content:center;gap:5px}
   .menu-btn span{display:block;width:18px;height:2px;background:var(--text-bright);border-radius:2px;transition:transform .2s,opacity .2s}
   .nav.open .menu-btn span:nth-child(1){transform:translateY(7px) rotate(45deg)}
@@ -298,6 +301,7 @@
       <span></span><span></span><span></span>
     </button>
     <ul class="links" id="nav-links">
+        <li><a class="map" href="/plan/?src=home">Freeyourtime "MAP"</a></li>
       <li><a class="start" href="guide.html">คู่มือวางแผนการเงินด้วย Bitcoin</a></li>
       <li><a href="#tools">เครื่องมือวางแผนการเงิน</a></li>
       <li><a href="#articles">บทความ</a></li>
@@ -323,6 +327,7 @@
         <div class="actions">
           <a class="btn btn-ghost" href="guide.html">Free! คู่มือวางแผนการเงินด้วย Bitcoin <span aria-hidden="true">→</span></a>
           <a class="btn btn-primary" href="retirement-quick-check.html">ทดลองวางแผนเกษียณ <span aria-hidden="true">→</span></a>
+          <a class="btn btn-map" href="/plan/?src=home">ทำแผนละเอียด "MAP" 99 บาท <span aria-hidden="true">→</span></a>
         </div>
       </div>
       <div class="coin" aria-hidden="true">
