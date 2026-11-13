@@ -400,6 +400,8 @@ async function buy(body, url) {
     "line_items[0][price_data][product_data][name]": item.name,
     "metadata[product]": product,
     "metadata[src]": src,
+    // charge in baht only (PromptPay needs THB, and the price check below expects baht)
+    "adaptive_pricing[enabled]": "false",
   });
   return json({ url: session.url });
 }
@@ -429,7 +431,11 @@ async function paid(url) {
 // the session must be one of ours, for the right price
 function sessionOk(session) {
   const item = PRODUCTS[session?.metadata?.product];
-  return !!item && session.currency === "thb" && session.amount_total === item.amount;
+  if (!item) return false;
+  if (session.currency === "thb" && session.amount_total === item.amount) return true;
+  // paid in another currency through Stripe's conversion: check the original baht amount
+  const cc = session.currency_conversion;
+  return !!cc && cc.source_currency === "thb" && cc.amount_total === item.amount;
 }
 
 // makes the plan (99) or account (399) once per payment, even if the buyer's return and Stripe's webhook arrive together
