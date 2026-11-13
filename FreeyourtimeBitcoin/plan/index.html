@@ -278,7 +278,7 @@ footer.site-foot{margin-top:56px;border-top:1px solid var(--line);padding:0;font
   <!-- 1. intro -->
   <section id="v-intro" class="intro">
     <div>
-      <div class="label">Free Your Time Map · <span class="testtag">เปิดลงทะเบียน</span></div>
+      <div class="label">Free Your Time Map · <span class="testtag">เปิดขายแล้ว</span></div>
       <h1><span style="white-space:nowrap">Freeyourtime <span style="color:var(--orange)">"MAP"</span></span></h1>
       <p class="wl-lead">มา Check กันว่า คุณ "ใช้เวลาของคุณ" ได้หรือยัง</p>
       <a class="wl-qc" style="margin-top:14px" href="/retirement-quick-check"><span>ยังไม่แน่ใจ? เช็กเร็วฟรีก่อน ว่าต้องมีเงินเท่าไหร่ถึง "พอเพียง"</span><b>เช็กเลย →</b></a>
@@ -291,29 +291,10 @@ footer.site-foot{margin-top:56px;border-top:1px solid var(--line);padding:0;font
     </ul>
     <div class="wl-prices">
       <div class="wl-price"><div class="wl-name">แผนเดียว</div><div class="wl-amt"><b class="num">99</b> บาท</div><div class="wl-sub">ทำครั้งเดียว เก็บไว้ดูได้ตลอด</div><ul class="wl-list"><li>คุยกับ AI ทำแผนของคุณ 1 แผน</li><li>ตัวเลขที่ "พอเพียง" และเงินที่ต้องเก็บต่อเดือน</li><li>ทางเลือก พร้อมตารางเงินรายปี</li><li>แก้ตัวเลขเองได้ 1 ครั้ง</li><li>บันทึกเป็น PDF</li></ul><div class="wl-buy" hidden><button class="btn solid" type="button" data-buy="99">ซื้อแผนเดียว 99 บาท</button></div></div>
-      <div class="wl-price wl-best"><div class="wl-name">ทั้งปี <span class="wl-badge">ใช้ได้ 1 ปี</span></div><div class="wl-amt"><b class="num">399</b> บาท</div><div class="wl-sub">เฉลี่ยเดือนละราว 33 บาท</div><ul class="wl-list"><li>ทุกอย่างในแบบแผนเดียว</li><li>ทำแผนหรือปรับแก้ไขได้เดือนละ 4 ครั้ง</li></ul><div class="wl-more">เครื่องมือเสริม</div><ul class="wl-list"><li>ประวัติแผน และเทียบกับแผนครั้งก่อน</li><li>ลองปรับ "ถ้า…"<br>เช่น หยุดทำงานเร็วขึ้น <span class="nw">ออมเพิ่ม</span></li><li>เช็กรายเดือน ว่ายังอยู่ในเส้นทางไหม</li><li>เครื่องมือบนเว็บ<br>ใช้ตัวเลขจากแผนของคุณ<span class="nw">ได้ทันที</span></li></ul><div class="wl-buy" hidden><button class="btn solid" type="button" data-buy="399">ซื้อทั้งปี 399 บาท</button></div></div>
+      <div class="wl-price wl-best"><div class="wl-name">ทั้งปี <span class="wl-badge">ใช้ได้ 1 ปี</span></div><div class="wl-amt"><b class="num">399</b> บาท</div><div class="wl-sub">เฉลี่ยเดือนละราว 33 บาท</div><ul class="wl-list"><li>ทุกอย่างในแบบแผนเดียว</li><li>ทำแผนหรือปรับแก้ไขได้เดือนละ 4 ครั้ง</li></ul><div class="wl-more">เครื่องมือเสริม</div><ul class="wl-list"><li>ประวัติแผน และเทียบกับแผนครั้งก่อน</li><li>ลองปรับ "ถ้า…"<br>เช่น หยุดทำงานเร็วขึ้น <span class="nw">ออมเพิ่ม</span></li><li>เช็กรายเดือน ว่ายังอยู่ในเส้นทางไหม</li><li>เครื่องมือบนเว็บ<br>ใช้ตัวเลขจากแผนของคุณ<span class="nw">ได้ทันที</span></li></ul><div class="wl-buy" hidden><button class="btn solid" type="button" data-buy="399">ซื้อทั้งปี 399 บาท</button></div><div class="wl-buy" data-soon="399"><span class="btn" style="display:flex;width:100%;justify-content:center;cursor:default;opacity:.75">เปิดเร็ว ๆ นี้</span></div></div>
     </div>
     <p class="foot-note" id="buy-note" hidden>ชำระผ่าน Stripe ด้วยบัตร หรือ PromptPay · จ่ายแล้วเข้าใช้ได้ทันที · ไม่คืนเงินหลังชำระ · เครื่องมือเพื่อการศึกษา ไม่ใช่คำแนะนำการลงทุน<br>การซื้อถือว่ายอมรับ <a href="/policy" target="_blank">เงื่อนไขและนโยบาย</a></p>
     <div class="notice err" id="buy-err" hidden></div>
-    <div class="wl-count" id="wl-count" hidden>มีคนลงชื่อแล้ว <b class="num" id="wl-n"></b> คน</div>
-    <form class="consent" id="wl-form" novalidate>
-      <p style="font-size:17px;font-weight:600;color:var(--bright)">ลงชื่อที่นี่ได้เลย</p>
-      <label class="label" for="wl-nick">ชื่อเล่น</label><input class="wl-in" id="wl-nick" maxlength="60" autocomplete="nickname" placeholder="แบงค์">
-      <label class="label" for="wl-email">อีเมล</label><input class="wl-in" id="wl-email" type="email" maxlength="120" autocomplete="email" placeholder="name@gmail.com">
-      <div class="label">สนใจแบบไหน</div>
-      <div class="wl-opts" id="wl-choice"><button type="button" data-v="99">99 แผนเดียว</button><button type="button" data-v="399">399 ทั้งปี</button><button type="button" data-v="unsure">ยังไม่แน่ใจ</button></div>
-      <div class="label">คิดว่าต้องมีเงินเท่าไร ถึงจะ Free Your Time ได้? <span class="wl-opt">(ไม่ต้องตอบก็ได้)</span></div>
-      <div class="wl-opts" id="wl-need"><button type="button" data-v="<5">ไม่ถึง 5 ล้าน</button><button type="button" data-v="5-10">5–10 ล้าน</button><button type="button" data-v="10-20">10–20 ล้าน</button><button type="button" data-v="20-50">20–50 ล้าน</button><button type="button" data-v=">50">มากกว่า 50 ล้าน</button><button type="button" data-v="unknown">ไม่รู้เลย</button></div>
-      <input id="wl-web" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px">
-      <label class="wl-check"><input type="checkbox" id="wl-ok"> ยินยอมให้เก็บข้อมูลและอีเมล เพื่อแจ้งข้อมูลเกี่ยวกับ Freeyourtime MAP เท่านั้น</label>
-      <div class="notice err" id="wl-err" hidden></div>
-      <button class="btn solid" id="wl-go" type="submit">ลงชื่อรอ</button>
-    </form>
-    <div class="consent" id="wl-done" hidden>
-      <h2 id="wl-title">ลงชื่อแล้ว</h2>
-      <p id="wl-msg">เราจะส่งอีเมลหาคุณก่อนเปิดขายให้คนทั่วไป</p>
-      <div class="wl-btns"><a class="btn" href="/retirement-quick-check">เช็กเร็วฟรี ต้องมีเงินเท่าไหร่</a><button class="btn" id="wl-share" type="button">ส่งให้เพื่อน</button></div>
-    </div>
     <div class="consent" id="wl-admin" hidden>
       <label class="label" for="wl-key">รหัสเจ้าของเว็บ (WAITLIST_KEY)</label>
       <div class="row" style="flex-wrap:wrap"><input class="wl-in" id="wl-key" type="password" autocomplete="off" style="flex:1;min-width:200px"><button class="btn solid" id="wl-dl" type="button">ดาวน์โหลดรายชื่อ (Excel)</button></div>
@@ -957,38 +938,6 @@ function showPlanLink(){
   // where the visitor came from: ?src=fb / tiktok / line / youtube / ig / quickcheck, else guessed from the referring site
   var SRCS=["home","quickcheck","fb","tiktok","line","youtube","ig"],q=(new URLSearchParams(location.search).get("src")||"").toLowerCase(),ref=document.referrer||"";
   var src=SRCS.indexOf(q)>=0?q:/facebook\.|fb\.|messenger\./.test(ref)?"fb":/tiktok\./.test(ref)?"tiktok":/line\.me|line\.naver/.test(ref)?"line":/youtube\.|youtu\.be/.test(ref)?"youtube":/instagram\./.test(ref)?"ig":/retirement-quick-check/.test(ref)?"quickcheck":"plan";window.FYT_SRC=src;
-  function opts(id,k){var box=$(id);box.addEventListener("click",function(e){var b=e.target.closest("button");if(!b)return;
-    var on=!b.classList.contains("on")||k==="choice";[].forEach.call(box.children,function(x){x.classList.remove("on");});
-    if(on)b.classList.add("on");pick[k]=on?b.dataset.v:"";box.classList.remove("bad");$("wl-err").hidden=true;});}
-  opts("wl-choice","choice");opts("wl-need","need");
-  ["wl-nick","wl-email"].forEach(function(id){$(id).addEventListener("input",function(){this.classList.remove("bad");$("wl-err").hidden=true;});});
-  function done(j){
-    $("wl-form").hidden=true;$("wl-done").hidden=false;
-    $("wl-title").textContent=j.n?"ลงชื่อแล้ว คุณเป็นคนที่ "+j.n:"ลงชื่อแล้ว";
-    if(j.again)$("wl-msg").textContent="อีเมลนี้ลงชื่อไว้แล้ว อัปเดตคำตอบให้แล้ว เราจะส่งอีเมลหาคุณก่อนเปิดขายให้คนทั่วไป";
-  }
-  try{var mine=JSON.parse(localStorage.getItem(KEY)||"null");if(mine)done(mine);}catch(e){}
-  fetch("/api/waitlist-count").then(function(r){return r.json();}).then(function(j){if(j.count){$("wl-n").textContent=j.count.toLocaleString("th-TH");$("wl-count").hidden=false;}}).catch(function(){});
-  $("wl-form").addEventListener("submit",function(e){
-    e.preventDefault();
-    var nick=$("wl-nick").value.trim(),email=$("wl-email").value.trim(),err=null;
-    if(!nick){$("wl-nick").classList.add("bad");err="ใส่ชื่อเล่นก่อน";}
-    else if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)){$("wl-email").classList.add("bad");err="อีเมลยังไม่ถูกต้อง";}
-    else if(!pick.choice){$("wl-choice").classList.add("bad");err="เลือกก่อนว่าสนใจแบบไหน";}
-    else if(!$("wl-ok").checked)err="ติ๊กยินยอมก่อนลงชื่อ";
-    if(err){$("wl-err").textContent=err;$("wl-err").hidden=false;return;}
-    var btn=$("wl-go");btn.disabled=true;btn.textContent="กำลังลงชื่อ…";
-    fetch("/api/waitlist",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({nick:nick,email:email,choice:pick.choice,need:pick.need,consent:true,website:$("wl-web").value,ms:Date.now()-t0,src:src})})
-      .then(function(r){return r.json().then(function(j){if(!r.ok)throw j;return j;});})
-      .then(function(j){try{localStorage.setItem(KEY,JSON.stringify({n:j.n||null}));}catch(e){}done(j);})
-      .catch(function(){$("wl-err").textContent="ลงชื่อไม่สำเร็จ ตรวจอินเทอร์เน็ตแล้วลองใหม่";$("wl-err").hidden=false;})
-      .then(function(){btn.disabled=false;btn.textContent="ลงชื่อรอ";});
-  });
-  $("wl-share").onclick=function(){
-    var u=location.origin+"/plan/",t="Free Your Time Map: มา Check กันว่า คุณ \"ใช้เวลาของคุณ\" ได้หรือยัง";
-    if(navigator.share)navigator.share({title:"Free Your Time Map",text:t,url:u}).catch(function(){});
-    else if(navigator.clipboard)navigator.clipboard.writeText(t+" "+u).then(function(){$("wl-share").textContent="คัดลอกลิงก์แล้ว";});
-  };
   // a wrong code opens the tester box so the message is visible
   $("start").addEventListener("click",function(){$("code-box").open=true;});
   // owner only: /plan/#admin shows the download box
@@ -1098,6 +1047,7 @@ if(ACCT){
     document.querySelectorAll("[data-buy]").forEach(function(b){
       if(open.indexOf(b.getAttribute("data-buy"))<0)return;
       b.parentNode.hidden=false;$("buy-note").hidden=false;
+      var soon=document.querySelector('[data-soon="'+b.getAttribute("data-buy")+'"]');if(soon)soon.hidden=true;
       if(j.test)b.textContent+=" (ทดสอบ)";
       b.onclick=function(){
         var all=document.querySelectorAll("[data-buy]");all.forEach(function(x){x.disabled=true;});
