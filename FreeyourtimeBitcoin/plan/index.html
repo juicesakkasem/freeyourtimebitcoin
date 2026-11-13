@@ -1124,7 +1124,7 @@ function checkPaid(sid,tries){
     $("paid-title").innerHTML='ชำระเงินแล้ว <span class="paid-ok">✓</span>';
     $("paid-msg").textContent=j.product==="399"?"บัญชีทั้งปีของคุณพร้อมใช้แล้ว ใช้ได้ 1 ปีนับจากวันนี้":"แผนของคุณพร้อมแล้ว เริ่มคุยกับ AI ได้เลย";
     var b=$("paid-body");b.hidden=false;
-    b.innerHTML='<div class="notice"><b>เก็บลิงก์นี้ไว้</b> ใช้กลับมาเปิด'+(j.product==="399"?" dashboard และแผนทั้งหมด":"แผนของคุณ")+' ใครมีลิงก์นี้ก็เข้าได้ อย่าส่งต่อ'
+    b.innerHTML='<div class="notice"><b>เก็บลิงก์นี้ไว้</b>'+(j.emailed?' (ส่งไปที่อีเมลที่คุณใช้ชำระแล้วด้วย)':'')+' ใช้กลับมาเปิด'+(j.product==="399"?" dashboard และแผนทั้งหมด":"แผนของคุณ")+' ใครมีลิงก์นี้ก็เข้าได้ อย่าส่งต่อ'
       +'<div class="row" style="margin-top:8px"><input id="paid-url" readonly value="'+esc(link)+'" aria-label="ลิงก์ของคุณ" style="flex:1;min-width:0;font:inherit;font-size:14px;color:var(--bright);background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:6px 10px"><button class="btn" id="paid-copy" type="button">คัดลอก</button></div></div>'
       +(j.product==="399"?"":'<div class="consent"><p>AI จะถามประมาณ 15–18 ข้อ เรื่องอายุ รายรับ รายจ่าย เงินที่มี และ Bitcoin ตอบคร่าว ๆ ได้ ข้อไหนไม่รู้ตอบว่า "ไม่แน่ใจ"</p><p>ตัวเลขทั้งหมดเป็นการจำลองจากข้อมูลและสมมติฐานที่คุณให้ เพื่อการศึกษา <b>ไม่ใช่คำแนะนำการลงทุน</b></p></div>')
       +'<div class="actions"><a class="btn solid" href="'+esc(link)+'">'+(j.product==="399"?"ไปที่ dashboard":"เริ่มคุยกับ AI")+'</a></div>';

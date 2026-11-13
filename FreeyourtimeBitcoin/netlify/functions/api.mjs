@@ -409,7 +409,7 @@ async function paid(url) {
   if (!/^cs_(test|live)_[A-Za-z0-9]{10,200}$/.test(id)) return fail("bad_session", 400);
   const s = store();
   const done = await s.get("paid/" + id, { type: "json" });
-  if (done) return json({ product: done.product, planId: done.planId, accountId: done.accountId });
+  if (done) return json({ product: done.product, planId: done.planId, accountId: done.accountId, emailed: await sendLink(id, done, url.origin) });
   if (!stripeKey()) return fail("not_selling", 403);
   let session;
   try {
@@ -418,11 +418,39 @@ async function paid(url) {
     if (/stripe 404/.test(e.message)) return fail("bad_session", 404);
     throw e;
   }
-  const product = session.metadata?.product;
-  const item = PRODUCTS[product];
-  if (!item || session.currency !== "thb" || session.amount_total !== item.amount) return fail("bad_session", 409);
+  if (!sessionOk(session)) return fail("bad_session", 409);
   // a QR / bank payment may still be on its way: the page asks again in a moment
   if (session.payment_status !== "paid") return json({ pending: true, status: session.status }, 202);
+  const rec = await fulfil(session);
+  const emailed = await sendLink(session.id, rec, url.origin);
+  return json({ product: rec.product, planId: rec.planId, accountId: rec.accountId, emailed });
+}
+
+// the session must be one of ours, for the right price
+function sessionOk(session) {
+  const item = PRODUCTS[session?.metadata?.product];
+  return !!item && session.currency === "thb" && session.amount_total === item.amount;
+}
+
+// makes the plan (99) or account (399) once per payment, even if the buyer's return and Stripe's webhook arrive together
+async function fulfil(session) {
+  const s = store();
+  const id = session.id;
+  let done = await s.get("paid/" + id, { type: "json" });
+  if (done) return done;
+  const lock = await s.setJSON("paidlock/" + id, { at: Date.now() }, { onlyIfNew: true });
+  if (lock && lock.modified === false) {
+    for (let i = 0; i < 16; i++) {
+      await new Promise((r) => setTimeout(r, 500));
+      done = await s.get("paid/" + id, { type: "json" });
+      if (done) return done;
+    }
+    // the other attempt stalled; take over
+    const held = await s.get("paidlock/" + id, { type: "json" });
+    if (held && Date.now() - held.at < 30000) throw new Error("fulfil busy");
+    await s.setJSON("paidlock/" + id, { at: Date.now() });
+  }
+  const product = session.metadata.product;
   const email = session.customer_details?.email || null;
   const rec = { product, email, amount: session.amount_total, src: session.metadata?.src || "", test: !session.livemode, created: new Date().toISOString() };
   if (product === "399") {
@@ -432,7 +460,83 @@ async function paid(url) {
     await savePlan(rec.planId, { code: null, paid: id, created: rec.created, msgs: 0, extracts: 0, summaries: 0, saves: 0, turns: null, record: null });
   }
   await s.setJSON("paid/" + id, rec);
-  return json({ product, planId: rec.planId, accountId: rec.accountId });
+  return rec;
+}
+
+// ---------- email: the buyer's private link, sent once (Resend) ----------
+const escHtml = (t) => String(t).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+async function sendLink(id, rec, origin) {
+  if (rec.emailed) return true;
+  const key = env("RESEND_API_KEY", "");
+  if (!key || !rec.email) return false;
+  const year = rec.product === "399";
+  const link = origin + "/plan/?" + (year ? "a=" + rec.accountId : "id=" + rec.planId);
+  const subject = year ? "ลิงก์ dashboard Freeyourtime MAP (ทั้งปี) ของคุณ" : "ลิงก์แผน Freeyourtime MAP ของคุณ";
+  const what = year ? "dashboard ทั้งปีของคุณ ใช้ได้ 1 ปีนับจากวันที่ชำระ" : "แผนของคุณ";
+  const text = [
+    "ขอบคุณที่ซื้อ Freeyourtime MAP" + (year ? " แบบทั้งปี" : " แผนเดียว"),
+    "",
+    "เปิด" + what + " ได้ที่ลิงก์นี้:",
+    link,
+    "",
+    "เก็บอีเมลนี้ไว้ ลิงก์นี้คือกุญแจเข้า" + (year ? "บัญชี" : "แผน") + "ของคุณ ใครมีลิงก์ก็เปิดได้ อย่าส่งต่อ",
+    "",
+    "เครื่องมือเพื่อการศึกษา ไม่ใช่คำแนะนำการลงทุน",
+    "ติดต่อ: https://www.facebook.com/Juicesakkasemcashualme",
+    "เงื่อนไขและนโยบาย: " + origin + "/policy",
+  ].join("\n");
+  const html = `<div style="font-family:Arial,sans-serif;font-size:16px;line-height:1.7;color:#222;max-width:560px">
+<p>ขอบคุณที่ซื้อ <b>Freeyourtime MAP</b>${year ? " แบบทั้งปี" : " แผนเดียว"}</p>
+<p>เปิด${escHtml(what)} ได้ที่ปุ่มนี้</p>
+<p><a href="${escHtml(link)}" style="display:inline-block;background:#f7931a;color:#111;text-decoration:none;font-weight:bold;padding:12px 22px;border-radius:999px">${year ? "ไปที่ dashboard" : "เปิดแผนของฉัน"}</a></p>
+<p style="font-size:14px;color:#555">หรือคัดลอกลิงก์:<br><a href="${escHtml(link)}">${escHtml(link)}</a></p>
+<p style="font-size:14px;color:#555"><b>เก็บอีเมลนี้ไว้</b> ลิงก์นี้คือกุญแจเข้า${year ? "บัญชี" : "แผน"}ของคุณ ใครมีลิงก์ก็เปิดได้ อย่าส่งต่อ</p>
+<hr style="border:0;border-top:1px solid #ddd">
+<p style="font-size:13px;color:#777">เครื่องมือเพื่อการศึกษา ไม่ใช่คำแนะนำการลงทุน · <a href="https://www.facebook.com/Juicesakkasemcashualme">ติดต่อเรา</a> · <a href="${escHtml(origin)}/policy">เงื่อนไขและนโยบาย</a></p>
+</div>`;
+  try {
+    const r = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: { authorization: "Bearer " + key, "content-type": "application/json", "idempotency-key": "paid-" + id },
+      body: JSON.stringify({ from: env("MAIL_FROM", "Freeyourtime MAP <map@cashualme.com>"), to: [rec.email], subject, html, text }),
+    });
+    if (!r.ok) { console.error("email failed", r.status, (await r.text()).slice(0, 200)); return false; }
+    rec.emailed = new Date().toISOString();
+    await store().setJSON("paid/" + id, rec);
+    return true;
+  } catch (e) {
+    console.error("email failed", e?.message);
+    return false;
+  }
+}
+
+// ---------- Stripe webhook: Stripe tells us about a payment even if the buyer closed the page ----------
+async function hmacHex(secret, msg) {
+  const k = await crypto.subtle.importKey("raw", new TextEncoder().encode(secret), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
+  const sig = await crypto.subtle.sign("HMAC", k, new TextEncoder().encode(msg));
+  return [...new Uint8Array(sig)].map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+const sameStr = (a, b) => { if (a.length !== b.length) return false; let d = 0; for (let i = 0; i < a.length; i++) d |= a.charCodeAt(i) ^ b.charCodeAt(i); return d === 0; };
+
+async function stripeWebhook(req, url) {
+  const secret = env("STRIPE_WEBHOOK_SECRET", "");
+  if (!secret) return fail("not_configured", 503);
+  const raw = await req.text();
+  const parts = (req.headers.get("stripe-signature") || "").split(",").map((x) => x.trim().split("="));
+  const t = parts.find(([k]) => k === "t")?.[1];
+  const sigs = parts.filter(([k]) => k === "v1").map(([, v]) => v || "");
+  if (!t || !sigs.length || Math.abs(Date.now() / 1000 - Number(t)) > 300) return fail("bad_signature", 400);
+  const want = await hmacHex(secret, t + "." + raw);
+  if (!sigs.some((v) => sameStr(v, want))) return fail("bad_signature", 400);
+  const event = JSON.parse(raw);
+  if (event.type === "checkout.session.completed" || event.type === "checkout.session.async_payment_succeeded") {
+    const session = event.data?.object;
+    if (session?.payment_status === "paid" && sessionOk(session)) {
+      const rec = await fulfil(session);
+      await sendLink(session.id, rec, url.origin);
+    }
+  }
+  return json({ received: true });
 }
 
 async function view(url) {
@@ -452,6 +556,7 @@ export default async (req) => {
     if (req.method === "GET" && route === "paid") return await paid(url);
     if (req.method === "GET" && route === "waitlist-export") return await waitlistExport(req);
     if (req.method !== "POST") return fail("not_found", 404);
+    if (route === "stripe-webhook") return await stripeWebhook(req, url);
     const body = await req.json().catch(() => null);
     if (route === "waitlist") return await waitlistJoin(body);
     if (route === "account-new") return await accountNew(body);
