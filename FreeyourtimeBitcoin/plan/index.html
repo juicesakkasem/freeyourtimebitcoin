@@ -231,6 +231,27 @@ footer.site-foot{margin-top:56px;border-top:1px solid var(--line);padding:0;font
 .wl-qc b{color:var(--orange);white-space:nowrap}.wl-qc:hover{filter:brightness(1.15)}
 .wl-buy{margin-top:auto;padding-top:16px}.wl-buy .btn{width:100%;justify-content:center}
 .paid-ok{font-size:15px;color:var(--orange);font-weight:600}
+.tiles .tile>.label{min-height:3.5em}
+.chart-box{position:relative}.chart-box svg{touch-action:pan-y}
+.ch-tip{position:absolute;z-index:5;pointer-events:none;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:13px;line-height:1.5;box-shadow:0 8px 24px rgba(0,0,0,.45);min-width:200px}
+.ch-tip b{display:block;color:var(--bright);margin-bottom:2px}.ch-tip div{display:flex;align-items:center;gap:6px}.ch-tip div span{margin-left:auto;padding-left:12px;color:var(--bright)}
+.ch-tip i{display:inline-block;width:9px;height:9px;border-radius:50%;flex:none}.ch-tip small{display:block;color:var(--dim);margin-top:2px}
+.ch-hint{color:var(--dim);font-size:12.5px}
+.cmp-tbl td.num{white-space:nowrap}
+.health .card>.meter-top:first-child{align-items:flex-start}.health .card h3{min-height:2.7em;margin:0}
+.wi-demo{max-width:none;width:max-content;max-width:100%;font-size:14px;color:var(--bright);background:var(--orange-soft);border:1px solid var(--orange);border-radius:10px;padding:8px 12px;margin:0 0 12px}
+.wi-sum{font-size:16px;color:var(--bright);margin:14px 0 0;line-height:1.6}.wi-sum b{color:var(--orange)}
+.y-stats{display:block;font-size:13.5px;color:var(--dim);margin-top:2px}.y-stats b{color:var(--bright);font-weight:600}
+.y-up{color:var(--good)}.y-down{color:var(--bad)}.y-same{color:var(--dim)}
+.wi-grid{display:grid;gap:14px;margin-top:6px}
+.wi-row label{display:flex;justify-content:space-between;gap:10px;font-size:14.5px}.wi-row label b{color:var(--orange);white-space:nowrap}
+.wi-row input[type=range]{width:100%;accent-color:var(--orange)}
+.wi-out{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:14px}
+.wi-box{background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:10px 14px}.wi-box .k{font-size:13px;color:var(--dim)}.wi-box .n{font-size:22px;font-weight:700;color:var(--bright)}.wi-box .d{font-size:13px}
+.ck-in{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.ck-res{font-size:16px;font-weight:600;margin-top:10px}
+.ck-list{display:flex;flex-direction:column;gap:6px;margin-top:10px;font-size:14px}
+.ck-list div{display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid var(--line);padding-bottom:6px}
 .wl-code{font-size:14px}.wl-code>summary{cursor:pointer;color:var(--dim);width:max-content}
 .wl-code[open]>summary{margin-bottom:12px}
 .wl-code>p,.wl-code>ul{margin:0 0 12px}
@@ -333,6 +354,7 @@ footer.site-foot{margin-top:56px;border-top:1px solid var(--line);padding:0;font
     <div class="acc-quota" id="acc-quota"></div>
     <div class="acc-btns"><button class="btn solid" id="acc-chat" type="button">ทำแผนใหม่ คุยกับ AI</button><button class="btn" id="acc-adjust" type="button">ปรับตัวเลขจากแผนล่าสุด</button></div>
     <p class="foot-note" id="acc-note">คุยกับ AI: ตอบคำถามใหม่ทั้งหมด เหมาะเมื่อชีวิตเปลี่ยนเยอะ · ปรับตัวเลข: เริ่มจากตัวเลขในแผนล่าสุด แก้เฉพาะที่เปลี่ยน แล้วสร้างแผนใหม่</p>
+    <div class="acc-sec" id="acc-check"></div>
     <div class="acc-sec"><h2>แผนทั้งหมด</h2><div id="acc-plans"></div></div>
     <div class="acc-link" id="acc-link"></div>
   </section>
@@ -774,10 +796,10 @@ function renderPlan(opt){
   +(noBtc?"":'<div class="btc-pick-row"><span class="label">ให้ Bitcoin โตปีละ</span><div class="chips" role="group" aria-label="เลือกการเติบโตของ Bitcoin">'+LEVELS.map(function(L,i){return'<button class="chip-btn btc-pick" data-i="'+i+'" aria-pressed="'+(i===main)+'">'+L.g+'%</button>'}).join("")+'</div><span class="foot-note">กดเปลี่ยนแล้วทั้งแผนคำนวณใหม่</span></div>')
   +'<div class="verdict '+vClass+'"><div class="label">ผลสรุป</div><div class="v-title">'+vTitle+"</div><p>"+vText+"</p></div>"+shortHTML
   +'<section><div class="sec-head"><h2>ตัวเลขสำคัญ</h2><p>'+(noBtc?"แผนนี้ไม่มี Bitcoin · เงินเฟ้อ "+P.inflation+"% ต่อปี":'ตามสมมติฐานหลัก Bitcoin แบบ'+scn[main].l+' ('+scn[main].g+'% ต่อปี · '+vsInf(scn[main].g,P.inflation)+')')+'</p></div><div class="tiles">'
-  +[["เงินที่คาดว่าจะมีวัน Free Your Time",fmtM(M.retV),"≈ "+fmtM(today(M.retV,yrsToRet))+" ค่าเงินวันนี้"],["เงินที่ควรมีวัน Free Your Time",fmtM(need),"≈ "+fmtM(today(need,yrsToRet))+" ค่าเงินวันนี้"],["ออมและลงทุนต่อเดือน",fmt(Math.max(0,canSave)),dcaNow>0?(saveNow>=0?"DCA "+fmt(dcaNow)+" + เก็บอื่น "+fmt(saveNow):"DCA "+fmt(dcaNow)+" เกินเงินที่เหลือ "+fmt(-saveNow)):"บาท ต่อเดือน"],["เงินพอใช้ถึงอายุ",M.runOut===null?P.lifeExpect+"+":String(M.runOut),M.runOut===null?"อยู่รอดตลอดแผน":"ก่อนอายุ "+P.lifeExpect]].map(function(t){return'<div class="tile"><span class="label">'+t[0]+"</span><b>"+t[1]+"</b><span>"+t[2]+"</span></div>"}).join("")
+  +[["เงินที่คาดว่าจะมีวัน<br><span class='nw'>Free Your Time</span>",fmtM(M.retV),"≈ "+fmtM(today(M.retV,yrsToRet))+" ค่าเงินวันนี้"],["เงินที่ควรมีวัน<br><span class='nw'>Free Your Time</span>",fmtM(need),"≈ "+fmtM(today(need,yrsToRet))+" ค่าเงินวันนี้"],["ออมและลงทุนต่อเดือน",fmt(Math.max(0,canSave)),dcaNow>0?(saveNow>=0?"DCA "+fmt(dcaNow)+" + เก็บอื่น "+fmt(saveNow):"DCA "+fmt(dcaNow)+" เกินเงินที่เหลือ "+fmt(-saveNow)):"บาท ต่อเดือน"],["เงินพอใช้ถึงอายุ",M.runOut===null?P.lifeExpect+"+":String(M.runOut),M.runOut===null?"อยู่รอดตลอดแผน":"ก่อนอายุ "+P.lifeExpect]].map(function(t){return'<div class="tile"><span class="label">'+t[0]+"</span><b>"+t[1]+"</b><span>"+t[2]+"</span></div>"}).join("")
   +'</div></section>'
-  +'<section><div class="sec-head"><h2>ถ้ายังเป็นแบบนี้ไปเรื่อย ๆ</h2><p>'+pathText+'</p></div><div class="chips" role="group" aria-label="หน่วยเงินของกราฟ"><button class="chip-btn" id="m-today" aria-pressed="true">ค่าเงินวันนี้</button><button class="chip-btn" id="m-future" aria-pressed="false">ค่าเงินในอนาคต</button></div><div class="chart-box"><div class="legend" id="legend"></div><div style="overflow-x:auto"><svg id="chart" viewBox="0 0 760 320" width="100%" role="img" aria-label="กราฟเงินตลอดชีวิตถ้ายังทำแบบเดิม"></svg></div></div>'
-  +(noBtc?"":'<h3 style="margin-top:6px">ถ้า Bitcoin โตต่างจากนี้</h3>')
+  +'<section><div class="sec-head"><h2>สถานการณ์ปัจจุบัน</h2><p>'+pathText+'</p></div><div class="chips" role="group" aria-label="หน่วยเงินของกราฟ"><button class="chip-btn" id="m-today" aria-pressed="true">ค่าเงินวันนี้</button><button class="chip-btn" id="m-future" aria-pressed="false">ค่าเงินในอนาคต</button></div><div class="chart-box"><div class="legend" id="legend"></div><div style="overflow-x:auto"><svg id="chart" viewBox="0 0 760 320" width="100%" role="img" aria-label="กราฟเงินตลอดชีวิตถ้ายังทำแบบเดิม"></svg></div></div>'
+  +(noBtc?"":'<h3 style="margin-top:6px">ถ้าเก็บสะสม Bitcoin ในแผน</h3>')
   +'<div class="tbl"><table style="min-width:500px"><thead><tr><th>สมมติฐาน Bitcoin</th><th class="r">เงินวัน Free Your Time</th><th class="r">ค่าเงินวันนี้</th><th class="r">เทียบกับที่ควรมี</th><th>เงินพอถึงอายุ</th></tr></thead><tbody>'
   +res.map(function(r,i){var p=needs[i].pct;return'<tr class="'+(i===main?"main":"")+'"><td>'+(noBtc?"ไม่มี Bitcoin ในแผน":scn[i].l+" "+scn[i].g+"%/ปี"+(i===main?" · หลัก":""))+'</td><td class="r num">'+fmtM(r.retV)+'</td><td class="r num">'+fmtM(today(r.retV,yrsToRet))+'</td><td class="r num">'+p+"%</td><td>"+(r.runOut===null?'<span class="tag t-good">'+P.lifeExpect+"+ อยู่รอด</span>":'<span class="tag t-bad">หมดตอน '+r.runOut+"</span>")+"</td></tr>"}).join("")
   +"</tbody></table></div></section>"
@@ -797,9 +819,9 @@ function renderPlan(opt){
   document.querySelectorAll(".yr-pick").forEach(function(b){b.onclick=function(){$("yr-body").innerHTML=yrTable(+b.getAttribute("data-k"));document.querySelectorAll(".yr-pick").forEach(function(x){x.setAttribute("aria-pressed",String(x===b));});};});
   document.querySelectorAll(".btc-pick").forEach(function(b){b.onclick=function(){var i=+b.getAttribute("data-i");if(i===P.btcLevel)return;data.btcLevel=i;renderPlan({keepScroll:window.scrollY,reuseSummary:true});};});
   var mode="today";var redraw=function(){
-    drawLines("chart","legend",P,[{label:"ถ้ายังทำแบบเดิม",r:M,color:"var(--s2)",w:3}],need,mode);
+    drawLines("chart","legend",P,[{label:"ถ้ายังทำแบบเดิม",r:M,color:"var(--s2)",w:3}].concat(window.wiLine&&window.wiShow!==false?[window.wiLine]:[]),need,mode);
     drawLines("chart2","legend2",P,cmp,need,mode);$("m-today").setAttribute("aria-pressed",String(mode==="today"));$("m-future").setAttribute("aria-pressed",String(mode!=="today"));$("m-today").style.borderColor=mode==="today"?"var(--orange)":"";$("m-future").style.borderColor=mode!=="today"?"var(--orange)":"";};
-  $("m-today").onclick=function(){mode="today";redraw();};$("m-future").onclick=function(){mode="future";redraw();};redraw();
+  window.planRedraw=redraw;$("m-today").onclick=function(){mode="today";redraw();};$("m-future").onclick=function(){mode="future";redraw();};redraw();
   $("pdf-plan").onclick=function(){window.print();};
   var eb=$("edit-again");if(eb)eb.onclick=function(){if(!gate("แก้ตัวเลขได้ 1 ครั้ง สร้างแผนใหม่แล้วจะแก้ไม่ได้อีก","แก้ตัวเลข",function(){eb.click();}))return;editing=true;editSnap=JSON.parse(JSON.stringify({data:data,defaultsUsed:defaultsUsed}));el.style.display="none";show("v-review");renderReview();$("cancel-edit").hidden=false;};
   $("restart").onclick=function(){if(gate("เก็บลิงก์แผนไว้แล้วหรือยัง? เปิดลิงก์นั้นเมื่อไรก็กลับมาดูแผนนี้ได้","ไปหน้าแรก",function(){$("restart").click();},"กลับไปคัดลอกลิงก์"))location.href="/";};
@@ -843,7 +865,7 @@ function drawLines(svgId,legendId,P,series,needIn,mode){
   var span=P.lifeExpect-P.age,tick=span>40?10:5;
   for(var a=Math.ceil(P.age/tick)*tick;a<=P.lifeExpect;a+=tick){s+='<text x="'+x(a)+'" y="'+(H-12)+'" text-anchor="middle" font-size="12" fill="var(--dim)">'+a+"</text>";}
   s+='<line x1="'+x(P.retireAge)+'" x2="'+x(P.retireAge)+'" y1="'+T+'" y2="'+(H-B)+'" stroke="var(--dim)" stroke-dasharray="4 4"/><text x="'+(x(P.retireAge)+6)+'" y="'+(T+12)+'" font-size="12" fill="var(--dim)">หยุดทำงาน '+P.retireAge+"</text>";
-  if(need<=top){s+='<circle cx="'+x(P.retireAge)+'" cy="'+y(need)+'" r="5" fill="none" stroke="var(--bright)" stroke-width="2"/><text x="'+(x(P.retireAge)-8)+'" y="'+(y(need)-9)+'" text-anchor="end" font-size="12" fill="var(--bright)">ควรมี '+fmtM(need)+"</text>";}
+  var needLbl="";if(need<=top){s+='<circle cx="'+x(P.retireAge)+'" cy="'+y(need)+'" r="5" fill="none" stroke="var(--bright)" stroke-width="2"/>';needLbl='<text x="'+(x(P.retireAge)-8)+'" y="'+(y(need)-9)+'" text-anchor="end" font-size="12" fill="var(--bright)" stroke="var(--bg)" stroke-width="4" stroke-linejoin="round" paint-order="stroke">ควรมี '+fmtM(need)+"</text>";}
   var offN=0;
   res.forEach(function(r,i){
     var sr=series[i];
@@ -851,10 +873,31 @@ function drawLines(svgId,legendId,P,series,needIn,mode){
     s+='<path d="'+d+'" clip-path="url(#'+cid+')" fill="none" stroke="'+sr.color+'" stroke-width="'+(sr.w||2)+'"'+(sr.dash?' stroke-dasharray="'+sr.dash+'"':"")+' stroke-linejoin="round"/>';
     if(r.retV<=top)s+='<circle cx="'+x(P.retireAge)+'" cy="'+y(r.retV)+'" r="'+((sr.w||2)>2?4.5:3)+'" fill="'+sr.color+'"/>';
     var off=r.ports.findIndex(function(v){return v>top});
-    if(off>0){s+='<text x="'+(W-R-4)+'" y="'+(T+14+offN*14)+'" text-anchor="end" font-size="12" fill="'+sr.color+'">'+esc(sr.label)+" เกินกรอบ ↑ (สูงสุด "+fmtM(Math.max.apply(null,r.ports))+")</text>";offN++;}
+    if(off>0)offN++;
   });
-  $(svgId).innerHTML=s;
-  $(legendId).innerHTML=series.map(function(sr){return'<span><i style="background:'+(sr.dash?"transparent;border-top:2px dashed "+sr.color+";height:0":sr.color)+'"></i>'+esc(sr.label)+"</span>"}).join("")+'<span><i style="background:transparent;border:2px solid var(--bright);width:10px;height:10px;border-radius:50%"></i>เงินที่ควรมี</span>';
+  $(svgId).innerHTML=s+needLbl+'<line id="'+svgId+'-guide" y1="'+T+'" y2="'+(H-B)+'" stroke="var(--bright)" stroke-opacity=".5" visibility="hidden"/>';
+  (function(){
+    var svg=$(svgId),box=svg.closest(".chart-box"),tip=box.querySelector(".ch-tip");
+    if(!tip){tip=document.createElement("div");tip.className="ch-tip";tip.hidden=true;box.appendChild(tip);}
+    var guide=$(svgId+"-guide");
+    var hide=function(){tip.hidden=true;guide.setAttribute("visibility","hidden");};
+    var at=function(e){
+      var rc=svg.getBoundingClientRect(),sx=(e.clientX-rc.left)/rc.width*W;
+      if(sx<L-10||sx>W-R+10){hide();return;}
+      var age=Math.max(P.age,Math.min(P.lifeExpect,Math.round(P.age+(sx-L)/(W-L-R)*(P.lifeExpect-P.age)))),k=age-P.age;
+      guide.setAttribute("x1",x(age));guide.setAttribute("x2",x(age));guide.setAttribute("visibility","visible");
+      tip.innerHTML='<b>อายุ '+age+(age===P.retireAge?" · วันหยุดทำงาน":"")+'</b>'
+        +res.map(function(r,i){var v=r.ports[Math.min(k,r.ports.length-1)];return'<div><i style="background:'+series[i].color+'"></i>'+esc(series[i].label)+'<span class="num">'+fmtM(Math.max(0,v||0))+"</span></div>";}).join("")
+        +(age===P.retireAge?'<div><i style="background:transparent;border:2px solid var(--bright)"></i>เงินที่ควรมี<span class="num">'+fmtM(need)+"</span></div>":"")
+        +'<small>'+(mode==="today"?"ค่าเงินวันนี้":"ค่าเงินในอนาคต")+"</small>";
+      tip.hidden=false;
+      var bx=box.getBoundingClientRect(),px=e.clientX-bx.left,tw=tip.offsetWidth;
+      tip.style.left=Math.max(4,Math.min(bx.width-tw-4,px+(px+tw+16>bx.width?-tw-12:12)))+"px";
+      tip.style.top=Math.max(4,e.clientY-bx.top-tip.offsetHeight-12)+"px";
+    };
+    svg.onpointermove=at;svg.onpointerdown=at;svg.onpointerleave=hide;
+  })();
+  $(legendId).innerHTML=series.map(function(sr){return'<span><i style="background:'+(sr.dash?"transparent;border-top:2px dashed "+sr.color+";height:0":sr.color)+'"></i>'+esc(sr.label)+"</span>"}).join("")+'<span><i style="background:transparent;border:2px solid var(--bright);width:10px;height:10px;border-radius:50%"></i>เงินที่ควรมี</span><span class="ch-hint">ชี้หรือแตะที่กราฟเพื่อดูตัวเลข</span>';
 }
 
 // ---------- download the finished plan as one HTML file ----------
@@ -1083,6 +1126,190 @@ function checkPaid(sid,tries){
     if(tries<3){setTimeout(function(){checkPaid(sid,tries+1);},3000);return;}
     $("paid-title").textContent="ตรวจสอบการชำระเงินไม่สำเร็จ";$("paid-msg").textContent="รีเฟรชหน้านี้อีกครั้ง ถ้ายังไม่ได้ ติดต่อเราพร้อมอีเมลที่ใช้จ่าย";
   });
+}
+
+// ---------- 399 add-ons ----------
+// the same engine as the plan page, boiled down to the numbers people compare
+function planStats(P){
+  var noBtc=!(P.btcValue>0)&&!(P.dca>0),g=noBtc?LEVELS[1].g:LEVELS[P.btcLevel==null?1:P.btcLevel].g;
+  var r=sim(P,g),n=neededBySim(P,g,r),toToday=Math.pow(1+P.inflation/100,P.retireAge-P.age);
+  return{pct:n.pct,retV:r.retV,retToday:r.retV/toToday,needToday:n.need/toToday,lasts:r.runOut===null?P.lifeExpect:r.runOut,ok:r.runOut===null,ports:r.ports,
+    have:(P.cash||0)+(P.stocks||0)+(P.fund||0)+(P.gold||0)+(P.other||0)+(P.btcValue||0)};
+}
+function arrow(now,before,higherIsBetter){
+  if(before==null||now==null)return"";
+  var d=now-before;if(Math.abs(d)<1e-9)return' <span class="y-same">=</span>';
+  var good=higherIsBetter==null?null:(d>0)===higherIsBetter;
+  return' <span class="'+(good==null?"y-same":good?"y-up":"y-down")+'">'+(d>0?"↑":"↓")+"</span>";
+}
+var accCache=null;
+function accData(force){if(force||!accCache)accCache=api.get("account?a="+ACCT);return accCache;}
+
+if(ACCT){
+  // dashboard: each built plan shows its key numbers
+  var _renderAccount=renderAccount;
+  renderAccount=function(j){
+    accCache=Promise.resolve(j);
+    _renderAccount(j);
+    var rows=document.querySelectorAll("#acc-plans .acc-row");
+    j.plans.forEach(function(x,i){
+      if(!x.inputs||!rows[i])return;
+      try{var s=planStats(x.inputs);
+        var span=document.createElement("span");span.className="y-stats";
+        span.innerHTML="Free Your Time อายุ <b>"+x.inputs.retireAge+"</b> · ความพร้อม <b>"+Math.min(999,s.pct)+"%</b> · มีเงินราว <b>"+fmtM(s.retToday)+"</b> (ค่าเงินวันนี้) · พอใช้ถึง <b>"+s.lasts+"</b>";
+        rows[i].firstElementChild.appendChild(span);
+      }catch(e){}
+    });
+    renderCheck(j);
+  };
+
+  // monthly check: did you put away this month what the newest plan says (DCA + other saving)?
+  window.renderCheck=function(j){
+    var box=$("acc-check"),base=j.plans.filter(function(x){return x.inputs;})[0];
+    if(!base){box.innerHTML='<h2>เช็กรายเดือน</h2><p class="foot-note">สร้างแผนแรกให้เสร็จก่อน แล้วกลับมาเช็กทุกเดือนว่าเก็บเงินตามแผนหรือยัง</p>';return;}
+    var P=base.inputs,y=Math.max(0,Math.floor((Date.now()-new Date(base.built||base.created))/(365.25*864e5))),age=P.age+y;
+    // the plan's amounts for this year of the plan (same sums as "เงินเข้าออกตอนนี้")
+    var ev=function(inc){return P.events.reduce(function(t,x){return t+((x.type==="income")===inc&&age>=x.fromAge&&age<x.toAge?x.monthly:0)},0)};
+    var debt=P.debts.reduce(function(t,d){return t+(age<d.toAge?d.monthly:0)},0);
+    var inc=P.salary*Math.pow(1+P.salaryG/100,y)+P.sideIncome+ev(true),out=P.exp*Math.pow(1+P.inflation/100,y)+debt+ev(false);
+    var r100=function(v){return Math.max(0,Math.round(v/100)*100)};
+    var planDca=age<P.dcaToAge?r100(P.dca||0):0,planSave=r100(inc-out-planDca),retired=age>=P.retireAge;
+    var month=new Date(Date.now()+7*3600e3).toISOString().slice(0,7);
+    var mLabel=function(m){return new Date(m+"-15").toLocaleDateString("th-TH",{month:"short",year:"numeric"})};
+    var checks=(j.checks||[]).filter(function(c){return c.month;}),mine=checks.filter(function(c){return c.month===month;})[0];
+    var status=function(got,want){if(!(want>0))return'<span class="y-same">บันทึกแล้ว</span>';var r=got/want;
+      return r>=0.95&&r<=1.05?'<span class="y-same">✅ ตามแผน</span>':r>1.05?'<span class="y-up">⬆ '+Math.round(r*100)+'% ของแผน</span>':'<span class="y-down">⬇ '+Math.round(r*100)+'% ของแผน · ขาดอีก '+fmt(want-got)+' บาท</span>';};
+    if(retired){box.innerHTML='<h2>เช็กรายเดือน</h2><p class="foot-note">ตามแผนล่าสุด ตอนนี้ถึงวัน Free Your Time แล้ว จึงไม่มียอดที่ต้องเก็บต่อเดือน</p>';return;}
+    var sumGot=checks.reduce(function(t,c){return t+c.dca+c.save},0),sumWant=checks.reduce(function(t,c){return t+c.planDca+c.planSave},0);
+    var inp=function(id,v){return'<input class="wl-in num" id="'+id+'" inputmode="numeric" value="'+(v==null?"":fmt(v))+'" placeholder="0" style="width:100%;max-width:170px;text-align:right">';};
+    box.innerHTML='<h2>เช็กรายเดือน: เดือนนี้เก็บตามแผนหรือยัง?</h2>'
+      +'<p class="foot-note">'+mLabel(month)+' · ตัวเลข "ตามแผน" มาจากแผนล่าสุด ('+thDate(base.created)+') · ไม่ใช้สิทธิ์ กรอกซ้ำในเดือนเดียวกันได้ ระบบเก็บค่าล่าสุด</p>'
+      +'<div class="tbl"><table style="min-width:340px"><thead><tr><th></th><th class="r">ตามแผน</th><th class="r">เก็บจริง</th></tr></thead><tbody>'
+      +'<tr><td>DCA Bitcoin</td><td class="r num">'+fmt(planDca)+'</td><td class="r">'+inp("ck-dca",mine?mine.dca:null)+'</td></tr>'
+      +'<tr><td>ออม/ลงทุนอื่น</td><td class="r num">'+fmt(planSave)+'</td><td class="r">'+inp("ck-save",mine?mine.save:null)+'</td></tr>'
+      +'<tr class="cf-total"><td><b>รวม</b></td><td class="r num"><b>'+fmt(planDca+planSave)+'</b></td><td class="r num"><b id="ck-sum">'+(mine?fmt(mine.dca+mine.save):"–")+'</b></td></tr>'
+      +'</tbody></table></div>'
+      +'<div class="ck-res" id="ck-res">'+(mine?"ผล: "+status(mine.dca+mine.save,planDca+planSave):"")+'</div>'
+      +'<div class="actions" style="margin-top:10px"><button class="btn solid" id="ck-go" type="button">'+(mine?"แก้ยอดเดือนนี้":"บันทึกยอดเดือนนี้")+'</button></div>'
+      +(checks.length?'<h3 style="margin-top:18px">ประวัติแต่ละเดือน</h3><div class="ck-list">'+checks.slice().reverse().slice(0,12).map(function(c){return"<div><span>"+mLabel(c.month)+" · "+fmt(c.dca+c.save)+" / "+fmt(c.planDca+c.planSave)+"</span>"+status(c.dca+c.save,c.planDca+c.planSave)+"</div>";}).join("")+"</div>"
+        +'<p class="ck-res">สะสมตั้งแต่เริ่มเช็ก: เก็บแล้ว '+fmt(sumGot)+' จากแผน '+fmt(sumWant)+' บาท'+(sumWant>0?" ("+Math.round(sumGot/sumWant*100)+"%)":"")+'</p>':"")
+      +'<p class="foot-note">"ออม/ลงทุนอื่น" ตามแผน = รายได้ − รายจ่าย − หนี้ − DCA ของปีนี้ในแผน · เพื่อการศึกษา ไม่ใช่คำแนะนำการลงทุน</p>';
+    var n=function(id){var v=String($(id).value).replace(/[^0-9.]/g,"");return v===""?null:Number(v);};
+    var live=function(){var a=n("ck-dca"),b=n("ck-save");$("ck-sum").textContent=a==null&&b==null?"–":fmt((a||0)+(b||0));};
+    $("ck-dca").addEventListener("input",live);$("ck-save").addEventListener("input",live);
+    $("ck-go").onclick=function(){
+      var a=n("ck-dca"),b=n("ck-save");
+      if(a==null&&b==null){$("ck-res").textContent="กรอกยอดที่เก็บจริงเดือนนี้ก่อน (ไม่มีใส่ 0)";return;}
+      var go=$("ck-go");go.disabled=true;
+      fetch("/api/account-check",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({accountId:ACCT,dca:a||0,save:b||0,planDca:planDca,planSave:planSave,planId:base.id})})
+        .then(function(r){return r.json().then(function(x){if(!r.ok)throw{code:x.error||"server"};return x;});},function(){throw{code:"network"};})
+        .then(function(x){j.checks=x.checks;renderCheck(j);})
+        .catch(function(e){go.disabled=false;$("ck-res").textContent=ACC_ERR[e&&e.code]||"บันทึกไม่สำเร็จ ลองใหม่อีกครั้ง";});
+    };
+  };
+
+  // plan page: compare with the previous plan, and the what-if sliders
+  var _renderPlan2=renderPlan;
+  renderPlan=function(o){
+    window.wiLine=null;
+    _renderPlan2(o);
+    var el=$("v-plan"),acts=el.querySelector(".actions");if(!acts||!data)return;
+    var anchor=acts.previousElementSibling&&acts.previousElementSibling.classList.contains("foot-note")?acts.previousElementSibling:acts;
+    var cmpSec=document.createElement("section"),wiSec=document.createElement("section");
+    // right after the key numbers, so the changes are seen first
+    var key=[].filter.call(el.querySelectorAll("section"),function(s){var h=s.querySelector("h2");return h&&h.textContent.trim()==="ตัวเลขสำคัญ";})[0];
+    var endAnchor=anchor;if(key&&key.nextSibling)anchor=key.nextSibling;
+    el.insertBefore(cmpSec,anchor);
+    var cur=[].filter.call(el.querySelectorAll("section"),function(s){var h=s.querySelector("h2");return h&&h.textContent.trim()==="สถานการณ์ปัจจุบัน";})[0];
+    var cbox=cur&&cur.querySelector(".chart-box");
+    if(cbox)cbox.parentNode.insertBefore(wiSec,cbox.nextSibling);else el.insertBefore(wiSec,anchor);
+    var P=data,now=planStats(P);
+    accData().then(function(j){
+      var built=j.plans.filter(function(x){return x.inputs;}),k=built.map(function(x){return x.id;}).indexOf(planId),prev=k>=0?built[k+1]:built[0];
+      if(prev&&prev.id!==planId){
+        var Q=prev.inputs,b=planStats(Q);
+        var r=function(label,a,bv,fa,hib){return"<tr><td>"+label+'</td><td class="r num">'+fa(bv)+'</td><td class="r num"><b>'+fa(a)+"</b>"+arrow(a,bv,hib)+"</td></tr>";};
+        var m=function(v){return fmtM(v);},yr=function(v){return v+" ปี";},pc=function(v){return Math.min(999,v)+"%";},bt=function(v){return fmt(v);};
+        cmpSec.innerHTML='<div class="sec-head"><h2>เทียบกับแผนก่อนหน้า</h2><p>แผนวันที่ '+thDate(prev.created)+' เทียบกับแผนนี้ · ลูกศรเขียว = ดีขึ้น แดง = แย่ลง</p></div>'
+          +'<div class="tbl"><table style="min-width:420px"><thead><tr><th></th><th class="r">แผนก่อน</th><th class="r">แผนนี้</th></tr></thead><tbody>'
+          +r("ความพร้อมวัน Free Your Time",now.pct,b.pct,pc,true)
+          +r("อายุ Free Your Time",P.retireAge,Q.retireAge,yr,null)
+          +r("เงินวัน Free Your Time (ค่าเงินวันนี้)",now.retToday,b.retToday,m,true)
+          +r("เงินที่ควรมี (ค่าเงินวันนี้)",now.needToday,b.needToday,m,false)
+          +r("เงินพอใช้ถึงอายุ",now.lasts,b.lasts,yr,true)
+          +r("เงินที่มีตอนทำแผน",now.have,b.have,m,true)
+          +r("รายจ่ายต่อเดือน",P.exp,Q.exp,bt,false)
+          +r("DCA ต่อเดือน",P.dca||0,Q.dca||0,bt,null)
+          +"</tbody></table></div>";
+      }else cmpSec.remove();
+      renderWhatIf(wiSec,P,now,j);
+    }).catch(function(){cmpSec.remove();renderWhatIf(wiSec,P,now,null);});
+    // the site's calculators, opened with this plan's numbers
+    var toolSec=document.createElement("section");el.insertBefore(toolSec,endAnchor);
+    var debtNow=P.debts.reduce(function(t,d){return t+(P.age<d.toAge?d.monthly:0)},0),saveYr=Math.max(0,P.salary+P.sideIncome-P.exp-debtNow)*12;
+    var link=function(path,params){var u=new URLSearchParams({from:"map"});Object.keys(params).forEach(function(k){u.set(k,Math.round(params[k]));});return path+"?"+u.toString();};
+    var tools=[["Wealth Planner","เทียบการเติบโตของเงินก้อนและเงินออมต่อปี",link("/wealth-planner",{"inp-initial":now.have,"inp-dca":saveYr,"inp-inflation":P.inflation})],
+      ["วางแผน Bitcoin หลังเกษียณ","ดูว่าถอนใช้ได้กี่ปี (ใส่จำนวน BTC เอง)",link("/btc-retirement-withdrawal",{"spend":P.retireIncome,"horizon":P.lifeExpect-P.retireAge,"infl":P.inflation})],
+      ["สำรองเงินสดหลังเกษียณ","กันเงินสดไว้ใช้ช่วงราคาต่ำ ไม่ต้องขายตอนราคาตก",link("/btc-cash-bucket",{"spend":P.retireIncome,"horizon":P.lifeExpect-P.retireAge,"infl":P.inflation})],
+      ["เงินเฟ้อกินเงินเก็บไปเท่าไหร่","เงินเก็บเสียค่าไปเท่าไรถ้าเก็บเป็นเงินสด เทียบกับลงทุน",link("/Purchasing-Power.html",{"inputCurrentSavings":now.have,"inputMonthlySavings":saveYr/12,"inputInflationRate":P.inflation})]];
+    if(P.dca>0&&P.retireAge>P.age)tools.push(["1 BTC","DCA เดือนละ "+fmt(P.dca)+" บาท ถึงวันหยุดทำงานจะสะสมได้กี่เหรียญ",link("/1-btc-dashboard",{"monthly":P.dca,"years":Math.min(50,P.retireAge-P.age)})]);
+    toolSec.innerHTML='<div class="sec-head"><h2>เอาข้อมูลเปิดในเครื่องมืออื่น ๆ ได้เลย</h2><p>เครื่องมือบนเว็บ ใส่ตัวเลขจากแผนนี้ให้แล้ว ลองปรับต่อได้</p></div>'
+      +'<div class="ck-list">'+tools.map(function(x){return'<a class="acc-row" href="'+esc(x[2])+'"><span><b>'+x[0]+'</b><br><span class="meta">'+x[1]+'</span></span><span class="acc-tag">เปิด →</span></a>';}).join("")+"</div>";
+  };
+
+  window.renderWhatIf=function(sec,P,base,j){
+    var hasBtc=P.btcValue>0||P.dca>0,minAge=Math.max(P.age+1,30),maxAge=Math.min(P.lifeExpect-1,85);
+    var spec=[["retireAge","อายุหยุดทำงาน (วัน Free Your Time)",minAge,maxAge,1,P.retireAge,function(v){return v+" ปี";}],
+      ["save","ออมเพิ่มต่อเดือน (ใช้จ่ายน้อยลง)",0,Math.max(20000,Math.round(P.exp*0.5/1000)*1000),500,0,function(v){return fmt(v)+" บาท";}],
+      ["dca","DCA Bitcoin ต่อเดือน",0,Math.max(30000,Math.ceil((P.dca||0)*3/1000)*1000),500,P.dca||0,function(v){return fmt(v)+" บาท";}],
+      ["retireIncome","เงินใช้ต่อเดือนหลังหยุดทำงาน (ค่าเงินวันนี้)",Math.round(P.retireIncome*0.5/1000)*1000,Math.round(P.retireIncome*1.5/1000)*1000,1000,P.retireIncome,function(v){return fmt(v)+" บาท";}]];
+    // money lasts: show stopping 5 years earlier; money runs out: show working 5 years longer
+    var demo=base.ok?(P.retireAge-5>=minAge?P.retireAge-5:Math.min(maxAge,P.retireAge+5)):(P.retireAge+5<=maxAge?P.retireAge+5:Math.max(minAge,P.retireAge-5));
+    if(hasBtc)spec.push(["btcLevel","สมมติฐาน Bitcoin",0,2,1,P.btcLevel==null?1:P.btcLevel,function(v){return LEVELS[v].l+" "+LEVELS[v].g+"%/ปี";}]);
+    var left=j?Math.max(0,j.quota.adjust.max-j.quota.adjust.used):0,canMake=!!(j&&j.active&&left>0);
+    sec.innerHTML='<div class="sec-head"><h2>ลองปรับตัวเลขเพื่อเทียบกับแผนปัจจุบัน</h2><p>เลื่อนดูว่าแผนเปลี่ยนยังไง ลองได้ไม่จำกัด ไม่ใช้สิทธิ์ และไม่เปลี่ยนแผนนี้</p></div>'
+      +'<div class="card"><label class="wl-check" style="margin-bottom:10px"><input type="checkbox" id="wi-show" checked> แสดงเส้นที่ลองปรับในกราฟด้านบน</label><p class="wi-demo" id="wi-demo"></p><div class="wi-grid">'+spec.map(function(s){return'<div class="wi-row"><label for="wi-'+s[0]+'"><span>'+s[1]+'</span><b id="wi-v-'+s[0]+'"></b></label><input type="range" id="wi-'+s[0]+'" min="'+s[2]+'" max="'+s[3]+'" step="'+s[4]+'" value="'+(s[0]==="retireAge"?demo:s[5])+'"></div>';}).join("")+"</div>"
+      +'<p class="wi-sum" id="wi-sum"></p><div class="wi-out" id="wi-out"></div>'
+      +'<div class="actions" style="margin-top:14px"><button class="btn" id="wi-reset" type="button">กลับค่าเดิม</button><button class="btn solid" id="wi-make" type="button"'+(canMake?"":" disabled")+'>สร้างเป็นแผนใหม่จากตัวเลขนี้</button></div>'
+      +'<p class="foot-note" id="wi-note">'+(canMake?"สร้างเป็นแผนใหม่ใช้สิทธิ์ปรับตัวเลข 1 ครั้ง (เดือนนี้เหลือ "+left+" ครั้ง)<br><span class='nw'>ได้ตรวจตัวเลขทั้งหมดก่อนสร้าง</span>":j&&!j.active?"สิทธิ์ใช้งาน 1 ปีหมดแล้ว ยังลองปรับดูได้":"ใช้สิทธิ์ปรับตัวเลขของเดือนนี้ครบแล้ว ยังลองปรับดูได้")+"</p></div>";
+    var val=function(k){var e=$("wi-"+k);return e?Number(e.value):null;};
+    var cur=function(){var Q=JSON.parse(JSON.stringify(P));Q.retireAge=val("retireAge");Q.exp=Math.max(0,P.exp-val("save"));Q.dca=val("dca");if(Q.dcaToAge===P.retireAge||Q.dcaToAge>Q.retireAge)Q.dcaToAge=Q.retireAge;Q.retireIncome=val("retireIncome");if(hasBtc)Q.btcLevel=val("btcLevel");return Q;};
+    var box=function(k,v,d){return'<div class="wi-box"><div class="k">'+k+'</div><div class="n num">'+v+'</div><div class="d">'+d+"</div></div>";};
+    var delta=function(a,b,f,hib){var d=a-b;if(Math.abs(d)<1e-9)return'<span class="y-same">เท่าเดิม</span>';var g=(d>0)===hib;return'<span class="'+(g?"y-up":"y-down")+'">'+(d>0?"+":"−")+f(Math.abs(d))+"</span>";};
+    var t=null,run=function(){
+      spec.forEach(function(s){$("wi-v-"+s[0]).textContent=s[6](val(s[0]));});
+      var Q=cur(),s=planStats(Q),changed=spec.some(function(x){return val(x[0])!==x[5];});
+      window.wiLine=changed?{label:"ที่ลองปรับ",r:{ports:s.ports,retV:s.ports[P.retireAge-P.age]||0},color:"var(--good)",w:2,dash:"6 4"}:null;
+      if(window.planRedraw)window.planRedraw();
+      // one plain sentence: what was changed, and what happens to the money
+      var ch=[],v=function(k){return val(k);};
+      if(v("retireAge")!==P.retireAge)ch.push("หยุดทำงานตอนอายุ <b>"+v("retireAge")+"</b> แทน "+P.retireAge);
+      if(v("save")>0)ch.push("ออมเพิ่มเดือนละ <b>"+fmt(v("save"))+"</b> บาท");
+      if(v("dca")!==(P.dca||0))ch.push("DCA เดือนละ <b>"+fmt(v("dca"))+"</b> แทน "+fmt(P.dca||0));
+      if(v("retireIncome")!==P.retireIncome)ch.push("ใช้เงินเดือนละ <b>"+fmt(v("retireIncome"))+"</b> แทน "+fmt(P.retireIncome)+" หลังหยุดทำงาน");
+      if(hasBtc&&v("btcLevel")!==(P.btcLevel==null?1:P.btcLevel))ch.push("ใช้สมมติฐาน Bitcoin แบบ<b>"+LEVELS[v("btcLevel")].l+"</b>");
+      var res=s.ok?"เงินจะพอใช้ถึงอายุ <b>"+P.lifeExpect+"</b>"+(base.ok?"":" (เดิมหมดตอน "+base.lasts+")"):"เงินจะหมดตอนอายุ <b>"+s.lasts+"</b>"+(base.ok?" (เดิมพอใช้ถึง "+P.lifeExpect+")":" (เดิมหมดตอน "+base.lasts+")");
+      $("wi-sum").innerHTML=ch.length?"💡 ถ้า"+ch.join(" และ")+" "+res:"ตัวเลขตอนนี้เท่ากับแผนจริง เลื่อนแถบด้านบนเพื่อลองแบบอื่น";
+      var isDemo=spec.every(function(x){return val(x[0])===(x[0]==="retireAge"?demo:x[5]);})&&demo!==P.retireAge;
+      $("wi-demo").innerHTML=isDemo?"<b>ตัวอย่าง:</b> ลอง"+(demo>P.retireAge?"ทำงานต่ออีก "+(demo-P.retireAge)+" ปี":"หยุดทำงานเร็วขึ้น "+(P.retireAge-demo)+" ปี")+' · เลื่อนแถบเพื่อลองแบบอื่น · กด "กลับค่าเดิม" เพื่อดูแผนจริง':"";
+      $("wi-demo").hidden=!isDemo;
+      $("wi-out").innerHTML=box("ความพร้อม",Math.min(999,s.pct)+"%",delta(s.pct,base.pct,function(v){return v+"%";},true))
+        +box("เงินวัน Free Your Time",fmtM(s.retToday),delta(s.retToday,base.retToday,fmtM,true)+" · ค่าเงินวันนี้")
+        +box("เงินพอใช้ถึงอายุ",s.lasts+" ปี",delta(s.lasts,base.lasts,function(v){return v+" ปี";},true));
+    };
+    sec.querySelectorAll("input[type=range]").forEach(function(r){r.addEventListener("input",function(){clearTimeout(t);t=setTimeout(run,60);});});
+    $("wi-show").onchange=function(){window.wiShow=this.checked;if(window.planRedraw)window.planRedraw();};
+    $("wi-reset").onclick=function(){spec.forEach(function(s){$("wi-"+s[0]).value=s[5];});run();};
+    $("wi-make").onclick=function(){
+      if(!gate("ใช้สิทธิ์ปรับตัวเลขของเดือนนี้ 1 ครั้ง สร้างแผนใหม่จากตัวเลขที่ลองปรับ แล้วตรวจตัวเลขทั้งหมดก่อนสร้าง","สร้างแผนใหม่",function(){$("wi-make").click();}))return;
+      var Q=cur(),btn=$("wi-make");btn.disabled=true;
+      fetch("/api/account-new",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({accountId:ACCT,kind:"adjust",fromPlanId:planId,changes:{retireAge:Q.retireAge,dcaToAge:Q.dcaToAge,exp:Q.exp,dca:Q.dca,retireIncome:Q.retireIncome,btcLevel:Q.btcLevel}})})
+        .then(function(r){return r.json().then(function(x){if(!r.ok)throw{code:x.error||"server"};return x;});},function(){throw{code:"network"};})
+        .then(function(x){location.href="/plan/?id="+x.planId+"&a="+ACCT;})
+        .catch(function(e){btn.disabled=false;$("wi-note").textContent=ACC_ERR[e&&e.code]||"ทำรายการไม่สำเร็จ ลองใหม่อีกครั้ง";});
+    };
+    run();
+  };
 }
 
 // mobile menu, same as the homepage

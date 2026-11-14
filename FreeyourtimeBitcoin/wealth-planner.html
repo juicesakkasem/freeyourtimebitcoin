@@ -161,6 +161,31 @@ html body input, html body select{background-color:#191715;border-color:#34302b;
 /* หัวข้อเดิมของหน้า (มีหัวข้อใหม่ด้านบนแทน) */
 .fyt-wrap > div.mb-10:first-child{display:none!important}
 </style>
+<style id="fyt-wp">
+/* Wealth Planner content in the site's palette (dark, warm greys, orange accent) */
+html body .card{background:#121110;border:1px solid #24211e;box-shadow:none}
+html body .input-group{background:#191715;border:1px solid #24211e;border-radius:12px}
+html body .input-group.border-t-4{border-top-width:2px}
+html body .input-group[class*="border-"]{border-color:#24211e}
+html body .input-group.border-blue-500{border-top-color:#f7931a}
+html body .input-group.border-emerald-500{border-top-color:#10b981}
+html body .input-group.border-yellow-400{border-top-color:#facc15}
+html body .input-group.border-orange-500{border-top-color:#f97316}
+html body .input-group.border-red-500{border-top-color:#ef4444}
+html body .input-label,html body .stat-label{color:#a0978f}
+html body .input-field{background:#0f0e0d;border:1px solid #34302b;border-radius:10px;padding:8px 12px;color:#f4f0ea}
+html body .input-field:focus{border-color:#f7931a;box-shadow:0 0 0 3px rgba(247,147,26,.15)}
+html body .bg-slate-900{background-color:#0b0a09}
+html body .bg-slate-800,html body .bg-slate-800\/50{background-color:#121110}
+html body .bg-slate-700{background-color:#191715}
+html body .bg-slate-600{background-color:#24211e}
+html body .border-slate-700,html body .border-slate-600{border-color:#24211e}
+html body .text-white{color:#f4f0ea}
+html body .text-slate-200,html body .text-slate-300{color:#d9d3cb}
+html body .text-slate-400,html body .text-slate-500{color:#a0978f}
+html body .toggle-checkbox:checked{border-color:#f7931a}
+html body .toggle-checkbox:checked + .toggle-label{background-color:#f7931a}
+</style>
 </head>
 <body class="min-h-screen">
 
@@ -376,10 +401,10 @@ html body input, html body select{background-color:#191715;border-color:#34302b;
                     plugins: {
                         legend: { position: 'top', labels: { usePointStyle: true, padding: 20 } },
                         tooltip: {
-                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                            backgroundColor: 'rgba(18, 17, 16, 0.95)',
                             titleColor: '#fff',
                             bodyColor: '#cbd5e1',
-                            borderColor: '#334155',
+                            borderColor: '#34302b',
                             borderWidth: 1,
                             padding: 12,
                             callbacks: {
@@ -389,7 +414,7 @@ html body input, html body select{background-color:#191715;border-color:#34302b;
                     },
                     scales: {
                         y: { 
-                            grid: { color: '#334155', drawBorder: false }, 
+                            grid: { color: '#24211e', drawBorder: false }, 
                             ticks: { callback: function(value) { return (value / 1000000).toFixed(1) + 'M'; } } 
                         },
                         x: { grid: { display: false, drawBorder: false } }
@@ -555,6 +580,24 @@ html body input, html body select{background-color:#191715;border-color:#34302b;
   if(!btn) return;
   btn.addEventListener('click',function(){ btn.setAttribute('aria-expanded',String(nav.classList.toggle('open'))); });
   nav.querySelectorAll('.links a').forEach(function(a){ a.addEventListener('click',function(){ nav.classList.remove('open'); btn.setAttribute('aria-expanded','false'); }); });
+})();
+</script>
+<!-- Freeyourtime MAP (399): /this-page?from=map&<input id>=<value> fills the calculator with numbers from the customer's plan -->
+<script>
+(function(){
+  var q=new URLSearchParams(location.search);if(q.get("from")!=="map")return;
+  var fill=function(){q.forEach(function(v,k){if(k==="from")return;var e=document.getElementById(k);
+    if(!e||e.tagName!=="INPUT"||e.type==="checkbox"||e.type==="radio")return;
+    e.value=(e.type==="number"||e.type==="range")?String(v).replace(/[^0-9.]/g,""):Number(v).toLocaleString("en-US");
+    e.dispatchEvent(new Event("input",{bubbles:true}));e.dispatchEvent(new Event("change",{bubbles:true}));});
+    try{if(typeof calc==="function")calc();}catch(e){}};
+  document.addEventListener("DOMContentLoaded",fill);
+  window.addEventListener("load",function(){fill();
+    var b=document.createElement("div");
+    b.style.cssText="position:sticky;top:0;z-index:9999;background:#f7931a;color:#111;font:600 14px/1.5 sans-serif;padding:8px 16px;text-align:center";
+    b.innerHTML='ใช้ตัวเลขจากแผน Freeyourtime "MAP" ของคุณแล้ว ปรับต่อได้ · <a href="javascript:history.back()" style="color:#111">กลับไปที่แผน</a>';
+    document.body.insertBefore(b,document.body.firstChild);
+  });
 })();
 </script>
 </body>

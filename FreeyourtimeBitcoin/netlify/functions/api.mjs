@@ -314,14 +314,49 @@ async function accountView(url) {
   const plans = await Promise.all(
     acc.plans.map(async (p) => {
       const pl = await loadPlan(p.id);
-      return { id: p.id, created: p.created, kind: p.kind, done: !!pl?.record?.inputs };
+      return { id: p.id, created: p.created, kind: p.kind, done: !!pl?.record?.inputs, inputs: pl?.record?.inputs || null, built: pl?.record?.inputs ? pl.created : null };
     }),
   );
   return json({
     tier: acc.tier, created: acc.created, expires: acc.expires, active: u.active, periodEnd: u.per.to.toISOString(),
     quota: { chat: { used: u.chat, max: QUOTA.chat }, adjust: { used: u.adjust, max: QUOTA.adjust } },
     plans: plans.reverse(),
+    checks: (acc.checks || []).slice(-60),
   });
+}
+
+// the what-if sliders can change only these numbers, within sensible limits
+const WHATIF = { retireAge: [30, 90], dcaToAge: [0, 120], dca: [0, 10000000], exp: [0, 10000000], retireIncome: [0, 10000000], btcLevel: [0, 2] };
+function whatIf(ch) {
+  const out = {};
+  if (!ch || typeof ch !== "object") return out;
+  for (const [k, [lo, hi]] of Object.entries(WHATIF)) {
+    const v = Number(ch[k]);
+    if (k in ch && Number.isFinite(v)) out[k] = Math.min(hi, Math.max(lo, Math.round(v)));
+  }
+  return out;
+}
+
+// monthly check: how much the customer put away this month (DCA and other saving) next to the plan's amounts.
+// One record per month (Thai time); saving again in the same month replaces it.
+async function accountCheck(body) {
+  const id = body?.accountId;
+  const acc = await loadAccount(id);
+  if (!acc) return fail("no_account", 404);
+  if (!usage(acc).active) return fail("expired", 403);
+  const num = (v) => { const n = Number(v); return Number.isFinite(n) && n >= 0 && n < 1e10 ? Math.round(n) : null; };
+  const dca = num(body?.dca), save = num(body?.save);
+  if (dca === null || save === null) return fail("bad_input", 400);
+  const planDca = num(body?.planDca) ?? 0, planSave = num(body?.planSave) ?? 0;
+  const planId = acc.plans.some((p) => p.id === body?.planId) ? body.planId : null;
+  const now = new Date();
+  const month = new Date(now.getTime() + 7 * 3600e3).toISOString().slice(0, 7);
+  acc.checks = (acc.checks || []).filter((c) => c.month !== month);
+  acc.checks.push({ month, at: now.toISOString(), dca, save, planDca, planSave, planId });
+  acc.checks.sort((x, y) => (x.month < y.month ? -1 : 1));
+  acc.checks = acc.checks.slice(-60);
+  await saveAccount(id, acc);
+  return json({ ok: true, checks: acc.checks });
 }
 
 async function accountNew(body) {
@@ -338,7 +373,7 @@ async function accountNew(body) {
     if (!acc.plans.some((p) => p.id === body.fromPlanId)) return fail("no_base", 409);
     const pl = await loadPlan(body.fromPlanId);
     if (!pl?.record?.inputs) return fail("no_base", 409);
-    seed = pl.record.inputs;
+    seed = { ...pl.record.inputs, ...whatIf(body.changes) };
   } else if (kind === "adjust") {
     // start from the newest plan that was built
     for (const p of [...acc.plans].reverse()) {
@@ -566,6 +601,7 @@ export default async (req) => {
     const body = await req.json().catch(() => null);
     if (route === "waitlist") return await waitlistJoin(body);
     if (route === "account-new") return await accountNew(body);
+    if (route === "account-check") return await accountCheck(body);
     if (route === "buy") return await buy(body, url);
     if (route === "start") return await start(body);
     if (route === "chat") return await chat(body);
