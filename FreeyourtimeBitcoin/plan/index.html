@@ -241,6 +241,7 @@ footer.site-foot{margin-top:56px;border-top:1px solid var(--line);padding:0;font
 .health .card>.meter-top:first-child{align-items:flex-start}.health .card h3{min-height:2.7em;margin:0}
 .wi-demo{max-width:none;width:max-content;max-width:100%;font-size:14px;color:var(--bright);background:var(--orange-soft);border:1px solid var(--orange);border-radius:10px;padding:8px 12px;margin:0 0 12px}
 .wi-sum{font-size:16px;color:var(--bright);margin:14px 0 0;line-height:1.6}.wi-sum b{color:var(--orange)}
+.up-box{border:1px dashed var(--orange);border-radius:12px;padding:14px 16px;margin-top:14px;background:var(--orange-soft)}.up-box p{margin:4px 0 10px;font-size:14.5px}.up-box b{color:var(--bright)}
 .y-stats{display:block;font-size:13.5px;color:var(--dim);margin-top:2px}.y-stats b{color:var(--bright);font-weight:600}
 .y-up{color:var(--good)}.y-down{color:var(--bad)}.y-same{color:var(--dim)}
 .wi-grid{display:grid;gap:14px;margin-top:6px}
@@ -979,7 +980,7 @@ function showPlanLink(){
 (function(){
   var t0=Date.now(),pick={choice:"",need:""},KEY="fytm-waitlist";
   // where the visitor came from: ?src=fb / tiktok / line / youtube / ig / quickcheck, else guessed from the referring site
-  var SRCS=["home","quickcheck","fb","tiktok","line","youtube","ig"],q=(new URLSearchParams(location.search).get("src")||"").toLowerCase(),ref=document.referrer||"";
+  var SRCS=["home","upsell","quickcheck","fb","tiktok","line","youtube","ig"],q=(new URLSearchParams(location.search).get("src")||"").toLowerCase(),ref=document.referrer||"";
   var src=SRCS.indexOf(q)>=0?q:/facebook\.|fb\.|messenger\./.test(ref)?"fb":/tiktok\./.test(ref)?"tiktok":/line\.me|line\.naver/.test(ref)?"line":/youtube\.|youtu\.be/.test(ref)?"youtube":/instagram\./.test(ref)?"ig":/retirement-quick-check/.test(ref)?"quickcheck":"plan";window.FYT_SRC=src;
   // a wrong code opens the tester box so the message is visible
   $("start").addEventListener("click",function(){$("code-box").open=true;});
@@ -1311,6 +1312,25 @@ if(ACCT){
     run();
   };
 }
+
+if(!ACCT){
+  var _renderPlan99=renderPlan;
+  renderPlan=function(o){
+    _renderPlan99(o);
+    var el=$("v-plan"),cur=[].filter.call(el.querySelectorAll("section"),function(s){var h=s.querySelector("h2");return h&&h.textContent.trim()==="สถานการณ์ปัจจุบัน";})[0];
+    var cbox=cur&&cur.querySelector(".chart-box");if(!cbox)return;
+    api.get("shop").then(function(j){
+      if((j.open||[]).indexOf("399")<0||document.getElementById("up-399"))return;
+      var d=document.createElement("div");d.className="up-box";d.id="up-399";
+      d.innerHTML='<b>🔒 ลองปรับตัวเลขเพื่อเทียบกับแผนปัจจุบัน</b> มีในแบบทั้งปี 399 บาท'
+        +'<p>เลื่อนดูว่าถ้าหยุดทำงานเร็วขึ้น หรือออมเพิ่ม แผนจะเปลี่ยนยังไง พร้อมเช็กการออมรายเดือน และเทียบแผนทุกครั้งที่ปรับ</p>'
+        +'<a class="btn" href="/plan/?src=upsell">ดูแบบทั้งปี 399 บาท →</a>';
+      cbox.parentNode.insertBefore(d,cbox.nextSibling);
+    }).catch(function(){});
+  };
+}
+// coming from the upsell box: open at the price cards
+if(new URLSearchParams(location.search).get("src")==="upsell"&&!new URLSearchParams(location.search).get("id")){window.addEventListener("load",function(){var w=document.querySelector(".wl-prices");if(w){w.scrollIntoView({block:"start"});window.scrollBy(0,-90);}});}
 
 // mobile menu, same as the homepage
 (function(){var nav=document.querySelector(".nav"),b=document.querySelector(".menu-btn");if(b)b.onclick=function(){var o=nav.classList.toggle("open");b.setAttribute("aria-expanded",String(o));};})();
