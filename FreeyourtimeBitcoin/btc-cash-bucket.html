@@ -665,5 +665,23 @@ html:root, html:root[data-theme]{
   nav.querySelectorAll('.links a').forEach(function(a){ a.addEventListener('click',function(){ nav.classList.remove('open'); btn.setAttribute('aria-expanded','false'); }); });
 })();
 </script>
+<!-- Freeyourtime MAP (399): /this-page?from=map&<input id>=<value> fills the calculator with numbers from the customer's plan -->
+<script>
+(function(){
+  var q=new URLSearchParams(location.search);if(q.get("from")!=="map")return;
+  var fill=function(){q.forEach(function(v,k){if(k==="from")return;var e=document.getElementById(k);
+    if(!e||e.tagName!=="INPUT"||e.type==="checkbox"||e.type==="radio")return;
+    e.value=(e.type==="number"||e.type==="range")?String(v).replace(/[^0-9.]/g,""):Number(v).toLocaleString("en-US");
+    e.dispatchEvent(new Event("input",{bubbles:true}));e.dispatchEvent(new Event("change",{bubbles:true}));});
+    try{if(typeof calc==="function")calc();}catch(e){}};
+  document.addEventListener("DOMContentLoaded",fill);
+  window.addEventListener("load",function(){fill();
+    var b=document.createElement("div");
+    b.style.cssText="position:sticky;top:0;z-index:9999;background:#f7931a;color:#111;font:600 14px/1.5 sans-serif;padding:8px 16px;text-align:center";
+    b.innerHTML='ใช้ตัวเลขจากแผน Freeyourtime "MAP" ของคุณแล้ว ปรับต่อได้ · <a href="javascript:history.back()" style="color:#111">กลับไปที่แผน</a>';
+    document.body.insertBefore(b,document.body.firstChild);
+  });
+})();
+</script>
 </body>
 </html>
