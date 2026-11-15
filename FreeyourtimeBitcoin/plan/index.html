@@ -282,7 +282,7 @@ details.ch-fold{border:1px solid var(--line);border-radius:12px;padding:12px 16p
 details.ch-fold>summary{cursor:pointer;font-weight:600;color:var(--bright);font-size:16px}
 details.ch-fold[open]>summary{margin-bottom:12px}
 details.ch-fold>section>.sec-head h2{display:none}
-@media print{.chap-nav{display:none!important}.chap+.chap{break-before:auto}}
+@media print{.wrap{padding-bottom:0!important}#v-plan,.wrap{margin-bottom:0!important}#v-plan>p.foot-note,.chap-nav,#sec-wi,section:has(>.ck-list>a.acc-row),.risk-box .btn{display:none!important}.chap{display:block}.chap>*+*{margin-top:14px}.chap+.chap{margin-top:16px;padding-top:12px}.chap-head{break-after:avoid;break-inside:avoid;gap:10px}.chap-no{width:30px;height:30px;font-size:15px}.chap-t{font-size:18px}.chap-q{font-size:11px}.chap section,#v-plan section{break-inside:auto}.sec-head,h2,h3{break-after:avoid;break-inside:avoid}.chart-box,.tile,.tiles,.verdict,.card,.risk-box,.as-box,.cmp-pick,tr,.notice{break-inside:avoid}details.ch-fold{border:0;padding:0}details.ch-fold>summary{font-size:15.5px}}
 @media (max-width:640px){.chap-t{font-size:22px}.chap-no{width:40px;height:40px;font-size:19px}}
 .ed-hint{font-weight:400;color:var(--dim);font-size:12.5px;margin-left:6px}
 .y-stats{display:block;font-size:13.5px;color:var(--dim);margin-top:2px}.y-stats b{color:var(--bright);font-weight:600}
@@ -1013,7 +1013,7 @@ function downloadPlan(btn){
   var fonts=[].map.call(document.querySelectorAll('link[rel="stylesheet"]'),function(l){return'<link rel="stylesheet" href="'+l.href+'">'}).join("");
   var d=new Date(),ymd=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
   var html='<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Free Your Time Map ของคุณ '+ymd+"</title>"+fonts
-    +"<style>"+css+"\n.plan-file{display:flex;flex-direction:column;gap:36px}@media print{section,.verdict,.card,.chart-box,.tile{break-inside:avoid}}</style></head><body><div class=\"wrap\"><div class=\"plan-file\">"+c.innerHTML
+    +"<style>"+css+"\n.plan-file{display:flex;flex-direction:column;gap:36px}@media print{.verdict,.card,.chart-box,.tile{break-inside:avoid}}</style></head><body><div class=\"wrap\"><div class=\"plan-file\">"+c.innerHTML
     +"</div><footer>เครื่องมือเพื่อการศึกษา ไม่ใช่คำแนะนำการลงทุน ไม่ได้บอกว่าควรซื้อหรือขายสินทรัพย์ใด · © 2569 FreeyourtimeBitcoin</footer></div></body></html>";
   btn.disabled=true;say("");
   downloads.save({filename:"retirement-plan-"+ymd+".html",data:html})
