@@ -97,13 +97,17 @@ html body .font-sans{font-family:'Noto Sans Thai', system-ui, -apple-system, 'Se
 .fyt-nav .links a{text-decoration:none;color:#a0978f;font-size:15.5px;font-weight:500;transition:color .2s}
 .fyt-nav .links a:hover{color:#f4f0ea}
 .fyt-nav .links .start{color:#f7931a}
+.fyt-nav .links .map{color:#f7931a;font-weight:700;border:1px solid #f7931a;border-radius:999px;padding:7px 16px;white-space:nowrap}
+.fyt-nav .links .map:hover{background:#f7931a;color:#1a1206}.fyt-nav .links{gap:24px}.fyt-nav .links a{white-space:nowrap}
 .fyt-nav .menu-btn{display:none;width:42px;height:42px;border:1px solid #34302b;border-radius:10px;background:transparent;cursor:pointer;place-content:center;gap:5px;padding:0}
 .fyt-nav .menu-btn span{display:block;width:18px;height:2px;background:#f4f0ea;border-radius:2px;transition:transform .2s,opacity .2s}
 .fyt-nav.open .menu-btn span:nth-child(1){transform:translateY(7px) rotate(45deg)}
 .fyt-nav.open .menu-btn span:nth-child(2){opacity:0}
 .fyt-nav.open .menu-btn span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
-@media (max-width:980px){
+@media (max-width:1180px){
   .fyt-nav .menu-btn{display:grid}
+  .fyt-nav .links .map-li{order:-1}
+  .fyt-nav .links .map{border:0;border-radius:0;padding:12px 16px}
   .fyt-nav .links{display:none;position:absolute;top:64px;left:0;right:0;flex-direction:column;align-items:stretch;gap:0;background:#0b0a09;border-bottom:1px solid #24211e;box-shadow:0 18px 40px rgba(0,0,0,.55);padding:6px 0 10px}
   .fyt-nav.open .links{display:flex}
   .fyt-nav .links a{display:block;padding:12px 16px;font-size:17px}
@@ -173,10 +177,11 @@ html body input, html body select{background-color:#191715;border-color:#34302b;
     </button>
     <ul class="links" id="nav-links">
       <li><a class="start" href="guide.html">คู่มือวางแผนการเงินด้วย Bitcoin</a></li>
-      <li><a href="index.html#tools">เครื่องมือวางแผนการเงิน</a></li>
+      <li><a href="index.html#tools">Tools วางแผนการเงิน</a></li>
       <li><a href="index.html#articles">บทความ</a></li>
       <li><a href="course.html">คอร์ส</a></li>
       <li><a href="index.html#about">เกี่ยวกับ</a></li>
+      <li class="map-li"><a class="map" href="/plan/">Freeyourtime "MAP"</a></li>
     </ul>
   </div>
 </header>
