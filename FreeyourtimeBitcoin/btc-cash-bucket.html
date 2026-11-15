@@ -418,7 +418,7 @@ html:root, html:root[data-theme]{
   var LINES=[{name:"เริ่มตอนราคาสูงสุด",short:"ราคาสูงสุด",col:"--s1"},{name:"เริ่มตอนราคาปกติ",short:"ราคาปกติ",col:"--ink-2"},{name:"เริ่มตอนราคาต่ำสุด",short:"ราคาต่ำสุด",col:"--s2"}];
   var YS=[]; for(var yy=0;yy<=24;yy++)YS.push(yy/4);              // เงินสำรอง 0–6 ปี
   var MAXY=60, KMAXY=Math.round(MAXY*WPY);                        // การ์ด 2 ดูไกลสุด 60 ปี (เกินเป้าก็ยังเห็นว่าต่างกัน)
-  var st={m:0,tm:2,v3:"price",d:0,sh:{a:true,z:true,l:[true,true,true]}}, last=null;   // sh = เส้นที่แสดงในกราฟการ์ด 1 (กดปุ่มใต้หัวกราฟเพื่อซ่อน/แสดง)
+  var st={m:0,tm:2,v3:"price",d:0,sh:{a:true,z:true,l:[false,true,false]}}, last=null;   // sh = เส้นที่แสดงในกราฟการ์ด 1 (เริ่มที่ราคาปกติเส้นเดียว) (กดปุ่มใต้หัวกราฟเพื่อซ่อน/แสดง)
   function css(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim();}
   function num(id){var c=CFG[id],v=parseFloat((""+$(id).value).replace(/,/g,""));
     if(isNaN(v))v=(id==="spend"||id==="bucket"||id==="rate")?0:c.min; v=Math.min(c.max,Math.max(c.min,v)); return c.int?Math.round(v):v;}
