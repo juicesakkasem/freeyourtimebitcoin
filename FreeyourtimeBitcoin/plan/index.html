@@ -1365,13 +1365,13 @@ function btcToolLink(path,m,px){
       [].forEach.call(el.querySelectorAll('a[href^="/btc-retirement-withdrawal"],a[href^="/btc-cash-bucket"]'),function(a){
         a.setAttribute("href",btcToolLink(a.getAttribute("href").split("?")[0],m,px));});
     };
-    if(m&&m.share>=0.1){
+    if(m&&m.share>0){
       var cur=[].filter.call(el.querySelectorAll("section"),function(s){var h=s.querySelector("h2");return h&&h.textContent.trim()==="สถานการณ์ปัจจุบัน";})[0];
       if(cur){
         var yr=m.spend*12,d=document.createElement("div");d.className="risk-box";
         d.innerHTML='<b>⚠️ ราคาจริงไม่ได้โตเรียบ ๆ แบบในแผน</b>'
           +'<p>แผนนี้คิดว่า Bitcoin โตปีละ '+m.g+'% ทุกปี แต่ราคาจริงขึ้นลงเป็นรอบ และเคยลดลงมากกว่าครึ่งในบางช่วง ถ้าต้องขาย Bitcoin มาใช้ตอนราคาต่ำ เงินจะหมดเร็วกว่าที่เห็นในแผน</p>'
-          +'<p>ในแผนนี้ เงินที่ใช้หลังหยุดทำงานราว <b>'+Math.round(m.share*100)+'%</b> มาจาก Bitcoin (ประมาณเดือนละ '+fmt(Math.round(m.spend/100)*100)+' บาท ค่าเงินวันนี้) วิธีที่หลายคนใช้คือกันเงินสดไว้ใช้ 1–3 ปี หรือราว '+fmt(Math.round(yr/10000)*10000)+'–'+fmt(Math.round(yr*3/10000)*10000)+' บาท ค่าเงินวันนี้ เพื่อไม่ต้องขายตอนราคาตก</p>'
+          +'<p>ในแผนนี้ เงินที่ใช้หลังหยุดทำงานราว <b>'+(m.share<0.01?"น้อยกว่า 1":Math.round(m.share*100))+'%</b> มาจาก Bitcoin (ประมาณเดือนละ '+fmt(Math.round(m.spend/100)*100)+' บาท ค่าเงินวันนี้) วิธีที่หลายคนใช้คือกันเงินสดไว้ใช้ 1–3 ปี หรือราว '+fmt(Math.round(yr/10000)*10000)+'–'+fmt(Math.round(yr*3/10000)*10000)+' บาท ค่าเงินวันนี้ เพื่อไม่ต้องขายตอนราคาตก</p>'
           +'<a class="btn" href="'+esc(btcToolLink("/btc-cash-bucket",m,0))+'">ลองคำนวณในเครื่องมือสำรองเงินสด →</a>';
         cur.appendChild(d);
       }
