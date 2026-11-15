@@ -513,25 +513,24 @@ async function sendLink(id, rec, origin) {
   const year = rec.product === "399";
   const link = origin + "/plan/?" + (year ? "a=" + rec.accountId : "id=" + rec.planId);
   const subject = year ? "ลิงก์ dashboard Freeyourtime MAP (ทั้งปี) ของคุณ" : "ลิงก์แผน Freeyourtime MAP ของคุณ";
-  const what = year ? "dashboard ทั้งปีของคุณ ใช้ได้ 1 ปีนับจากวันที่ชำระ" : "แผนของคุณ";
+  const what = year ? " dashboard ทั้งปีของคุณ (ใช้ได้ 1 ปีนับจากวันที่ชำระ) " : "แผนของคุณ";
   const text = [
-    "ขอบคุณที่ซื้อ Freeyourtime MAP" + (year ? " แบบทั้งปี" : " แผนเดียว"),
-    "",
-    "เปิด" + what + " ได้ที่ลิงก์นี้:",
+    "ขอบคุณที่ซื้อ Freeyourtime MAP" + (year ? " แบบทั้งปี 399 บาท" : " แผน 99 บาท"),
+    "เก็บอีเมลนี้ไว้ เปิด" + what + "ได้ทุกเมื่อ ทุกเครื่อง จากลิงก์นี้:",
     link,
     "",
-    "เก็บอีเมลนี้ไว้ ลิงก์นี้คือกุญแจเข้า" + (year ? "บัญชี" : "แผน") + "ของคุณ ใครมีลิงก์ก็เปิดได้ อย่าส่งต่อ",
+    "ลิงก์นี้คือกุญแจเข้า" + (year ? "บัญชี" : "แผน") + "ของคุณ ใครมีลิงก์ก็เปิดได้ อย่าส่งต่อ",
     "",
     "เครื่องมือเพื่อการศึกษา ไม่ใช่คำแนะนำการลงทุน",
     "ติดต่อ: https://www.facebook.com/Juicesakkasemcashualme",
     "เงื่อนไขและนโยบาย: " + origin + "/policy",
   ].join("\n");
   const html = `<div style="font-family:Arial,sans-serif;font-size:16px;line-height:1.7;color:#222;max-width:560px">
-<p>ขอบคุณที่ซื้อ <b>Freeyourtime MAP</b>${year ? " แบบทั้งปี" : " แผนเดียว"}</p>
-<p>เปิด${escHtml(what)} ได้ที่ปุ่มนี้</p>
+<p>ขอบคุณที่ซื้อ <b>Freeyourtime MAP</b>${year ? " แบบทั้งปี 399 บาท" : " แผน 99 บาท"}</p>
+<p><b>เก็บอีเมลนี้ไว้</b> เปิด${escHtml(what)}ได้ทุกเมื่อ ทุกเครื่อง จากปุ่มด้านล่าง</p>
 <p><a href="${escHtml(link)}" style="display:inline-block;background:#f7931a;color:#111;text-decoration:none;font-weight:bold;padding:12px 22px;border-radius:999px">${year ? "ไปที่ dashboard" : "เปิดแผนของฉัน"}</a></p>
 <p style="font-size:14px;color:#555">หรือคัดลอกลิงก์:<br><a href="${escHtml(link)}">${escHtml(link)}</a></p>
-<p style="font-size:14px;color:#555"><b>เก็บอีเมลนี้ไว้</b> ลิงก์นี้คือกุญแจเข้า${year ? "บัญชี" : "แผน"}ของคุณ ใครมีลิงก์ก็เปิดได้ อย่าส่งต่อ</p>
+<p style="font-size:14px;color:#555">ลิงก์นี้คือกุญแจเข้า${year ? "บัญชี" : "แผน"}ของคุณ ใครมีลิงก์ก็เปิดได้ อย่าส่งต่อ</p>
 <hr style="border:0;border-top:1px solid #ddd">
 <p style="font-size:13px;color:#777">เครื่องมือเพื่อการศึกษา ไม่ใช่คำแนะนำการลงทุน · <a href="https://www.facebook.com/Juicesakkasemcashualme">ติดต่อเรา</a> · <a href="${escHtml(origin)}/policy">เงื่อนไขและนโยบาย</a></p>
 </div>`;
