@@ -683,5 +683,43 @@ html:root, html:root[data-theme]{
   });
 })();
 </script>
+<!-- Freeyourtime MAP: results on this page are for MAP customers (99 or 399). Opened from a plan (?p=<plan id>) or a browser that did so before → unlocked. -->
+<style>
+.fyt-lock{position:relative;overflow:hidden}
+.fyt-lock>*:not(.fyt-lock-ov){filter:blur(7px);pointer-events:none;user-select:none}
+.fyt-lock-ov{position:absolute;inset:0;z-index:5;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(10,9,8,.35)}
+.fyt-lock-ov .bx{background:#17140f;border:1px solid #f7931a;border-radius:14px;padding:18px 20px;max-width:460px;text-align:center;line-height:1.65;box-shadow:0 10px 30px rgba(0,0,0,.5)}
+.fyt-lock-ov b{display:block;font-size:17px;margin-bottom:6px;color:#fff}
+.fyt-lock-ov p{margin:6px 0;font-size:14.5px;color:#d9d3cb}
+.fyt-lock-ov a.go{display:inline-block;margin:8px 0 4px;padding:9px 18px;border-radius:999px;background:#f7931a;color:#111;font-weight:600;text-decoration:none}
+.fyt-lock-ov a.alt{color:#f7931a}
+.fyt-lock-ov .sm{font-size:13.5px;color:#d9d3cb}
+</style>
+<script>
+(function(){
+  var KEY="fyt-map-plan",q=new URLSearchParams(location.search),fromUrl=q.get("p"),saved=null;
+  try{saved=localStorage.getItem(KEY);}catch(e){}
+  // keep the plan id out of the address bar, so a shared link doesn't pass it on
+  if(fromUrl){q.delete("p");try{history.replaceState(null,"",location.pathname+(q.toString()?"?"+q.toString():"")+location.hash);}catch(e){}}
+  var cards=["c1","c2","c3"].map(function(id){return document.getElementById(id);}).filter(Boolean);
+  cards.forEach(function(c,i){
+    c.classList.add("fyt-lock");
+    var ov=document.createElement("div");ov.className="fyt-lock-ov";
+    ov.innerHTML=i===0
+      ?'<div class="bx"><b>🔒 ผลคำนวณหน้านี้สำหรับลูกค้า Freeyourtime "MAP"</b>'
+        +'<p>ใช้ได้ทั้งแบบแผนเดียว 99 บาท และแบบทั้งปี 399 บาท<br>มีแผนแล้ว: กดปุ่ม "ลองคำนวณในเครื่องมือสำรองเงินสด" <span style="white-space:nowrap">ในหน้าแผนของคุณ</span></p>'
+        +'<a class="go" href="/plan/">ทำแผน "MAP" 99 บาท →</a>'
+        +'<p class="sm">หรือลองเครื่องมือฟรี <a class="alt" href="/btc-retirement-withdrawal">วางแผน Bitcoin หลังเกษียณ →</a></p></div>'
+      :'<div class="bx"><b>🔒 สำหรับลูกค้า Freeyourtime "MAP"</b></div>';
+    c.appendChild(ov);
+  });
+  var unlock=function(){cards.forEach(function(c){c.classList.remove("fyt-lock");var o=c.querySelector(".fyt-lock-ov");if(o)o.remove();});window.dispatchEvent(new Event("resize"));};
+  var id=fromUrl||saved;if(!id||!/^[A-Za-z0-9_-]{8,80}$/.test(id))return;
+  fetch("/api/plan?id="+encodeURIComponent(id)).then(function(r){return r.ok?r.json():null;}).then(function(j){
+    if(j&&j.record&&j.record.inputs){unlock();try{localStorage.setItem(KEY,id);}catch(e){}}
+    else if(j===null&&!fromUrl){try{localStorage.removeItem(KEY);}catch(e){}}
+  }).catch(function(){});
+})();
+</script>
 </body>
 </html>
