@@ -243,6 +243,10 @@ footer.site-foot{margin-top:56px;border-top:1px solid var(--line);padding:0;font
 .wi-sum{font-size:16px;color:var(--bright);margin:14px 0 0;line-height:1.6}.wi-sum b{color:var(--orange)}
 .up-box{border:1px dashed var(--orange);border-radius:12px;padding:14px 16px;margin-top:14px;background:var(--orange-soft)}.up-box p{margin:4px 0 10px;font-size:14.5px}.up-box b{color:var(--bright)}
 .risk-box{border:1px solid var(--warn);border-radius:12px;padding:14px 16px;margin-top:14px;background:rgba(232,176,58,.08)}.risk-box p{margin:6px 0;font-size:14.5px}.risk-box b{color:var(--bright)}.risk-box .btn{margin-top:6px}
+.as-box{margin-top:14px;border:1px solid var(--line);border-radius:12px;padding:14px 16px}.as-box h3{margin:0 0 4px;font-size:16px}.as-box .meta{color:var(--dim);font-size:13px}
+.as-bar{display:flex;height:12px;border-radius:6px;overflow:hidden;margin:10px 0 8px;background:var(--surface-2)}.as-bar i{display:block;height:100%}
+.as-tbl{width:100%;border-collapse:collapse;font-size:14.5px}.as-tbl td{padding:6px 4px;border-top:1px solid var(--line)}.as-tbl td.num{text-align:right;white-space:nowrap}.as-tbl .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:8px;vertical-align:-1px}
+.as-tbl tr.tot td{font-weight:600;color:var(--bright)}
 .y-stats{display:block;font-size:13.5px;color:var(--dim);margin-top:2px}.y-stats b{color:var(--bright);font-weight:600}
 .y-up{color:var(--good)}.y-down{color:var(--bad)}.y-same{color:var(--dim)}
 .wi-grid{display:grid;gap:14px;margin-top:6px}
@@ -572,7 +576,7 @@ function rates(p){var i=p.inflation;return{cash:1.5,stocks:i+5,fund:i+3,gold:i+1
 function sim(p,bgr,o){
   o=o||{};
   var inf=p.inflation/100,T=p.lifeExpect-p.age,ra=p.retireAge+(o.later||0);
-  var RATE=rates(p),c=p.cash,s=p.stocks,f=p.fund,g=p.gold,ot=p.other||0,b=p.btcValue,ports=[],rows=[],shortAge=null,shortAtEnd=false,nw=0,NEW=o.newRate!=null,retB=0;
+  var RATE=rates(p),c=p.cash,s=p.stocks,f=p.fund,g=p.gold,ot=p.other||0,b=p.btcValue,ports=[],rows=[],shortAge=null,shortAtEnd=false,nw=0,NEW=o.newRate!=null,retB=0,retParts=null;
   // newRate: existing portfolio keeps growing as it is; every new baht saved from now on (leftover + DCA) goes into one asset at this rate
   // flatRate: what-if the whole portfolio earned one rate (comparison chart)
   if(o.flatRate!=null){var fr=o.flatRate;RATE={cash:fr,stocks:fr,fund:fr,gold:fr,other:fr,disc:RATE.disc};bgr=fr;}
@@ -582,7 +586,7 @@ function sim(p,bgr,o){
     // scaleRet: what-if the portfolio on retirement day were k times bigger (used to find "money needed")
     if(o.scaleRet!=null&&age===ra){var k=o.scaleRet;c*=k;s*=k;f*=k;g*=k;ot*=k;b*=k;nw*=k;}
     if(p.assetSale&&age===p.assetSale.age)c+=p.assetSale.amount;
-    ports.push(Math.max(0,c+s+f+g+ot+b+nw));if(age===ra)retB=b;
+    ports.push(Math.max(0,c+s+f+g+ot+b+nw));if(age===ra){retB=b;retParts={cash:c,stocks:s,fund:f,gold:g,other:ot,btc:b,nw:nw};}
     c*=1+RATE.cash/100;s*=1+RATE.stocks/100;f*=1+RATE.fund/100;g*=1+RATE.gold/100;ot*=1+RATE.other/100;b*=1+bgr/100;if(NEW)nw*=1+o.newRate/100;
     var debt=p.debts.reduce(function(t,d){return t+(age<d.toAge?d.monthly:0)},0);
     var evIn=p.events.reduce(function(t,x){return t+(x.type==="income"&&act(x,age)?x.monthly:0)},0);
@@ -606,7 +610,7 @@ function sim(p,bgr,o){
     }
   }
   var runOut=null;ports.forEach(function(v,i){if(runOut===null&&v<=0&&p.age+i>ra)runOut=p.age+i;});
-  return{ports:ports,rows:rows,runOut:runOut,retV:ports[ra-p.age]||0,retB:retB,final:c+s+f+g+ot+b+nw,shortAge:shortAge,shortAtEnd:shortAtEnd};
+  return{ports:ports,rows:rows,runOut:runOut,retV:ports[ra-p.age]||0,retB:retB,retParts:retParts,final:c+s+f+g+ot+b+nw,shortAge:shortAge,shortAtEnd:shortAtEnd};
 }
 // money needed on retirement day = the portfolio size (same mix) that lasts exactly to the planned age
 function neededBySim(p,bgr,r){
@@ -1377,6 +1381,29 @@ function btcToolLink(path,m,px){
       }
     }
     if(m)btcPrice().then(fix);
+  };
+})();
+
+(function(){
+  var _renderPlanAssets=renderPlan;
+  renderPlan=function(o){
+    _renderPlanAssets(o);
+    var P=data,el=$("v-plan");
+    var key=[].filter.call(el.querySelectorAll("section"),function(s){var h=s.querySelector("h2");return h&&h.textContent.trim()==="ตัวเลขสำคัญ";})[0];
+    if(!key)return;
+    var noBtc=!(P.btcValue>0)&&!(P.dca>0),g=noBtc?LEVELS[1].g:LEVELS[P.btcLevel==null?1:P.btcLevel].g,r=sim(P,g),x=r.retParts;
+    if(!x)return;
+    var yrs=Math.max(0,P.retireAge-P.age),dn=Math.pow(1+P.inflation/100,yrs);
+    var rows=[["Bitcoin",x.btc,"#f7931a"],["หุ้น",x.stocks,"#8fa3b8"],["กองทุน",x.fund,"#6fbf8f"],["ตราสารหนี้ หุ้นกู้ และอื่น ๆ",x.other,"#d7b98c"],["ทองคำ",x.gold,"#e8c25a"],["เงินสดและเงินฝาก",x.cash,"#a0978f"]]
+      .filter(function(t){return t[1]>=1;});
+    var tot=rows.reduce(function(t,a){return t+a[1];},0);
+    if(!(tot>0))return;
+    var d=document.createElement("div");d.className="as-box";
+    d.innerHTML='<h3>เงินวัน Free Your Time แยกตามสินทรัพย์</h3><div class="meta">อายุ '+P.retireAge+(noBtc?"":' · Bitcoin โตปีละ '+g+'%')+' · ค่าเงินในอนาคต และค่าเงินวันนี้</div>'
+      +'<div class="as-bar">'+rows.map(function(a){return'<i style="width:'+(a[1]/tot*100).toFixed(2)+'%;background:'+a[2]+'"></i>';}).join("")+'</div>'
+      +'<table class="as-tbl"><tbody>'+rows.map(function(a){return'<tr><td><span class="dot" style="background:'+a[2]+'"></span>'+a[0]+'</td><td class="num">'+fmtM(a[1])+'</td><td class="num" style="color:var(--dim)">≈ '+fmtM(a[1]/dn)+'</td><td class="num">'+Math.round(a[1]/tot*100)+'%</td></tr>';}).join("")
+      +'<tr class="tot"><td>รวม</td><td class="num">'+fmtM(tot)+'</td><td class="num">≈ '+fmtM(tot/dn)+'</td><td class="num">100%</td></tr></tbody></table>';
+    key.appendChild(d);
   };
 })();
 
