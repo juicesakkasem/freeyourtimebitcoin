@@ -247,6 +247,26 @@ footer.site-foot{margin-top:56px;border-top:1px solid var(--line);padding:0;font
 .as-bar{display:flex;height:12px;border-radius:6px;overflow:hidden;margin:10px 0 8px;background:var(--surface-2)}.as-bar i{display:block;height:100%}
 .as-tbl{width:100%;border-collapse:collapse;font-size:14.5px}.as-tbl td{padding:6px 4px;border-top:1px solid var(--line)}.as-tbl td.num{text-align:right;white-space:nowrap}.as-tbl .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:8px;vertical-align:-1px}
 .as-tbl tr.tot td{font-weight:600;color:var(--bright)}
+.ed-row{display:flex;flex-wrap:wrap;align-items:flex-end;gap:8px 10px}
+.ed{display:flex;flex-direction:column;gap:3px;font-size:12px;color:var(--dim)}
+.ed input,.ed select{font:inherit;font-size:14.5px;color:var(--bright);background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:5px 8px;width:100%}
+.review-tbl .ed input{max-width:none;text-align:left;font-family:inherit}.review-tbl .ed input[inputmode=decimal]{font-family:var(--f-mono);text-align:right}
+.ed.w-l{flex:2 1 160px}.ed.w-n{flex:1 1 110px}.ed.w-a{flex:0 1 92px}.ed.w-t{flex:0 1 104px}
+.ed-row .x{align-self:center;margin-top:16px}
+.ed-add{font:inherit;font-size:14px;color:var(--orange);background:transparent;border:1px dashed var(--line);border-radius:8px;padding:6px 12px;cursor:pointer}
+.ed-add:hover{border-color:var(--orange)}
+.review-tbl input.ro{background:transparent;border-color:transparent;font-weight:700}
+tr.ex-item td{padding-top:4px;padding-bottom:4px;padding-left:22px}
+tr.ex-item+tr.ex-item .ed>span{display:none}tr.ex-item+tr.ex-item .ed-row .x{margin-top:0}
+.cmp-pick{display:flex;align-items:center;gap:10px;margin:0 0 12px;flex-wrap:wrap}.cmp-pick label{color:var(--dim);font-size:14px}
+.cmp-pick select{font:inherit;font-size:14.5px;color:var(--bright);background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:6px 10px}
+.cmp-box{margin-top:14px}.cmp-box .legend i{display:inline-block;width:16px;height:3px;border-radius:2px;margin-right:6px;vertical-align:middle}.cmp-box .legend i.ds{height:0!important;border-top:2px dashed var(--dim);background:none!important;border-radius:0}
+.cmp-box .legend span{margin-right:14px;font-size:13px;color:var(--dim)}
+.cmp-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 10px;font-size:14px;color:var(--dim);min-height:8px}.cmp-bar .btn.ghost{background:transparent;border:1px solid var(--line);color:var(--dim)}
+.cmp-tick{flex:none;width:22px;height:22px;border:2px solid var(--line);border-radius:6px;display:inline-grid;place-items:center;cursor:pointer;margin-right:4px}
+.cmp-tick:hover{border-color:var(--orange)}.cmp-tick.on{background:var(--orange);border-color:var(--orange)}.cmp-tick.on::after{content:"✓";color:#111;font-weight:800;font-size:14px}
+#acc-plans .acc-row{justify-content:flex-start}#acc-plans .acc-row>.acc-tag{margin-left:auto}
+.ed-hint{font-weight:400;color:var(--dim);font-size:12.5px;margin-left:6px}
 .y-stats{display:block;font-size:13.5px;color:var(--dim);margin-top:2px}.y-stats b{color:var(--bright);font-weight:600}
 .y-up{color:var(--good)}.y-down{color:var(--bad)}.y-same{color:var(--dim)}
 .wi-grid{display:grid;gap:14px;margin-top:6px}
@@ -527,6 +547,9 @@ function normalize(j){
   d.btcLevel=lv;
   if(d.dcaToAge===null){d.dcaToAge=d.retireAge;if(d.dca)defaultsUsed.push("dcaToAge");}
   if(d.retireIncome===null&&d.exp!==null){d.retireIncome=Math.round(d.exp*0.7/100)*100;defaultsUsed.push("retireIncome");}
+  d.expItems=(Array.isArray(j.expItems)?j.expItems:[]).map(function(x){return{label:String(x&&x.label||"รายจ่าย").slice(0,60),monthly:numOrNull(x&&x.monthly)||0};}).filter(function(x){return x.monthly>0;});
+  if(d.expItems.length&&d.exp===null){d.exp=d.expItems.reduce(function(t,x){return t+x.monthly;},0);var di=defaultsUsed.indexOf("exp");if(di>=0)defaultsUsed.splice(di,1);}
+  if(d.expItems.length&&d.exp!==null){var es=d.expItems.reduce(function(t,x){return t+x.monthly;},0);if(Math.abs(es-d.exp)>1)d.expItems.push({label:"อื่น ๆ",monthly:Math.max(0,Math.round(d.exp-es))});d.expItems=d.expItems.filter(function(x){return x.monthly>0;});}
   d.debts=(Array.isArray(j.debts)?j.debts:[]).map(function(x){return{label:String(x&&x.label||"หนี้"),monthly:numOrNull(x&&x.monthly)||0,toAge:numOrNull(x&&x.toAge)||d.retireAge}}).filter(function(x){return x.monthly>0});
   d.events=(Array.isArray(j.events)?j.events:[]).map(function(x){return{label:String(x&&x.label||"เหตุการณ์"),type:x&&x.type==="income"?"income":"expIncrease",monthly:numOrNull(x&&x.monthly)||0,fromAge:numOrNull(x&&x.fromAge)||d.age,toAge:numOrNull(x&&x.toAge)||((numOrNull(x&&x.fromAge)||d.age)+1)}}).filter(function(x){return x.monthly>0});
   var as=j.assetSale;d.assetSale=as&&numOrNull(as.amount)>0?{amount:numOrNull(as.amount),age:numOrNull(as.age)||d.retireAge}:null;
@@ -543,18 +566,55 @@ function renderReview(){
     if(f[2]==="select"){h+='<tr><td>'+f[1]+(def?' <span class="tag t-def">ค่ากลาง</span>':"")+'</td><td><div class="cell-in"><select id="f-'+f[0]+'" aria-label="'+esc(f[1])+'" style="font:inherit;font-size:14.5px;color:var(--bright);background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:5px 8px">'+LEVELS.map(function(L,i){return'<option value="'+i+'"'+(i===v?" selected":"")+">"+L.l+" "+L.g+"% ต่อปี</option>"}).join("")+"</select></div></td></tr>";return;}
     h+='<tr><td>'+f[1]+(def?' <span class="tag t-def">ค่ากลาง</span>':"")+'</td><td><div class="cell-in"><input id="f-'+f[0]+'" inputmode="decimal" value="'+(v===null?"":v.toLocaleString("th-TH",{maximumFractionDigits:2}))+'" class="'+(miss?"missing":"")+'" aria-label="'+esc(f[1])+'"><span class="unit">'+f[2]+"</span></div></td></tr>";
   });
-  var list=function(title,items,kind){
-    h+='<tr class="group"><td colspan="2">'+title+"</td></tr>";
-    if(!items.length){h+='<tr><td colspan="2" style="color:var(--dim)">ไม่มี</td></tr>';return;}
-    items.forEach(function(x,i){h+='<tr><td colspan="2"><div class="list-row"><span>'+esc(x)+'</span><button class="x" data-del="'+kind+":"+i+'" aria-label="ลบรายการนี้">×</button></div></td></tr>';});
-  };
-  list("หนี้ที่ผ่อนอยู่",data.debts.map(function(x){return x.label+" · "+fmt(x.monthly)+" บาท/เดือน ถึงอายุ "+x.toAge}),"debt");
-  list("เหตุการณ์ในอนาคต",data.events.map(function(x){return x.label+" · "+(x.type==="income"?"+":"−")+fmt(x.monthly)+" บาท/เดือน อายุ "+x.fromAge+"–"+x.toAge}),"event");
-  list("อสังหาฯ ที่จะขาย",data.assetSale?["ได้ "+fmt(data.assetSale.amount)+" บาท ตอนอายุ "+data.assetSale.age]:[],"asset");
-  $("review-rows").innerHTML=h;$("extracting").hidden=true;$("review-body").hidden=false;$("build").disabled=false;
+  var edRow=function(kind,i,cells){h+='<tr><td colspan="2"><div class="ed-row" data-kind="'+kind+'">'+cells+'<button class="x" type="button" data-del="'+kind+":"+i+'" aria-label="ลบรายการนี้">×</button></div></td></tr>';};
+  var edIn=function(k,v,ph,cls,lab){var txt=k==="label";return'<label class="ed '+cls+'"><span>'+lab+'</span><input data-k="'+k+'" inputmode="'+(txt?"text":"decimal")+'" value="'+(v===null||v===undefined||(!txt&&!v)?"":esc(txt?String(v):Number(v).toLocaleString("en-US")))+'" placeholder="'+ph+'"></label>';};
+  var edAdd=function(kind,txt){h+='<tr><td colspan="2"><button class="ed-add" type="button" data-add="'+kind+'">+ '+txt+'</button></td></tr>';};
+  h+='<tr class="group"><td colspan="2">หนี้ที่ผ่อนอยู่</td></tr>';
+  data.debts.forEach(function(x,i){edRow("debt",i,edIn("label",x.label,"เช่น ผ่อนบ้าน","w-l","ชื่อ")+edIn("monthly",x.monthly,"0","w-n","บาท/เดือน")+edIn("toAge",x.toAge,"","w-a","ผ่อนถึงอายุ"));});
+  edAdd("debt","เพิ่มหนี้");
+  h+='<tr class="group"><td colspan="2">เหตุการณ์ในอนาคต · รายจ่ายหรือรายได้เป็นช่วง <span class="ed-hint">เช่น ค่าเทอมลูก ดูแลพ่อแม่ ค่าเช่าที่ได้รับ</span></td></tr>';
+  data.events.forEach(function(x,i){edRow("event",i,edIn("label",x.label,"เช่น ค่าเทอมลูก","w-l","ชื่อ")
+    +'<label class="ed w-t"><span>ประเภท</span><select data-k="type"><option value="expIncrease"'+(x.type!=="income"?" selected":"")+'>รายจ่าย</option><option value="income"'+(x.type==="income"?" selected":"")+'>รายได้</option></select></label>'
+    +edIn("monthly",x.monthly,"0","w-n","บาท/เดือน")+edIn("fromAge",x.fromAge,"","w-a","ตั้งแต่อายุ")+edIn("toAge",x.toAge,"","w-a","ถึงอายุ"));});
+  edAdd("event","เพิ่มรายจ่ายหรือรายได้เป็นช่วง");
+  h+='<tr class="group"><td colspan="2">อสังหาฯ ที่จะขาย</td></tr>';
+  if(data.assetSale)edRow("asset",0,edIn("amount",data.assetSale.amount,"0","w-n","ได้เงิน (บาท)")+edIn("age",data.assetSale.age,"","w-a","ขายตอนอายุ"));
+  else edAdd("asset","เพิ่มอสังหาฯ ที่จะขาย");
+  $("review-rows").innerHTML=h;
+  (function(){var ex=$("f-exp");if(!ex)return;var tr=ex.closest("tr"),items=data.expItems||[],x="";
+    var cell=function(k,v,ph,cls,lab){var txt=k==="label";return'<label class="ed '+cls+'"><span>'+lab+'</span><input data-k="'+k+'" inputmode="'+(txt?"text":"decimal")+'" value="'+(v===null||v===undefined||(!txt&&!v)?"":esc(txt?String(v):Number(v).toLocaleString("en-US")))+'" placeholder="'+ph+'"></label>';};
+    items.forEach(function(it,i){x+='<tr class="ex-item"><td colspan="2"><div class="ed-row" data-kind="exp">'+cell("label",it.label,"เช่น อาหาร","w-l","หมวด")+cell("monthly",it.monthly,"0","w-n","บาท/เดือน")+'<button class="x" type="button" data-del-exp="'+i+'" aria-label="ลบรายการนี้">×</button></div></td></tr>';});
+    x+='<tr class="ex-item"><td colspan="2"><button class="ed-add" type="button" data-add="exp">+ '+(items.length?"เพิ่มรายการรายจ่าย":"แยกรายจ่ายเป็นรายการ")+'</button></td></tr>';
+    tr.insertAdjacentHTML("afterend",x);
+    if(items.length){ex.readOnly=true;ex.classList.add("ro");ex.value=expSum().toLocaleString("th-TH");ex.title="รวมจากรายการด้านล่าง";}
+  })();
+  $("extracting").hidden=true;$("review-body").hidden=false;$("build").disabled=false;
 }
-$("review-rows").addEventListener("click",function(e){var b=e.target.closest("[data-del]");if(!b)return;readReview();var p=b.getAttribute("data-del").split(":");if(p[0]==="debt")data.debts.splice(+p[1],1);if(p[0]==="event")data.events.splice(+p[1],1);if(p[0]==="asset")data.assetSale=null;renderReview();});
-function readReview(){FIELDS.forEach(function(f){if(f.length===1)return;var el=$("f-"+f[0]);if(!el)return;var n=f[2]==="select"?+el.value:numOrNull(el.value);var old=data[f[0]];data[f[0]]=n;if(n!==old){var i=defaultsUsed.indexOf(f[0]);if(i>=0)defaultsUsed.splice(i,1);}});}
+$("review-rows").addEventListener("input",function(e){if(!e.target.closest('.ed-row[data-kind="exp"]'))return;var s=0;[].forEach.call(document.querySelectorAll('#review-rows .ed-row[data-kind="exp"] [data-k="monthly"]'),function(i){s+=numOrNull(i.value)||0;});var ex=$("f-exp");if(ex)ex.value=s.toLocaleString("th-TH");});
+$("review-rows").addEventListener("click",function(e){var dx=e.target.closest("[data-del-exp]");if(dx){readReview();data.expItems.splice(+dx.getAttribute("data-del-exp"),1);if(data.expItems.length)data.exp=expSum();renderReview();return;}
+  var ad=e.target.closest("[data-add]");if(ad){readReview();var k=ad.getAttribute("data-add");
+    if(k==="exp"){if(!(data.expItems&&data.expItems.length)){data.expItems=data.exp>0?[{label:"รายจ่ายรวม",monthly:data.exp}]:[];}data.expItems.push({label:"",monthly:0});}
+    if(k==="debt")data.debts.push({label:"",monthly:0,toAge:data.retireAge||null});
+    if(k==="event")data.events.push({label:"",type:"expIncrease",monthly:0,fromAge:data.age||null,toAge:data.age?data.age+10:null});
+    if(k==="asset")data.assetSale={amount:0,age:data.retireAge||null};
+    renderReview();var rs=document.querySelectorAll('#review-rows .ed-row[data-kind="'+k+'"]'),last=rs[rs.length-1];if(last){var f=last.querySelector("input");if(f)f.focus();}return;}
+  var b=e.target.closest("[data-del]");if(!b)return;readReview();var p=b.getAttribute("data-del").split(":");if(p[0]==="debt")data.debts.splice(+p[1],1);if(p[0]==="event")data.events.splice(+p[1],1);if(p[0]==="asset")data.assetSale=null;renderReview();});
+function readLists(){
+  var rows=[].slice.call(document.querySelectorAll("#review-rows .ed-row"));if(!rows.length&&!document.querySelector("#review-rows [data-add]"))return;
+  var get=function(r,k){var e=r.querySelector('[data-k="'+k+'"]');return e?e.value:null;},n=function(r,k){return numOrNull(get(r,k));},a=function(r,k){var v=n(r,k);return v===null?null:Math.round(v);};
+  var debts=[],events=[],asset=null;
+  rows.forEach(function(r){var kind=r.getAttribute("data-kind");
+    if(kind==="debt")debts.push({label:(get(r,"label")||"").trim()||"หนี้",monthly:n(r,"monthly")||0,toAge:a(r,"toAge")});
+    if(kind==="event")events.push({label:(get(r,"label")||"").trim()||"รายจ่ายเป็นช่วง",type:get(r,"type")==="income"?"income":"expIncrease",monthly:n(r,"monthly")||0,fromAge:a(r,"fromAge"),toAge:a(r,"toAge")});
+    if(kind==="asset")asset={amount:n(r,"amount")||0,age:a(r,"age")};});
+  data.debts=debts;data.events=events;data.assetSale=asset;
+  var exRows=[].slice.call(document.querySelectorAll('#review-rows .ed-row[data-kind="exp"]'));
+  if(exRows.length||document.querySelector('#review-rows [data-add="exp"]')){
+    data.expItems=exRows.map(function(r){return{label:(get(r,"label")||"").trim()||"รายจ่าย",monthly:n(r,"monthly")||0};});
+  }
+}
+function expSum(){return(data.expItems||[]).reduce(function(t,x){return t+(x.monthly||0);},0);}
+function readReview(){readLists();if(data.expItems&&data.expItems.length){var ex=$("f-exp");if(ex)ex.value=expSum().toLocaleString("th-TH");}FIELDS.forEach(function(f){if(f.length===1)return;var el=$("f-"+f[0]);if(!el)return;var n=f[2]==="select"?+el.value:numOrNull(el.value);var old=data[f[0]];data[f[0]]=n;if(n!==old){var i=defaultsUsed.indexOf(f[0]);if(i>=0)defaultsUsed.splice(i,1);}});}
 $("build").onclick=function(){
   readReview();var errs=[];
   if(!(data.age>=18&&data.age<=80))errs.push("อายุตอนนี้ต้องอยู่ระหว่าง 18–80");
@@ -566,8 +626,14 @@ $("build").onclick=function(){
   if(data.salaryG===null)data.salaryG=SALARY_G_DEFAULT;
   if(!(data.btcLevel>=0&&data.btcLevel<=2))data.btcLevel=1;
   if(data.dcaToAge===null)data.dcaToAge=data.retireAge;
+  data.debts.forEach(function(d){if(d.monthly>0&&!(d.toAge>data.age))errs.push((d.label||"หนี้")+": ผ่อนถึงอายุต้องมากกว่าอายุตอนนี้");});
+  data.events.forEach(function(x){if(x.monthly>0&&!(x.fromAge>0&&x.toAge>x.fromAge))errs.push((x.label||"รายการเป็นช่วง")+": ใส่อายุเริ่มและอายุสิ้นสุด โดยอายุสิ้นสุดต้องมากกว่าอายุเริ่ม");});
+  if(data.assetSale&&data.assetSale.amount>0&&!(data.assetSale.age>=data.age))errs.push("อสังหาฯ ที่จะขาย: ใส่อายุที่ขาย");
   if(errs.length){$("review-err").textContent=errs.join(" · ");$("review-err").hidden=false;renderReview();return;}
-  $("review-err").hidden=true;renderPlan();
+  $("review-err").hidden=true;
+  if(data.expItems){data.expItems=data.expItems.filter(function(x){return x.monthly>0;});if(data.expItems.length)data.exp=expSum();}
+  data.debts=data.debts.filter(function(d){return d.monthly>0;});data.events=data.events.filter(function(x){return x.monthly>0;});if(data.assetSale&&!(data.assetSale.amount>0))data.assetSale=null;
+  renderPlan();
 };
 
 // ---------- plan engine (same idea as retirement plan.html, DCA taken from savings) ----------
@@ -1232,7 +1298,13 @@ if(ACCT){
     var P=data,now=planStats(P);
     accData().then(function(j){
       var built=j.plans.filter(function(x){return x.inputs;}),k=built.map(function(x){return x.id;}).indexOf(planId),prev=k>=0?built[k+1]:built[0];
+      var others=built.filter(function(x){return x.id!==planId;}),want=new URLSearchParams(location.search).get("cmp");
+      if(want&&others.some(function(x){return x.id===want;}))prev=others.filter(function(x){return x.id===want;})[0];
+      if(!prev&&others.length)prev=others[0];
       if(prev&&prev.id!==planId){
+        window.drawCompare(cmpSec,P,now,prev,others);
+      }else cmpSec.remove();
+      if(false){
         var Q=prev.inputs,b=planStats(Q);
         var r=function(label,a,bv,fa,hib){return"<tr><td>"+label+'</td><td class="r num">'+fa(bv)+'</td><td class="r num"><b>'+fa(a)+"</b>"+arrow(a,bv,hib)+"</td></tr>";};
         var m=function(v){return fmtM(v);},yr=function(v){return v+" ปี";},pc=function(v){return Math.min(999,v)+"%";},bt=function(v){return fmt(v);};
@@ -1247,7 +1319,7 @@ if(ACCT){
           +r("รายจ่ายต่อเดือน",P.exp,Q.exp,bt,false)
           +r("DCA ต่อเดือน",P.dca||0,Q.dca||0,bt,null)
           +"</tbody></table></div>";
-      }else cmpSec.remove();
+      }
       renderWhatIf(wiSec,P,now,j);
     }).catch(function(){cmpSec.remove();renderWhatIf(wiSec,P,now,null);});
     // the site's calculators, opened with this plan's numbers
@@ -1406,6 +1478,76 @@ function btcToolLink(path,m,px){
     key.appendChild(d);
   };
 })();
+
+if(ACCT){
+  var cmpLabel=function(x){return thDate(x.created)+" · "+(x.kind==="adjust"?"ปรับตัวเลข":"คุยกับ AI");};
+  window.drawCompare=function(sec,P,now,other,others){
+    var Q=other.inputs,b=planStats(Q);
+    var r=function(label,a,bv,fa,hib){return"<tr><td>"+label+'</td><td class="r num">'+fa(bv)+'</td><td class="r num"><b>'+fa(a)+"</b>"+arrow(a,bv,hib)+"</td></tr>";};
+    var m=function(v){return fmtM(v);},yr=function(v){return v+" ปี";},pc=function(v){return Math.min(999,v)+"%";},bt=function(v){return fmt(v);};
+    var gOf=function(X){var nb=!(X.btcValue>0)&&!(X.dca>0);return nb?null:LEVELS[X.btcLevel==null?1:X.btcLevel].g;},ga=gOf(P),gb=gOf(Q);
+    sec.innerHTML='<div class="sec-head"><h2>เทียบกับแผนอื่น</h2><p>ลูกศรเขียว = แผนนี้ดีขึ้น แดง = แย่ลง</p></div>'
+      +'<div class="cmp-pick"><label for="cmp-sel">เทียบกับ</label><select id="cmp-sel">'+others.map(function(x){return'<option value="'+x.id+'"'+(x.id===other.id?" selected":"")+">"+esc(cmpLabel(x))+"</option>";}).join("")+'</select></div>'
+      +'<div class="tbl"><table style="min-width:420px"><thead><tr><th></th><th class="r">แผนที่เลือก</th><th class="r">แผนนี้</th></tr></thead><tbody>'
+      +r("ความพร้อมวัน Free Your Time",now.pct,b.pct,pc,true)
+      +r("อายุ Free Your Time",P.retireAge,Q.retireAge,yr,null)
+      +r("เงินวัน Free Your Time (ค่าเงินวันนี้)",now.retToday,b.retToday,m,true)
+      +r("เงินที่ควรมี (ค่าเงินวันนี้)",now.needToday,b.needToday,m,false)
+      +r("เงินพอใช้ถึงอายุ",now.lasts,b.lasts,yr,true)
+      +r("เงินที่มีตอนทำแผน",now.have,b.have,m,true)
+      +r("รายจ่ายต่อเดือน",P.exp,Q.exp,bt,false)
+      +r("DCA ต่อเดือน",P.dca||0,Q.dca||0,bt,null)
+      +"</tbody></table></div>"
+      +(ga!==gb?'<p class="foot-note">สองแผนใช้สมมติฐาน Bitcoin ต่างกัน: แผนที่เลือก '+(gb==null?"ไม่มี Bitcoin":gb+"%/ปี")+' · แผนนี้ '+(ga==null?"ไม่มี Bitcoin":ga+"%/ปี")+'</p>':"")
+      +'<div class="chart-box cmp-box"><div class="legend"><span><i style="background:var(--orange)"></i>แผนนี้</span><span><i class="ds"></i>แผนที่เลือก</span><span class="ch-hint">ค่าเงินวันนี้ · ชี้หรือแตะที่กราฟเพื่อดูตัวเลข</span></div><div style="overflow-x:auto"><svg id="cmp-chart" viewBox="0 0 760 300" width="100%" role="img" aria-label="กราฟเทียบเงินตลอดชีวิตของสองแผน"></svg></div></div>';
+    $("cmp-sel").onchange=function(){var id=this.value,o=others.filter(function(x){return x.id===id;})[0];if(o)window.drawCompare(sec,P,now,o,others);try{var u=new URL(location.href);u.searchParams.set("cmp",id);history.replaceState(null,"",u);}catch(e){}};
+    // chart: money over age for both plans, in today's money of each plan's own start
+    var line=function(X,s){var inf=X.inflation/100;return s.ports.map(function(v,i){return{age:X.age+i,v:Math.max(0,v)/Math.pow(1+inf,i)};});};
+    var A=line(P,now),B=line(Q,b),all=A.concat(B),a0=Math.min(A[0].age,B[0].age),a1=Math.max(A[A.length-1].age,B[B.length-1].age);
+    var mx=Math.max.apply(null,all.map(function(z){return z.v;}))||1,W=760,H=300,L=64,R=16,T=18,BT=34;
+    var x=function(a){return L+(a-a0)/(a1-a0||1)*(W-L-R);},y=function(v){return H-BT-v/mx*(H-T-BT);};
+    var s="";for(var i=0;i<=4;i++){var yy=y(mx*i/4);s+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+yy+'" y2="'+yy+'" stroke="var(--line)"/><text x="'+(L-8)+'" y="'+(yy+4)+'" text-anchor="end" font-size="11" fill="var(--dim)">'+fmtM(mx*i/4)+'</text>';}
+    var st=Math.max(5,Math.ceil((a1-a0)/8/5)*5);for(var a=Math.ceil(a0/st)*st;a<=a1;a+=st)s+='<text x="'+x(a)+'" y="'+(H-12)+'" text-anchor="middle" font-size="11" fill="var(--dim)">'+a+'</text>';
+    var path=function(D){return D.map(function(z,j){return(j?"L":"M")+x(z.age).toFixed(1)+" "+y(z.v).toFixed(1);}).join(" ");};
+    s+='<line x1="'+x(Q.retireAge)+'" x2="'+x(Q.retireAge)+'" y1="'+T+'" y2="'+(H-BT)+'" stroke="var(--dim)" stroke-dasharray="3 4"/>';
+    if(P.retireAge!==Q.retireAge)s+='<line x1="'+x(P.retireAge)+'" x2="'+x(P.retireAge)+'" y1="'+T+'" y2="'+(H-BT)+'" stroke="var(--orange)" stroke-opacity=".6" stroke-dasharray="3 4"/>';
+    s+='<path d="'+path(B)+'" fill="none" stroke="var(--dim)" stroke-width="2.2" stroke-dasharray="6 5"/><path d="'+path(A)+'" fill="none" stroke="var(--orange)" stroke-width="2.6"/>';
+    s+='<line id="cmp-gd" y1="'+T+'" y2="'+(H-BT)+'" stroke="var(--bright)" stroke-opacity=".5" visibility="hidden"/>';
+    var svg=$("cmp-chart");svg.innerHTML=s;
+    var box=sec.querySelector(".cmp-box"),tip=document.createElement("div");tip.className="ch-tip";tip.hidden=true;box.appendChild(tip);
+    var gd=$("cmp-gd"),hide=function(){tip.hidden=true;gd.setAttribute("visibility","hidden");};
+    var at=function(e){var rc=svg.getBoundingClientRect(),sx=(e.clientX-rc.left)/rc.width*W;if(sx<L-10||sx>W-R+10){hide();return;}
+      var age=Math.round(a0+(sx-L)/(W-L-R)*(a1-a0)),fa=A.filter(function(z){return z.age===age;})[0],fb=B.filter(function(z){return z.age===age;})[0];
+      gd.setAttribute("x1",x(age));gd.setAttribute("x2",x(age));gd.setAttribute("visibility","visible");
+      tip.innerHTML='<b>อายุ '+age+'</b><div><i style="background:var(--orange)"></i>แผนนี้<span class="num">'+(fa?fmtM(fa.v):"–")+'</span></div><div><i style="background:var(--dim)"></i>แผนที่เลือก<span class="num">'+(fb?fmtM(fb.v):"–")+'</span></div><small>ค่าเงินวันนี้</small>';
+      tip.hidden=false;var bx=box.getBoundingClientRect(),px=e.clientX-bx.left,tw=tip.offsetWidth;
+      tip.style.left=Math.max(4,Math.min(bx.width-tw-4,px+(px+tw+16>bx.width?-tw-12:12)))+"px";tip.style.top=Math.max(4,e.clientY-bx.top-tip.offsetHeight-12)+"px";};
+    svg.onpointermove=at;svg.onpointerdown=at;svg.onpointerleave=hide;
+  };
+
+  // dashboard: tick two built plans, then compare them on the newer plan's page
+  var _renderAccountCmp=renderAccount;
+  renderAccount=function(j){
+    _renderAccountCmp(j);
+    var rows=document.querySelectorAll("#acc-plans .acc-row"),picked=[];
+    var bar=document.getElementById("cmp-bar");if(!bar){bar=document.createElement("div");bar.id="cmp-bar";bar.className="cmp-bar";$("acc-plans").parentNode.insertBefore(bar,$("acc-plans"));}
+    var builtN=j.plans.filter(function(x){return x.inputs;}).length;
+    var paint=function(){
+      bar.innerHTML=builtN<2?"":(picked.length<2?'<span>ติ๊ก ☐ 2 แผนที่อยากเทียบ'+(picked.length?" (เลือกแล้ว 1)":"")+'</span>':'<button class="btn" type="button" id="cmp-go">เทียบ 2 แผนที่เลือก →</button><button class="btn ghost" type="button" id="cmp-clear">ล้าง</button>');
+      [].forEach.call(document.querySelectorAll("#acc-plans .cmp-tick"),function(t){var on=picked.indexOf(t.getAttribute("data-id"))>=0;t.classList.toggle("on",on);t.setAttribute("aria-checked",String(on));});
+      var go=$("cmp-go");if(go)go.onclick=function(){var ids=j.plans.map(function(x){return x.id;}),s=picked.slice().sort(function(a,b){return ids.indexOf(a)-ids.indexOf(b);});location.href="/plan/?id="+s[0]+"&a="+ACCT+"&cmp="+s[1];};
+      var cl=$("cmp-clear");if(cl)cl.onclick=function(){picked=[];paint();};
+    };
+    j.plans.forEach(function(x,i){
+      if(!x.inputs||!rows[i]||builtN<2)return;
+      var t=document.createElement("span");t.className="cmp-tick";t.setAttribute("role","checkbox");t.setAttribute("tabindex","0");t.setAttribute("data-id",x.id);t.setAttribute("aria-label","เลือกแผนนี้มาเทียบ");
+      var tog=function(e){e.preventDefault();e.stopPropagation();var k=picked.indexOf(x.id);if(k>=0)picked.splice(k,1);else{if(picked.length>=2)picked.shift();picked.push(x.id);}paint();};
+      t.onclick=tog;t.onkeydown=function(e){if(e.key===" "||e.key==="Enter")tog(e);};
+      rows[i].insertBefore(t,rows[i].firstChild);
+    });
+    paint();
+  };
+}
 
 // mobile menu, same as the homepage
 (function(){var nav=document.querySelector(".nav"),b=document.querySelector(".menu-btn");if(b)b.onclick=function(){var o=nav.classList.toggle("open");b.setAttribute("aria-expanded",String(o));};})();
