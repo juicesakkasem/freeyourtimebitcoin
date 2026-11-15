@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ต้องมี BTC เท่าไหร่ถึงพอ — วันหยุดทำงาน</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style id="fyt-theme">
+/* ===== FreeyourtimeBitcoin: ธีมเดียวกับหน้าแรก ===== */
+html body{padding-top:0!important;background:#0b0a09!important;color:#d9d3cb;font-family:'Noto Sans Thai', system-ui, -apple-system, 'Segoe UI', sans-serif!important}
+html body .font-sans{font-family:'Noto Sans Thai', system-ui, -apple-system, 'Segoe UI', sans-serif!important}
+.fyt-nav{position:sticky;top:0;z-index:1000;background:rgba(11,10,9,.86);backdrop-filter:saturate(140%) blur(12px);-webkit-backdrop-filter:saturate(140%) blur(12px);border-bottom:1px solid #24211e;line-height:1.6;font-family:'Noto Sans Thai', system-ui, -apple-system, 'Segoe UI', sans-serif}
+.fyt-nav *{box-sizing:border-box}
+.fyt-nav .nav-in{max-width:1080px;margin:0 auto;padding:0 24px;height:64px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.fyt-nav .brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:#f4f0ea;font-weight:700;font-size:17px;white-space:nowrap}
+.fyt-nav .brand .mk{width:30px;height:30px;border-radius:50%;background:#f7931a;color:#1a1206;display:grid;place-items:center;font-size:17px;line-height:1;flex:none}
+.fyt-nav .brand b{color:#f7931a;font-weight:700}
+.fyt-nav .links{display:flex;align-items:center;gap:28px;list-style:none;margin:0;padding:0}
+.fyt-nav .links a{text-decoration:none;color:#a0978f;font-size:15.5px;font-weight:500;transition:color .2s}
+.fyt-nav .links a:hover{color:#f4f0ea}
+.fyt-nav .links .start{color:#f7931a}
+.fyt-nav .menu-btn{display:none;width:42px;height:42px;border:1px solid #34302b;border-radius:10px;background:transparent;cursor:pointer;place-content:center;gap:5px;padding:0}
+.fyt-nav .menu-btn span{display:block;width:18px;height:2px;background:#f4f0ea;border-radius:2px;transition:transform .2s,opacity .2s}
+.fyt-nav.open .menu-btn span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.fyt-nav.open .menu-btn span:nth-child(2){opacity:0}
+.fyt-nav.open .menu-btn span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+@media (max-width:980px){
+  .fyt-nav .menu-btn{display:grid}
+  .fyt-nav .links{display:none;position:absolute;top:64px;left:0;right:0;flex-direction:column;align-items:stretch;gap:0;background:#0b0a09;border-bottom:1px solid #24211e;box-shadow:0 18px 40px rgba(0,0,0,.55);padding:6px 0 10px}
+  .fyt-nav.open .links{display:flex}
+  .fyt-nav .links a{display:block;padding:12px 16px;font-size:17px}
+}
+@media (max-width:640px){ .fyt-nav .nav-in{padding:0 16px} }
+.fyt-head{position:relative;isolation:isolate;border-bottom:1px solid #24211e;margin-bottom:24px;font-family:'Noto Sans Thai', system-ui, -apple-system, 'Segoe UI', sans-serif}
+.fyt-head::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(50% 80% at 85% 30%, rgba(247,147,26,.14), transparent 65%)}
+.fyt-head .in{max-width:1080px;margin:0 auto;padding:44px 24px 32px}
+.fyt-head .eyebrow{margin:0 0 10px;font-size:13px;font-weight:600;color:#f7931a}
+.fyt-head h1{margin:0;font-family:'Noto Sans Thai', system-ui, -apple-system, 'Segoe UI', sans-serif;font-weight:600;color:#f4f0ea;font-size:clamp(28px,4.6vw,42px);line-height:1.3;letter-spacing:0;background:none;-webkit-text-fill-color:currentColor}
+.fyt-head .sub{margin:12px 0 0;font-size:17px;line-height:1.7;color:#d9d3cb;max-width:38em}
+@media (max-width:640px){ .fyt-head .in{padding:32px 16px 24px} }
+.fyt-foot{border-top:1px solid #24211e;margin-top:40px;font-family:'Noto Sans Thai', system-ui, -apple-system, 'Segoe UI', sans-serif}
+.fyt-foot div{max-width:1080px;margin:0 auto;padding:28px 24px 40px;font-size:14px;line-height:1.7;color:#766e66}
+.fyt-foot a{color:#a0978f}
+@media print{ .fyt-nav,.fyt-head,.fyt-foot{display:none!important} }
+
+html:root, html:root[data-theme]{
+  --bg:#0b0a09; --surface:#121110; --surface-2:#191715;
+  --ink:#f4f0ea; --ink-2:#a0978f; --ink-3:#766e66;
+  --border:#24211e; --border-2:#34302b;
+  --accent:#f7931a; --accent-2:#ffa739; --accent-soft:rgba(247,147,26,.11);
+  --grid:rgba(255,255,255,.06);
+  --good:#8fd19e; --good-bg:rgba(110,190,125,.12);
+  --warn:#ffc477; --warn-bg:rgba(247,147,26,.13);
+  --bad:#ff9b9b; --bad-bg:rgba(230,90,90,.13);
+  --sans:'Noto Sans Thai', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color-scheme:dark;
+}
+#theme{display:none!important}
+
+/* หัวข้อเดิมของหน้า (มีหัวข้อใหม่ด้านบนแทน) */
+.wrap > header.top{display:none!important}
+</style>
+<meta name="description" content="ต้องมี Bitcoin กี่เหรียญในวันที่หยุดทำงาน ถึงพอใช้ถึงอายุที่วางแผน และต้อง DCA เดือนละเท่าไหร่ หักจาก Bitcoin ที่มีอยู่แล้ว">
+<link rel="canonical" href="https://freeyourtimebitcoin.cashualme.com/btc-how-much.html">
+<meta name="author" content="Juice Sakkasem">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="FreeyourtimeBitcoin">
+<meta property="og:locale" content="th_TH">
+<meta property="og:url" content="https://freeyourtimebitcoin.cashualme.com/btc-how-much.html">
+<meta property="og:title" content="ต้องมี BTC เท่าไหร่ถึงพอ">
+<meta property="og:description" content="ต้องมี Bitcoin กี่เหรียญในวันที่หยุดทำงาน และต้อง DCA เดือนละเท่าไหร่">
+<meta name="twitter:card" content="summary">
+<style>
+  :root{--mono:ui-monospace,"SF Mono","Cascadia Code","Segoe UI Mono",Consolas,monospace;--s1:#f7931a;--s2:#8fa3b8}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans)}
+  [hidden]{display:none!important}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px 40px;line-height:1.6}
+  @media (max-width:640px){.wrap{padding:0 16px 32px}}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px 20px;margin-bottom:18px}
+  @media (max-width:480px){.card{padding:16px 14px}}
+  h2{margin:0 0 4px;font-size:18px;font-weight:600;color:var(--ink)}
+  .sub{margin:0 0 14px;font-size:13.5px;color:var(--ink-2)}
+  .inputs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px 14px}
+  @media (max-width:820px){.inputs{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  .grp{grid-column:1/-1;font-size:13px;font-weight:600;color:var(--ink);padding-top:12px;border-top:1px solid var(--border)}
+  .grp:first-child{padding-top:0;border-top:0}
+  .field label{display:block;font-size:12.5px;color:var(--ink-2);margin-bottom:5px}
+  .field .in{display:flex;align-items:center;gap:6px;background:var(--surface-2);border:1px solid var(--border-2);border-radius:9px;padding:0 10px}
+  .field .in:focus-within{outline:2px solid var(--accent);outline-offset:1px;border-color:transparent}
+  .field input{flex:1;min-width:0;font-family:var(--mono);font-size:16px;font-weight:600;color:var(--ink);background:transparent;border:0;padding:8px 0;outline:none;font-variant-numeric:tabular-nums}
+  .field .u{font-size:12px;color:var(--ink-3);white-space:nowrap}
+  .field small{display:block;font-size:11px;color:var(--ink-3);margin-top:4px}
+  .tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:18px}
+  @media (max-width:760px){.tiles{grid-template-columns:minmax(0,1fr)}}
+  .tile{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px 18px}
+  .tile .lb{font-size:13px;color:var(--ink-2)}
+  .tile .big{font-family:var(--mono);font-size:26px;font-weight:700;color:var(--ink);margin:4px 0 2px;font-variant-numeric:tabular-nums}
+  .tile.main .big{color:var(--accent)}
+  .tile .ex{font-size:12.5px;color:var(--ink-3)}
+  .tile .rows{margin-top:8px;border-top:1px solid var(--border);padding-top:8px;font-size:13px}
+  .tile .rows div{display:flex;justify-content:space-between;gap:8px}
+  .tile .rows b{font-family:var(--mono);color:var(--ink)}
+  .ok{color:var(--good)!important}
+  .cbox{position:relative}
+  .cbox svg{display:block;width:100%;height:auto;touch-action:pan-y}
+  .tip{position:absolute;z-index:3;pointer-events:none;background:var(--surface-2);border:1px solid var(--border-2);border-radius:9px;padding:8px 11px;font-size:12.5px;box-shadow:0 6px 20px rgba(0,0,0,.35);min-width:170px}
+  .tip b{display:block;color:var(--ink)}
+  .tip span{font-family:var(--mono)}
+  .note{margin:10px 0 0;font-size:12.5px;color:var(--ink-3)}
+  .warnbox{border:1px solid var(--warn);background:var(--warn-bg);border-radius:12px;padding:14px 16px;margin-bottom:18px;font-size:14.5px;color:var(--ink-2)}
+  .warnbox b{color:var(--ink)}
+  .warnbox a{color:var(--accent)}
+  details.yt summary{cursor:pointer;font-size:14px;font-weight:600;color:var(--accent);padding:4px 0}
+  .tscroll{overflow-x:auto;margin-top:8px}
+  .yt table{width:100%;border-collapse:collapse;font-size:13px}
+  .yt th,.yt td{padding:7px 10px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+  .yt th:first-child,.yt td:first-child{text-align:left}
+  .yt thead th{font-size:12px;font-weight:600;color:var(--ink-3);border-bottom:1px solid var(--border)}
+  .yt tbody td{font-family:var(--mono);border-bottom:1px solid var(--grid)}
+  .yt td.dn{color:var(--bad)} .yt td.bt{color:var(--accent)}
+</style>
+</head>
+<body>
+<header class="fyt-nav" id="top">
+  <div class="nav-in">
+    <a class="brand" href="index.html" aria-label="FreeyourtimeBitcoin หน้าแรก">
+      <span class="mk" aria-hidden="true">₿</span>
+      <span>Freeyourtime<b>Bitcoin</b></span>
+    </a>
+    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="เปิดเมนู">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="links" id="nav-links">
+      <li><a class="start" href="guide.html">คู่มือวางแผนการเงินด้วย Bitcoin</a></li>
+      <li><a href="index.html#tools">เครื่องมือวางแผนการเงิน</a></li>
+      <li><a href="index.html#articles">บทความ</a></li>
+      <li><a href="course.html">คอร์ส</a></li>
+      <li><a href="index.html#about">เกี่ยวกับ</a></li>
+    </ul>
+  </div>
+</header>
+<section class="fyt-head">
+  <div class="in">
+    <p class="eyebrow">เครื่องมือวางแผนการเงิน</p>
+    <h1>ต้องมี BTC เท่าไหร่ถึงพอ</h1>
+    <p class="sub">วันที่หยุดทำงาน ต้องมี Bitcoin กี่เหรียญถึงพอใช้ถึงอายุที่วางแผน และต้อง DCA เดือนละเท่าไหร่ หักจาก Bitcoin ที่มีอยู่แล้ว</p>
+  </div>
+</section>
+
+<div class="wrap">
+  <section class="card" aria-label="ค่าที่ตั้ง">
+    <div class="inputs">
+      <div class="grp">อายุ</div>
+      <div class="field"><label for="age">อายุตอนนี้</label><div class="in"><input id="age" type="text" inputmode="numeric" value="40"><span class="u">ปี</span></div></div>
+      <div class="field"><label for="retireAge">อายุที่อยากหยุดทำงาน</label><div class="in"><input id="retireAge" type="text" inputmode="numeric" value="60"><span class="u">ปี</span></div></div>
+      <div class="field"><label for="lifeExpect">วางแผนใช้เงินถึงอายุ</label><div class="in"><input id="lifeExpect" type="text" inputmode="numeric" value="85"><span class="u">ปี</span></div></div>
+      <div></div>
+      <div class="grp">เงินและ Bitcoin</div>
+      <div class="field"><label for="exp">ค่าใช้จ่ายหลังหยุดทำงาน</label><div class="in"><input id="exp" type="text" inputmode="numeric" value="50,000"><span class="u">บาท/เดือน</span></div><small>ค่าเงินวันนี้</small></div>
+      <div class="field"><label for="btc">Bitcoin ที่มีแล้ว</label><div class="in"><input id="btc" type="text" inputmode="decimal" value="0"><span class="u">₿</span></div></div>
+      <div class="field"><label for="price">ราคา BTC วันนี้</label><div class="in"><input id="price" type="text" inputmode="numeric" value="3,000,000"><span class="u">บาท</span></div><small id="priceNote">กำลังดึงราคาสด…</small></div>
+      <div></div>
+      <div class="grp">สมมติฐาน</div>
+      <div class="field"><label for="infl">เงินเฟ้อ</label><div class="in"><input id="infl" type="text" inputmode="decimal" value="3"><span class="u">% / ปี</span></div></div>
+      <div class="field"><label for="growth">Bitcoin โตเฉลี่ย</label><div class="in"><input id="growth" type="text" inputmode="decimal" value="15"><span class="u">% / ปี</span></div><small>ค่าเฉลี่ยระยะยาว ไม่ใช่การทำนาย</small></div>
+    </div>
+  </section>
+
+  <div class="tiles">
+    <div class="tile main"><div class="lb">ต้องมีวันหยุดทำงาน</div><div class="big" id="oTarget">–</div><div class="ex" id="oTargetThb"></div>
+      <div class="rows" id="oHaveBox" hidden><div><span>มีแล้ว</span><b id="oHave"></b></div><div><span>ต้องสะสมเพิ่ม</span><b id="oLeft"></b></div></div></div>
+    <div class="tile"><div class="lb">ต้อง DCA เดือนละ</div><div class="big" id="oDca">–</div><div class="ex" id="oDcaEx"></div></div>
+    <div class="tile"><div class="lb">ตามสมมติฐาน วันหยุดทำงาน</div><div class="big" id="oPriceRet" style="font-size:21px">–</div><div class="ex" id="oExpRet"></div></div>
+  </div>
+
+  <div class="warnbox">
+    <b>⚠️ ตัวเลขนี้คิดว่าราคาโตเรียบ ๆ ทุกปี</b> แต่ราคาจริงขึ้นลงเป็นรอบ และเคยลดลงมากกว่าครึ่งในบางช่วง ถ้าต้องขาย Bitcoin มาใช้ตอนราคาต่ำ จะใช้เหรียญมากกว่าในตาราง
+    ลองดูเพิ่มที่ <a href="btc-retirement-withdrawal.html">วางแผน Bitcoin หลังเกษียณ</a> (ถอนใช้จริงตามรอบราคา) และ <a href="btc-cash-bucket.html">สำรองเงินสดหลังเกษียณ</a>
+  </div>
+
+  <section class="card">
+    <h2>Bitcoin ที่มี ตลอดช่วงอายุ</h2>
+    <p class="sub">ช่วงสะสม DCA จนถึงวันหยุดทำงาน แล้วทยอยขายใช้จนถึงอายุที่วางแผน · ชี้หรือแตะกราฟเพื่อดูตัวเลข</p>
+    <div class="cbox" id="cbox"><svg id="chart" viewBox="0 0 760 300" role="img" aria-label="กราฟจำนวน Bitcoin ตามอายุ"></svg><div class="tip" id="tip" hidden></div></div>
+    <details class="yt"><summary>ดูตารางรายปีหลังหยุดทำงาน</summary><div class="tscroll"><table>
+      <thead><tr><th>อายุ</th><th>ค่าใช้จ่ายต่อปี</th><th>ขาย BTC</th><th>BTC เหลือ</th><th>มูลค่าที่เหลือ</th></tr></thead>
+      <tbody id="yt"></tbody></table></div></details>
+  </section>
+</div>
+
+<footer class="fyt-foot"><div>
+  <p>เครื่องมือนี้ทำขึ้นเพื่อการศึกษา ไม่ใช่คำแนะนำการลงทุน ตัวเลขทุกตัวเป็นการจำลองจากสมมติฐานที่คุณปรับเองได้ ไม่ใช่การทำนายราคา · ราคาวันนี้จาก CoinGecko</p>
+  <p style="margin-top:8px"><a href="index.html">← กลับหน้าแรก</a> · © 2026 FreeyourtimeBitcoin</p>
+</div></footer>
+
+<script>
+(function(){
+  "use strict";
+  var $=function(id){return document.getElementById(id);};
+  var num=function(id){var v=parseFloat(String($(id).value).replace(/,/g,""));return isFinite(v)?v:0;};
+  var grp=function(v,d){return Number(v).toLocaleString("en-US",{maximumFractionDigits:d||0});};
+  var baht=function(v){return grp(Math.round(v))+" บาท";};
+  var bahtM=function(v){return v>=1e6?grp(v/1e6,v>=1e8?0:1)+" ล้านบาท":baht(v);};
+  var coin=function(v){return (v>=10?grp(v,2):v>=1?grp(v,3):Number(v).toFixed(4))+" ₿";};
+  var W=760,H=300,L=56,R=16,T=16,B=34,data=null;
+
+  function calc(){
+    var age=Math.round(num("age")),ra=Math.round(num("retireAge")),le=Math.round(num("lifeExpect"));
+    var exp=num("exp"),have=Math.max(0,num("btc")),px=num("price"),inf=num("infl")/100,g=num("growth")/100;
+    if(!(ra>age)||!(le>ra)||!(px>0)||!(exp>0)){$("oTarget").textContent="–";$("oDca").textContent="–";return;}
+    var ys=ra-age,yr=le-ra+1;
+    var expRet=exp*Math.pow(1+inf,ys),pxRet=px*Math.pow(1+g,ys);
+    var need1=expRet*12/pxRet,f=(1+inf)/(1+g);
+    var target=Math.abs(f-1)<1e-9?need1*yr:need1*(1-Math.pow(f,yr))/(1-f);
+    var left=Math.max(0,target-have),m=g!==0?Math.pow(1+g,1/12)-1:0,N=ys*12,F=left*pxRet;
+    var dca=m>0?F*m/(Math.pow(1+m,N)-1):F/N;
+    // holdings: accumulation then withdrawals at the assumed price path
+    var pts=[];
+    for(var i=0;i<=ys;i++){var mo=i*12,acc=mo>0?(m>0?dca*(Math.pow(1+m,mo)-1)/m:dca*mo):0,p=px*Math.pow(1+g,i);pts.push({age:age+i,btc:have+(p>0?acc/p:0),px:p});}
+    var bal=Math.max(target,have),rows=[];
+    for(var k=0;k<yr;k++){var a=ra+k,spend=expRet*12*Math.pow(1+inf,k),p2=pxRet*Math.pow(1+g,k),sell=spend/p2,end=Math.max(0,bal-sell);
+      rows.push('<tr><td>'+a+'</td><td>'+grp(spend)+'</td><td class="dn">−'+Number(sell).toFixed(4)+'</td><td class="bt">'+Number(end).toFixed(4)+'</td><td>'+grp(end*p2)+'</td></tr>');
+      pts.push({age:a+1,btc:end,px:p2*(1+g)});bal=end;}
+    $("oTarget").textContent=coin(target);
+    $("oTargetThb").textContent="≈ "+bahtM(target*pxRet)+" ตามราคาวันนั้น";
+    $("oHaveBox").hidden=!(have>0);
+    if(have>0){$("oHave").textContent=coin(have);$("oLeft").textContent=coin(left);}
+    if(left<=0){$("oDca").textContent="0 บาท";$("oDca").classList.add("ok");$("oDcaEx").textContent="Bitcoin ที่มีแล้วพอตามสมมติฐานนี้";}
+    else{$("oDca").textContent=baht(dca);$("oDca").classList.remove("ok");$("oDcaEx").textContent="ทุกเดือน อีก "+ys+" ปี (ราคาโตตามสมมติฐาน)";}
+    $("oPriceRet").textContent="1 BTC ≈ "+bahtM(pxRet);
+    $("oExpRet").textContent="ค่าใช้จ่ายวันนั้น "+baht(expRet)+" ต่อเดือน (เงินเฟ้อ "+num("infl")+"%)";
+    $("yt").innerHTML=rows.join("");
+    data={pts:pts,ra:ra};draw();
+  }
+
+  function draw(){
+    if(!data)return;var p=data.pts,a0=p[0].age,a1=p[p.length-1].age,mx=Math.max.apply(null,p.map(function(q){return q.btc;}))||1;
+    var x=function(a){return L+(a-a0)/(a1-a0||1)*(W-L-R);},y=function(v){return H-B-v/mx*(H-T-B);};
+    var s="",i;
+    for(i=0;i<=4;i++){var v=mx*i/4,yy=y(v);s+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+yy+'" y2="'+yy+'" stroke="var(--grid)"/><text x="'+(L-8)+'" y="'+(yy+4)+'" text-anchor="end" font-size="11" fill="var(--ink-3)">'+(mx>=10?grp(v,0):Number(v).toFixed(2))+'</text>';}
+    var step=Math.max(1,Math.ceil((a1-a0)/8/5)*5);
+    for(var a=Math.ceil(a0/step)*step;a<=a1;a+=step)s+='<text x="'+x(a)+'" y="'+(H-12)+'" text-anchor="middle" font-size="11" fill="var(--ink-3)">'+a+'</text>';
+    var d=p.map(function(q,j){return(j?"L":"M")+x(q.age).toFixed(1)+" "+y(q.btc).toFixed(1);}).join(" ");
+    s+='<path d="'+d+" L"+x(a1)+" "+y(0)+" L"+x(a0)+" "+y(0)+' Z" fill="var(--accent-soft)"/>';
+    s+='<path d="'+d+'" fill="none" stroke="var(--accent)" stroke-width="2.5"/>';
+    s+='<line x1="'+x(data.ra)+'" x2="'+x(data.ra)+'" y1="'+T+'" y2="'+(H-B)+'" stroke="var(--ink-2)" stroke-dasharray="4 4"/><text x="'+(x(data.ra)+6)+'" y="'+(T+12)+'" font-size="11.5" fill="var(--ink-2)">หยุดทำงาน '+data.ra+'</text>';
+    s+='<line id="gd" y1="'+T+'" y2="'+(H-B)+'" stroke="var(--ink-2)" stroke-opacity=".5" visibility="hidden"/>';
+    var svg=$("chart");svg.innerHTML=s;
+    var tip=$("tip"),gd=$("gd"),box=$("cbox");
+    var hide=function(){tip.hidden=true;gd.setAttribute("visibility","hidden");};
+    var at=function(e){var rc=svg.getBoundingClientRect(),sx=(e.clientX-rc.left)/rc.width*W;if(sx<L-10||sx>W-R+10){hide();return;}
+      var age=Math.round(a0+(sx-L)/(W-L-R)*(a1-a0)),q=p.filter(function(z){return z.age===age;})[0];if(!q){hide();return;}
+      gd.setAttribute("x1",x(age));gd.setAttribute("x2",x(age));gd.setAttribute("visibility","visible");
+      tip.innerHTML='<b>อายุ '+age+(age===data.ra?" · หยุดทำงาน":"")+'</b>Bitcoin <span>'+Number(q.btc).toFixed(4)+' ₿</span><br>มูลค่า <span>'+bahtM(q.btc*q.px)+'</span>';
+      tip.hidden=false;var bx=box.getBoundingClientRect(),px2=e.clientX-bx.left,tw=tip.offsetWidth;
+      tip.style.left=Math.max(4,Math.min(bx.width-tw-4,px2+(px2+tw+16>bx.width?-tw-12:12)))+"px";tip.style.top=Math.max(4,e.clientY-bx.top-tip.offsetHeight-12)+"px";};
+    svg.onpointermove=at;svg.onpointerdown=at;svg.onpointerleave=hide;
+  }
+
+  ["age","retireAge","lifeExpect","exp","btc","price","infl","growth"].forEach(function(id){
+    var el=$(id);el.addEventListener("input",function(){
+      if(id==="exp"||id==="price"){var raw=el.value.replace(/[^0-9]/g,"");el.value=raw?Number(raw).toLocaleString("en-US"):"";}
+      if(id==="price")priceTouched=true;calc();});
+  });
+  var priceTouched=false;
+  fetch("https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=thb",{cache:"no-store"}).then(function(r){return r.json();}).then(function(j){
+    var t=Math.round(+j.bitcoin.thb);if(t>0&&!priceTouched){$("price").value=t.toLocaleString("en-US");calc();}$("priceNote").textContent="ราคาสด CoinGecko (แก้เองได้)";
+  }).catch(function(){$("priceNote").textContent="ดึงราคาสดไม่ได้ ใส่ราคาเองได้";});
+  calc();
+})();
+</script>
+<script>
+(function(){
+  var nav=document.querySelector('.fyt-nav'), btn=nav&&nav.querySelector('.menu-btn');
+  if(!btn) return;
+  btn.addEventListener('click',function(){ btn.setAttribute('aria-expanded',String(nav.classList.toggle('open'))); });
+  nav.querySelectorAll('.links a').forEach(function(a){ a.addEventListener('click',function(){ nav.classList.remove('open'); btn.setAttribute('aria-expanded','false'); }); });
+})();
+</script>
+<!-- Freeyourtime MAP (399): /this-page?from=map&<input id>=<value> fills the calculator with numbers from the customer's plan -->
+<script>
+(function(){
+  var q=new URLSearchParams(location.search);if(q.get("from")!=="map")return;
+  var fill=function(){q.forEach(function(v,k){if(k==="from")return;var e=document.getElementById(k);
+    if(!e||(e.tagName!=="INPUT"&&e.tagName!=="SELECT")||e.type==="checkbox"||e.type==="radio")return;
+    e.value=(e.tagName==="SELECT"||e.type==="number"||e.type==="range")?String(v).replace(/[^0-9.]/g,""):Number(v).toLocaleString("en-US");
+    e.dispatchEvent(new Event("input",{bubbles:true}));e.dispatchEvent(new Event("change",{bubbles:true}));});
+    try{if(typeof calc==="function")calc();}catch(e){}};
+  document.addEventListener("DOMContentLoaded",fill);
+  window.addEventListener("load",function(){fill();
+    var b=document.createElement("div");
+    b.style.cssText="position:sticky;top:0;z-index:9999;background:#f7931a;color:#111;font:600 14px/1.5 sans-serif;padding:8px 16px;text-align:center";
+    b.innerHTML='ใช้ตัวเลขจากแผน Freeyourtime "MAP" ของคุณแล้ว ปรับต่อได้ · <a href="javascript:history.back()" style="color:#111">กลับไปที่แผน</a>';
+    document.body.insertBefore(b,document.body.firstChild);
+  });
+})();
+</script>
+</body>
+</html>
