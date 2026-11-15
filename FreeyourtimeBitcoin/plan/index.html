@@ -1298,6 +1298,7 @@ if(ACCT){
     var P=data,now=planStats(P);
     accData().then(function(j){
       var built=j.plans.filter(function(x){return x.inputs;}),k=built.map(function(x){return x.id;}).indexOf(planId),prev=k>=0?built[k+1]:built[0];
+      window._accPlans=j.plans;
       var others=built.filter(function(x){return x.id!==planId;}),want=new URLSearchParams(location.search).get("cmp");
       if(want&&others.some(function(x){return x.id===want;}))prev=others.filter(function(x){return x.id===want;})[0];
       if(!prev&&others.length)prev=others[0];
@@ -1480,7 +1481,18 @@ function btcToolLink(path,m,px){
 })();
 
 if(ACCT){
-  var cmpLabel=function(x){return thDate(x.created)+" · "+(x.kind==="adjust"?"ปรับตัวเลข":"คุยกับ AI");};
+  var BKK={timeZone:"Asia/Bangkok"};
+  window.planInfo=function(x,plans){
+    plans=plans||window._accPlans||[x];
+    var asc=plans.slice().sort(function(a,b){return new Date(a.created)-new Date(b.created);});
+    var mk=function(d){return new Date(d).toLocaleDateString("en-CA",BKK).slice(0,7);},m=mk(x.created);
+    var nth=asc.filter(function(y){return y.kind===x.kind&&mk(y.created)===m&&new Date(y.created)<=new Date(x.created);}).length;
+    var no=asc.indexOf(asc.filter(function(y){return y.id===x.id;})[0])+1;
+    var mon=new Date(x.created).toLocaleDateString("th-TH",{month:"short",timeZone:"Asia/Bangkok"});
+    var time=new Date(x.created).toLocaleTimeString("th-TH",{hour:"2-digit",minute:"2-digit",timeZone:"Asia/Bangkok"});
+    return{no:no,title:"แผนที่ "+no+" · "+(x.kind==="adjust"?"ปรับตัวเลข":"คุยกับ AI")+" ครั้งที่ "+nth+" ของ "+mon,when:thDate(x.created)+" · "+time+" น."};
+  };
+  var cmpLabel=function(x){var i=window.planInfo(x);return i.title+" · "+i.when;};
   window.drawCompare=function(sec,P,now,other,others){
     var Q=other.inputs,b=planStats(Q);
     var r=function(label,a,bv,fa,hib){return"<tr><td>"+label+'</td><td class="r num">'+fa(bv)+'</td><td class="r num"><b>'+fa(a)+"</b>"+arrow(a,bv,hib)+"</td></tr>";};
@@ -1529,6 +1541,8 @@ if(ACCT){
   var _renderAccountCmp=renderAccount;
   renderAccount=function(j){
     _renderAccountCmp(j);
+    window._accPlans=j.plans;
+    [].forEach.call(document.querySelectorAll("#acc-plans .acc-row"),function(row,i){var x=j.plans[i];if(!x)return;var inf=window.planInfo(x,j.plans),b=row.querySelector("b"),meta=row.querySelector(".meta");if(b)b.textContent=inf.title;if(meta)meta.textContent=inf.when;});
     var rows=document.querySelectorAll("#acc-plans .acc-row"),picked=[];
     var bar=document.getElementById("cmp-bar");if(!bar){bar=document.createElement("div");bar.id="cmp-bar";bar.className="cmp-bar";$("acc-plans").parentNode.insertBefore(bar,$("acc-plans"));}
     var builtN=j.plans.filter(function(x){return x.inputs;}).length;
