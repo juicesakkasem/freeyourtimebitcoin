@@ -669,8 +669,8 @@ html:root, html:root[data-theme]{
 (function(){
   var q=new URLSearchParams(location.search);if(q.get("from")!=="map")return;
   var fill=function(){q.forEach(function(v,k){if(k==="from")return;var e=document.getElementById(k);
-    if(!e||e.tagName!=="INPUT"||e.type==="checkbox"||e.type==="radio")return;
-    e.value=(e.type==="number"||e.type==="range")?String(v).replace(/[^0-9.]/g,""):Number(v).toLocaleString("en-US");
+    if(!e||(e.tagName!=="INPUT"&&e.tagName!=="SELECT")||e.type==="checkbox"||e.type==="radio")return;
+    e.value=(e.tagName==="SELECT"||e.type==="number"||e.type==="range")?String(v).replace(/[^0-9.]/g,""):Number(v).toLocaleString("en-US");
     e.dispatchEvent(new Event("input",{bubbles:true}));e.dispatchEvent(new Event("change",{bubbles:true}));});
     try{if(typeof calc==="function")calc();}catch(e){}};
   document.addEventListener("DOMContentLoaded",fill);

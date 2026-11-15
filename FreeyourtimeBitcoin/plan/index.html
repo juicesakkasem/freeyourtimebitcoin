@@ -242,6 +242,7 @@ footer.site-foot{margin-top:56px;border-top:1px solid var(--line);padding:0;font
 .wi-demo{max-width:none;width:max-content;max-width:100%;font-size:14px;color:var(--bright);background:var(--orange-soft);border:1px solid var(--orange);border-radius:10px;padding:8px 12px;margin:0 0 12px}
 .wi-sum{font-size:16px;color:var(--bright);margin:14px 0 0;line-height:1.6}.wi-sum b{color:var(--orange)}
 .up-box{border:1px dashed var(--orange);border-radius:12px;padding:14px 16px;margin-top:14px;background:var(--orange-soft)}.up-box p{margin:4px 0 10px;font-size:14.5px}.up-box b{color:var(--bright)}
+.risk-box{border:1px solid var(--warn);border-radius:12px;padding:14px 16px;margin-top:14px;background:rgba(232,176,58,.08)}.risk-box p{margin:6px 0;font-size:14.5px}.risk-box b{color:var(--bright)}.risk-box .btn{margin-top:6px}
 .y-stats{display:block;font-size:13.5px;color:var(--dim);margin-top:2px}.y-stats b{color:var(--bright);font-weight:600}
 .y-up{color:var(--good)}.y-down{color:var(--bad)}.y-same{color:var(--dim)}
 .wi-grid{display:grid;gap:14px;margin-top:6px}
@@ -383,7 +384,7 @@ footer.site-foot{margin-top:56px;border-top:1px solid var(--line);padding:0;font
 
   <!-- 3. review -->
   <section id="v-review" hidden>
-    <div class="sec-head"><h2>ตรวจตัวเลขก่อนสร้างแผน</h2><p>แก้ตรงไหนก็ได้ ช่องที่ติดป้าย "ค่ากลาง" คือคุณไม่ได้ระบุ ระบบเติมค่ามาตรฐานให้ ช่องขอบแดงต้องกรอก · <b style="color:var(--warn)">หลังสร้างแผน แก้ตัวเลขเองได้อีกเพียง 1 ครั้ง ตรวจให้ครบก่อน</b></p></div>
+    <div class="sec-head"><h2>ตรวจตัวเลขก่อนสร้างแผน</h2><p>แก้ตรงไหนก็ได้ ช่องที่ติดป้าย "ค่ากลาง" คือคุณไม่ได้ระบุ ระบบเติมค่ามาตรฐานให้ <span class="nw">ช่องขอบแดงต้องกรอก</span><br><b style="color:var(--warn)">หลังสร้างแผน แก้ตัวเลขเองได้อีกเพียง 1 ครั้ง ตรวจให้ครบก่อน</b></p></div>
     <div class="notice" id="extracting">กำลังอ่านคำตอบจากบทสนทนา…</div>
     <div id="review-body" hidden>
       <div class="tbl"><table class="review-tbl"><tbody id="review-rows"></tbody></table></div>
@@ -571,7 +572,7 @@ function rates(p){var i=p.inflation;return{cash:1.5,stocks:i+5,fund:i+3,gold:i+1
 function sim(p,bgr,o){
   o=o||{};
   var inf=p.inflation/100,T=p.lifeExpect-p.age,ra=p.retireAge+(o.later||0);
-  var RATE=rates(p),c=p.cash,s=p.stocks,f=p.fund,g=p.gold,ot=p.other||0,b=p.btcValue,ports=[],rows=[],shortAge=null,shortAtEnd=false,nw=0,NEW=o.newRate!=null;
+  var RATE=rates(p),c=p.cash,s=p.stocks,f=p.fund,g=p.gold,ot=p.other||0,b=p.btcValue,ports=[],rows=[],shortAge=null,shortAtEnd=false,nw=0,NEW=o.newRate!=null,retB=0;
   // newRate: existing portfolio keeps growing as it is; every new baht saved from now on (leftover + DCA) goes into one asset at this rate
   // flatRate: what-if the whole portfolio earned one rate (comparison chart)
   if(o.flatRate!=null){var fr=o.flatRate;RATE={cash:fr,stocks:fr,fund:fr,gold:fr,other:fr,disc:RATE.disc};bgr=fr;}
@@ -581,7 +582,7 @@ function sim(p,bgr,o){
     // scaleRet: what-if the portfolio on retirement day were k times bigger (used to find "money needed")
     if(o.scaleRet!=null&&age===ra){var k=o.scaleRet;c*=k;s*=k;f*=k;g*=k;ot*=k;b*=k;nw*=k;}
     if(p.assetSale&&age===p.assetSale.age)c+=p.assetSale.amount;
-    ports.push(Math.max(0,c+s+f+g+ot+b+nw));
+    ports.push(Math.max(0,c+s+f+g+ot+b+nw));if(age===ra)retB=b;
     c*=1+RATE.cash/100;s*=1+RATE.stocks/100;f*=1+RATE.fund/100;g*=1+RATE.gold/100;ot*=1+RATE.other/100;b*=1+bgr/100;if(NEW)nw*=1+o.newRate/100;
     var debt=p.debts.reduce(function(t,d){return t+(age<d.toAge?d.monthly:0)},0);
     var evIn=p.events.reduce(function(t,x){return t+(x.type==="income"&&act(x,age)?x.monthly:0)},0);
@@ -605,7 +606,7 @@ function sim(p,bgr,o){
     }
   }
   var runOut=null;ports.forEach(function(v,i){if(runOut===null&&v<=0&&p.age+i>ra)runOut=p.age+i;});
-  return{ports:ports,rows:rows,runOut:runOut,retV:ports[ra-p.age]||0,final:c+s+f+g+ot+b+nw,shortAge:shortAge,shortAtEnd:shortAtEnd};
+  return{ports:ports,rows:rows,runOut:runOut,retV:ports[ra-p.age]||0,retB:retB,final:c+s+f+g+ot+b+nw,shortAge:shortAge,shortAtEnd:shortAtEnd};
 }
 // money needed on retirement day = the portfolio size (same mix) that lasts exactly to the planned age
 function neededBySim(p,bgr,r){
@@ -1250,7 +1251,7 @@ if(ACCT){
     var debtNow=P.debts.reduce(function(t,d){return t+(P.age<d.toAge?d.monthly:0)},0),saveYr=Math.max(0,P.salary+P.sideIncome-P.exp-debtNow)*12;
     var link=function(path,params){var u=new URLSearchParams({from:"map"});Object.keys(params).forEach(function(k){u.set(k,Math.round(params[k]));});return path+"?"+u.toString();};
     var tools=[["Wealth Planner","เทียบการเติบโตของเงินก้อนและเงินออมต่อปี",link("/wealth-planner",{"inp-initial":now.have,"inp-dca":saveYr,"inp-inflation":P.inflation})],
-      ["วางแผน Bitcoin หลังเกษียณ","ดูว่าถอนใช้ได้กี่ปี (ใส่จำนวน BTC เอง)",link("/btc-retirement-withdrawal",{"spend":P.retireIncome,"horizon":P.lifeExpect-P.retireAge,"infl":P.inflation})],
+      ["วางแผน Bitcoin หลังเกษียณ","ดูว่า Bitcoin ในแผนถอนใช้ได้กี่ปี",link("/btc-retirement-withdrawal",{"spend":P.retireIncome,"horizon":P.lifeExpect-P.retireAge,"infl":P.inflation})],
       ["สำรองเงินสดหลังเกษียณ","กันเงินสดไว้ใช้ช่วงราคาต่ำ ไม่ต้องขายตอนราคาตก",link("/btc-cash-bucket",{"spend":P.retireIncome,"horizon":P.lifeExpect-P.retireAge,"infl":P.inflation})],
       ["เงินเฟ้อกินเงินเก็บไปเท่าไหร่","เงินเก็บเสียค่าไปเท่าไรถ้าเก็บเป็นเงินสด เทียบกับลงทุน",link("/Purchasing-Power.html",{"inputCurrentSavings":now.have,"inputMonthlySavings":saveYr/12,"inputInflationRate":P.inflation})]];
     if(P.dca>0&&P.retireAge>P.age)tools.push(["1 BTC","DCA เดือนละ "+fmt(P.dca)+" บาท ถึงวันหยุดทำงานจะสะสมได้กี่เหรียญ",link("/1-btc-dashboard",{"monthly":P.dca,"years":Math.min(50,P.retireAge-P.age)})]);
@@ -1331,6 +1332,52 @@ if(!ACCT){
 }
 // coming from the upsell box: open at the price cards
 if(new URLSearchParams(location.search).get("src")==="upsell"&&!new URLSearchParams(location.search).get("id")){window.addEventListener("load",function(){var w=document.querySelector(".wl-prices");if(w){w.scrollIntoView({block:"start"});window.scrollBy(0,-90);}});}
+
+// how much of life after Free Your Time is paid by selling Bitcoin, in today's money (null = plan doesn't rely on Bitcoin)
+function mapBtc(P){
+  var g=LEVELS[P.btcLevel==null?1:P.btcLevel].g,r=sim(P,g),yrs=Math.max(0,P.retireAge-P.age),inf=P.inflation/100,age=P.retireAge;
+  if(!(r.retB>0)||!(r.retV>0))return null;
+  var act=function(x){return age>=x.fromAge&&age<x.toAge};
+  var debt=P.debts.reduce(function(t,d){return t+(age<d.toAge?d.monthly:0)},0);
+  var evIn=P.events.reduce(function(t,x){return t+(x.type==="income"&&act(x)?x.monthly:0)},0);
+  var evOut=P.events.reduce(function(t,x){return t+(x.type!=="income"&&act(x)?x.monthly:0)},0);
+  var needM=(P.retireIncome*Math.pow(1+inf,yrs)+debt+evOut-P.pension-P.sideIncome-evIn)/Math.pow(1+inf,yrs);
+  if(!(needM>0))return null;
+  var share=Math.min(1,r.retB/r.retV);
+  // Bitcoin on Free Your Time day priced at today's price = coins, once divided by today's price
+  return{g:g,share:share,spend:needM*share,btcToday:r.retB/Math.pow(1+g/100,yrs),start:Math.min(30,yrs),horizon:Math.max(5,P.lifeExpect-P.retireAge),infl:P.inflation};
+}
+var _btcPx=null;
+function btcPrice(){return _btcPx||(_btcPx=fetch("https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=thb",{cache:"no-store"}).then(function(r){return r.json();}).then(function(j){return +j.bitcoin.thb||0;}).catch(function(){return 0;}));}
+function btcToolLink(path,m,px){
+  var u=new URLSearchParams({from:"map",startY:m.start,spend:Math.round(m.spend),infl:m.infl,horizon:m.horizon});
+  if(px>0)u.set("btc",Math.max(0.001,m.btcToday/px).toFixed(3));
+  return path+"?"+u.toString();
+}
+(function(){
+  var _renderPlanRisk=renderPlan;
+  renderPlan=function(o){
+    _renderPlanRisk(o);
+    var P=data,el=$("v-plan"),m=mapBtc(P);
+    var fix=function(px){
+      if(!m||!(px>0))return;
+      [].forEach.call(el.querySelectorAll('a[href^="/btc-retirement-withdrawal"],a[href^="/btc-cash-bucket"]'),function(a){
+        a.setAttribute("href",btcToolLink(a.getAttribute("href").split("?")[0],m,px));});
+    };
+    if(m&&m.share>=0.1){
+      var cur=[].filter.call(el.querySelectorAll("section"),function(s){var h=s.querySelector("h2");return h&&h.textContent.trim()==="สถานการณ์ปัจจุบัน";})[0];
+      if(cur){
+        var yr=m.spend*12,d=document.createElement("div");d.className="risk-box";
+        d.innerHTML='<b>⚠️ ราคาจริงไม่ได้โตเรียบ ๆ แบบในแผน</b>'
+          +'<p>แผนนี้คิดว่า Bitcoin โตปีละ '+m.g+'% ทุกปี แต่ราคาจริงขึ้นลงเป็นรอบ และเคยลดลงมากกว่าครึ่งในบางช่วง ถ้าต้องขาย Bitcoin มาใช้ตอนราคาต่ำ เงินจะหมดเร็วกว่าที่เห็นในแผน</p>'
+          +'<p>ในแผนนี้ เงินที่ใช้หลังหยุดทำงานราว <b>'+Math.round(m.share*100)+'%</b> มาจาก Bitcoin (ประมาณเดือนละ '+fmt(Math.round(m.spend/100)*100)+' บาท ค่าเงินวันนี้) วิธีที่หลายคนใช้คือกันเงินสดไว้ใช้ 1–3 ปี หรือราว '+fmt(Math.round(yr/10000)*10000)+'–'+fmt(Math.round(yr*3/10000)*10000)+' บาท ค่าเงินวันนี้ เพื่อไม่ต้องขายตอนราคาตก</p>'
+          +'<a class="btn" href="'+esc(btcToolLink("/btc-cash-bucket",m,0))+'">ลองคำนวณในเครื่องมือสำรองเงินสด →</a>';
+        cur.appendChild(d);
+      }
+    }
+    if(m)btcPrice().then(fix);
+  };
+})();
 
 // mobile menu, same as the homepage
 (function(){var nav=document.querySelector(".nav"),b=document.querySelector(".menu-btn");if(b)b.onclick=function(){var o=nav.classList.toggle("open");b.setAttribute("aria-expanded",String(o));};})();
