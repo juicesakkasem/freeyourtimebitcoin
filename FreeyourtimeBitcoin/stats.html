@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>สถิติ MAP</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#0b0a09;--surface:#141210;--line:#2a2622;--text:#d9d3cb;--bright:#f4f0ea;--dim:#8f877e;--orange:#f7931a;--good:#8fd19e}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:'Noto Sans Thai',system-ui,sans-serif;line-height:1.6}
+  .wrap{max-width:900px;margin:0 auto;padding:28px 16px 60px}
+  h1{color:var(--bright);font-size:26px;margin:0 0 4px}
+  .sub{color:var(--dim);font-size:14px;margin:0 0 20px}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:16px}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  input,select,button{font:inherit;font-size:15px;color:var(--bright);background:#1c1916;border:1px solid var(--line);border-radius:9px;padding:8px 12px}
+  button{background:var(--orange);color:#1a1206;font-weight:700;border-color:var(--orange);cursor:pointer}
+  button.ghost{background:transparent;color:var(--dim);border-color:var(--line);font-weight:600}
+  table{width:100%;border-collapse:collapse;font-size:14.5px}
+  th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+  th:first-child,td:first-child{text-align:left}
+  th{color:var(--dim);font-weight:600;font-size:13px}
+  tr.tot td{font-weight:700;color:var(--bright)}
+  .num{font-variant-numeric:tabular-nums}
+  .err{color:#ff9b9b}
+  .note{color:var(--dim);font-size:13px}
+  .scroll{overflow-x:auto}
+  h2{font-size:18px;color:var(--bright);margin:0 0 10px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>สถิติ Freeyourtime "MAP"</h1>
+  <p class="sub">คนเปิดหน้า MAP และคนซื้อ แยกตามช่องทาง · หน้านี้สำหรับเจ้าของเว็บเท่านั้น</p>
+
+  <div class="card" id="login">
+    <div class="row"><input id="key" type="password" placeholder="รหัสดูสถิติ" autocomplete="current-password"><button id="go" type="button">ดูสถิติ</button></div>
+    <p class="note">รหัสคือค่า STATS_KEY ใน Netlify · เครื่องที่เปิดหน้านี้จะไม่ถูกนับเป็นคนเข้าดู</p>
+    <p class="err" id="err" hidden></p>
+  </div>
+
+  <div id="out" hidden>
+    <div class="card"><div class="row">
+      <label for="range" class="note">ช่วงเวลา</label>
+      <select id="range"><option value="7">7 วันล่าสุด</option><option value="30" selected>30 วันล่าสุด</option><option value="0">ทั้งหมด</option></select>
+      <button class="ghost" id="reload" type="button">โหลดใหม่</button>
+      <button class="ghost" id="logout" type="button">ออก</button>
+    </div></div>
+    <div class="card"><h2>แยกตามช่องทาง</h2><div class="scroll"><table id="bySrc"></table></div>
+      <p class="note">คนเปิดดู = เปิดหน้า /plan/ ครั้งแรกในแต่ละรอบเบราว์เซอร์ ไม่นับลิงก์ #test คนที่กลับมาเปิดแผนเดิม และเครื่องนี้ · direct = ไม่รู้ที่มา (มักเป็นแอป LINE หรือ FB ที่ไม่ส่งข้อมูลต้นทาง) · site = กดมาจากหน้าอื่นในเว็บเรา</p></div>
+    <div class="card"><h2>รายวัน</h2><div class="scroll"><table id="byDay"></table></div></div>
+  </div>
+</div>
+<script>
+(function(){
+  var $=function(id){return document.getElementById(id);},data=null;
+  try{localStorage.setItem("fyt-owner","1");}catch(e){}
+  var saved="";try{saved=sessionStorage.getItem("fyt-stats-key")||"";}catch(e){}
+  var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});};
+  var fmt=function(n){return Number(n||0).toLocaleString("th-TH");};
+  var load=function(k){
+    $("err").hidden=true;
+    fetch("/api/stats",{headers:{"x-admin-key":k},cache:"no-store"}).then(function(r){if(r.status===403)throw"no";return r.json();}).then(function(j){
+      data=j;try{sessionStorage.setItem("fyt-stats-key",k);}catch(e){}
+      $("login").hidden=true;$("out").hidden=false;draw();
+    }).catch(function(e){$("err").textContent=e==="no"?"รหัสไม่ถูก หรือยังไม่ได้ตั้ง STATS_KEY ใน Netlify":"โหลดไม่สำเร็จ ลองใหม่อีกครั้ง";$("err").hidden=false;});
+  };
+  var draw=function(){
+    var n=+$("range").value,cut=n?new Date(Date.now()+7*3600e3-(n-1)*864e5).toISOString().slice(0,10):"";
+    var days=data.days.filter(function(d){return !cut||d.day>=cut;}),sales=data.sales.filter(function(x){return !x.test&&(!cut||x.day>=cut);});
+    var by={},add=function(src,k,v){by[src]=by[src]||{views:0,b99:0,b399:0,baht:0};by[src][k]+=v;};
+    days.forEach(function(d){Object.keys(d.counts).forEach(function(k){var p=k.split(":");if(p[0]==="plan")add(p[1],"views",d.counts[k]);});});
+    sales.forEach(function(x){add(x.src||"none",x.product==="399"?"b399":"b99",1);add(x.src||"none","baht",x.amount/100);});
+    var keys=Object.keys(by).sort(function(a,b){return by[b].views-by[a].views;}),T={views:0,b99:0,b399:0,baht:0};
+    keys.forEach(function(k){Object.keys(T).forEach(function(f){T[f]+=by[k][f];});});
+    var pct=function(o){var b=o.b99+o.b399;return o.views?(b/o.views*100).toFixed(1)+"%":"–";};
+    $("bySrc").innerHTML='<thead><tr><th>ช่องทาง</th><th>คนเปิดดู</th><th>ซื้อ 99</th><th>ซื้อ 399</th><th>ยอดเงิน (บาท)</th><th>ซื้อ / เปิดดู</th></tr></thead><tbody>'
+      +(keys.length?keys.map(function(k){var o=by[k];return'<tr><td>'+esc(k)+'</td><td class="num">'+fmt(o.views)+'</td><td class="num">'+fmt(o.b99)+'</td><td class="num">'+fmt(o.b399)+'</td><td class="num">'+fmt(o.baht)+'</td><td class="num">'+pct(o)+'</td></tr>';}).join(""):'<tr><td colspan="6" class="note">ยังไม่มีข้อมูลในช่วงนี้</td></tr>')
+      +'<tr class="tot"><td>รวม</td><td class="num">'+fmt(T.views)+'</td><td class="num">'+fmt(T.b99)+'</td><td class="num">'+fmt(T.b399)+'</td><td class="num">'+fmt(T.baht)+'</td><td class="num">'+pct(T)+'</td></tr></tbody>';
+    var srcs=Object.keys(by).filter(function(k){return by[k].views>0;});
+    $("byDay").innerHTML='<thead><tr><th>วันที่</th>'+srcs.map(function(k){return'<th>'+esc(k)+'</th>';}).join("")+'<th>รวม</th></tr></thead><tbody>'
+      +(days.length?days.map(function(d){var sum=0;return'<tr><td>'+d.day+'</td>'+srcs.map(function(k){var v=d.counts["plan:"+k]||0;sum+=v;return'<td class="num">'+(v||"·")+'</td>';}).join("")+'<td class="num"><b>'+fmt(sum)+'</b></td></tr>';}).join(""):'<tr><td class="note">ยังไม่มีข้อมูล</td></tr>')+'</tbody>';
+  };
+  $("go").onclick=function(){var k=$("key").value.trim();if(k)load(k);};
+  $("key").onkeydown=function(e){if(e.key==="Enter")$("go").click();};
+  $("range").onchange=draw;
+  $("reload").onclick=function(){var k="";try{k=sessionStorage.getItem("fyt-stats-key")||"";}catch(e){}if(k)load(k);};
+  $("logout").onclick=function(){try{sessionStorage.removeItem("fyt-stats-key");}catch(e){}location.reload();};
+  if(saved)load(saved);
+})();
+</script>
+</body>
+</html>
