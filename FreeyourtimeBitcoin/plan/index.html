@@ -1623,6 +1623,20 @@ if(ACCT){
   window.addEventListener("beforeprint",function(){[].forEach.call(document.querySelectorAll("details.ch-fold"),function(d){d.setAttribute("open","");});});
 })();
 
+(function(){
+  try{
+    var q=new URLSearchParams(location.search);
+    if(location.hash==="#test"||location.hash==="#admin"||q.get("id")||q.get("a")||q.get("paid"))return;
+    if(localStorage.getItem("fyt-owner")==="1"||sessionStorage.getItem("fyt-hit"))return;
+    sessionStorage.setItem("fyt-hit","1");
+  }catch(e){return;}
+  setTimeout(function(){
+    var src=window.FYT_SRC||"plan",ref=document.referrer||"";
+    if(src==="plan")src=/google\./.test(ref)?"google":/bing\.|duckduckgo\./.test(ref)?"search":ref&&ref.indexOf(location.host)<0?"other":ref?"site":"direct";
+    fetch("/api/hit",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({page:"plan",src:src}),keepalive:true}).catch(function(){});
+  },300);
+})();
+
 // mobile menu, same as the homepage
 (function(){var nav=document.querySelector(".nav"),b=document.querySelector(".menu-btn");if(b)b.onclick=function(){var o=nav.classList.toggle("open");b.setAttribute("aria-expanded",String(o));};})();
 

@@ -254,6 +254,33 @@ async function waitlistCount() {
 }
 
 // the owner downloads the list as a CSV that opens in Excel; needs WAITLIST_KEY (set in Netlify) in the x-admin-key header
+// ---------- visit counts by channel (no personal data: just a number per day, page and ?src=) ----------
+const dayBkk = () => new Date(Date.now() + 7 * 3600e3).toISOString().slice(0, 10);
+async function hit(body) {
+  const src = /^[a-z0-9]{1,20}$/.test(body?.src ?? "") ? body.src : "none";
+  const page = ["plan", "quickcheck", "home"].includes(body?.page) ? body.page : "plan";
+  const s = store(), key = "stats/" + dayBkk();
+  const d = (await s.get(key, { type: "json" })) || {};
+  const k = page + ":" + src;
+  if (!(k in d) && Object.keys(d).length >= 300) return json({ ok: true });
+  d[k] = (d[k] || 0) + 1;
+  await s.setJSON(key, d);
+  return json({ ok: true });
+}
+async function stats(req) {
+  const want = env("STATS_KEY", "") || env("WAITLIST_KEY", "");
+  const got = req.headers.get("x-admin-key") || "";
+  if (want.length < 8 || (await sha(got)) !== (await sha(want))) return fail("no_access", 403);
+  const s = store();
+  const days = await Promise.all((await s.list({ prefix: "stats/" })).blobs.map(async (b) => ({ day: b.key.slice(6), counts: (await s.get(b.key, { type: "json" })) || {} })));
+  const paidKeys = (await s.list({ prefix: "paid/" })).blobs;
+  const sales = (await Promise.all(paidKeys.map((b) => s.get(b.key, { type: "json" }))))
+    .filter(Boolean)
+    .map((r) => ({ day: String(r.created || "").slice(0, 10), product: r.product, src: r.src || "none", amount: r.amount || 0, test: !!r.test }));
+  days.sort((a, b) => (a.day < b.day ? 1 : -1));
+  return json({ days, sales });
+}
+
 async function waitlistExport(req) {
   const want = env("WAITLIST_KEY", "");
   const got = req.headers.get("x-admin-key") || "";
@@ -595,9 +622,11 @@ export default async (req) => {
     if (req.method === "GET" && route === "shop") return await shop();
     if (req.method === "GET" && route === "paid") return await paid(url);
     if (req.method === "GET" && route === "waitlist-export") return await waitlistExport(req);
+    if (req.method === "GET" && route === "stats") return await stats(req);
     if (req.method !== "POST") return fail("not_found", 404);
     if (route === "stripe-webhook") return await stripeWebhook(req, url);
     const body = await req.json().catch(() => null);
+    if (route === "hit") return await hit(body);
     if (route === "waitlist") return await waitlistJoin(body);
     if (route === "account-new") return await accountNew(body);
     if (route === "account-check") return await accountCheck(body);
